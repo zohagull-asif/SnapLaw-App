@@ -66,6 +66,32 @@ class SupabaseService {
     await client.auth.resetPasswordForEmail(email);
   }
 
+  // OTP methods for email verification
+  static Future<void> sendOtp(String email) async {
+    await client.auth.signInWithOtp(
+      email: email,
+      shouldCreateUser: false,
+    );
+  }
+
+  static Future<AuthResponse> verifyOtp({
+    required String email,
+    required String token,
+  }) async {
+    return await client.auth.verifyOTP(
+      email: email,
+      token: token,
+      type: OtpType.email,
+    );
+  }
+
+  static Future<void> resendOtp(String email) async {
+    await client.auth.resend(
+      type: OtpType.signup,
+      email: email,
+    );
+  }
+
   // Database methods
   static SupabaseQueryBuilder from(String table) {
     return client.from(table);

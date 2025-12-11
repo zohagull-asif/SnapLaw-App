@@ -4,6 +4,7 @@ import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/auth/presentation/screens/role_selection_screen.dart';
+import '../features/auth/presentation/screens/otp_verification_screen.dart';
 import '../features/client/presentation/screens/client_dashboard_screen.dart';
 import '../features/client/presentation/screens/client_cases_screen.dart';
 import '../features/client/presentation/screens/find_lawyers_screen.dart';
@@ -34,6 +35,7 @@ class AppRouter {
       final isAuthRoute = state.matchedLocation == '/login' ||
           state.matchedLocation == '/register' ||
           state.matchedLocation == '/forgot-password' ||
+          state.matchedLocation == '/verify-otp' ||
           state.matchedLocation == '/';
 
       if (!isAuthenticated && !isAuthRoute) {
@@ -65,6 +67,10 @@ class AppRouter {
       GoRoute(
         path: '/role-selection',
         builder: (context, state) => const RoleSelectionScreen(),
+      ),
+      GoRoute(
+        path: '/verify-otp',
+        builder: (context, state) => const OtpVerificationScreen(),
       ),
 
       // Client routes

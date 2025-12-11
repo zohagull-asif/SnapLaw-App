@@ -76,6 +76,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
         );
         ref.read(authProvider.notifier).clearError();
+      } else if (next.status == AuthStatus.pendingVerification) {
+        // Navigate to OTP verification screen
+        context.go('/verify-otp');
       } else if (next.status == AuthStatus.authenticated && next.user != null) {
         _navigateBasedOnRole(next.user!);
       }
