@@ -3,28 +3,36 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/models/user_model.dart';
 import '../../../../services/supabase_service.dart';
 
-enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
+enum AuthStatus { initial, loading, authenticated, unauthenticated, error, pendingVerification }
 
 class AuthState {
   final AuthStatus status;
   final UserModel? user;
   final String? errorMessage;
+  final String? pendingEmail;
+  final Map<String, dynamic>? pendingUserData;
 
   const AuthState({
     this.status = AuthStatus.initial,
     this.user,
     this.errorMessage,
+    this.pendingEmail,
+    this.pendingUserData,
   });
 
   AuthState copyWith({
     AuthStatus? status,
     UserModel? user,
     String? errorMessage,
+    String? pendingEmail,
+    Map<String, dynamic>? pendingUserData,
   }) {
     return AuthState(
       status: status ?? this.status,
       user: user ?? this.user,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: errorMessage,
+      pendingEmail: pendingEmail ?? this.pendingEmail,
+      pendingUserData: pendingUserData ?? this.pendingUserData,
     );
   }
 }
@@ -94,45 +102,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
         },
       );
 
-      if (response.user != null) {
-        try {
-          // Create profile in profiles table
-          await SupabaseService.from('profiles').insert({
-            'id': response.user!.id,
-            'email': email,
-            'full_name': fullName,
-            'phone_number': phoneNumber,
-            'role': role.name,
-            'is_verified': false,
-            'created_at': DateTime.now().toIso8601String(),
-          });
+      // Store pending user data for after OTP verification
+      final pendingData = {
+        'email': email,
+        'password': password,
+        'full_name': fullName,
+        'phone_number': phoneNumber,
+        'role': role.name,
+        'user_id': response.user?.id,
+      };
 
-          // If lawyer, create lawyer_profiles entry
-          if (role == UserRole.lawyer) {
-            await SupabaseService.from('lawyer_profiles').insert({
-              'user_id': response.user!.id,
-              'is_verified': false,
-              'is_available': true,
-              'created_at': DateTime.now().toIso8601String(),
-            });
-          }
-        } on PostgrestException catch (e) {
-          // Profile creation failed - could be duplicate or RLS policy issue
-          state = state.copyWith(
-            status: AuthStatus.error,
-            errorMessage: 'Failed to create profile: ${e.message}',
-          );
-          return;
-        }
-
-        await _fetchUserProfile(response.user!.id);
-      } else {
-        // No user returned - check if email confirmation is required
-        state = state.copyWith(
-          status: AuthStatus.error,
-          errorMessage: 'Please check your email to confirm your account',
-        );
-      }
+      // Supabase will send OTP email automatically on signup when email confirmation is enabled
+      // Set state to pending verification
+      state = state.copyWith(
+        status: AuthStatus.pendingVerification,
+        pendingEmail: email,
+        pendingUserData: pendingData,
+      );
     } on AuthException catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,
@@ -143,6 +129,109 @@ class AuthNotifier extends StateNotifier<AuthState> {
         status: AuthStatus.error,
         errorMessage: 'An unexpected error occurred: ${e.toString()}',
       );
+    }
+  }
+
+  Future<bool> verifyOtp(String otp) async {
+    if (state.pendingEmail == null) {
+      state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: 'No pending verification found',
+      );
+      return false;
+    }
+
+    state = state.copyWith(status: AuthStatus.loading);
+
+    try {
+      final response = await SupabaseService.verifyOtp(
+        email: state.pendingEmail!,
+        token: otp,
+      );
+
+      if (response.user != null) {
+        // OTP verified successfully, now create profile
+        final pendingData = state.pendingUserData;
+        if (pendingData != null) {
+          try {
+            // Create profile in profiles table
+            await SupabaseService.from('profiles').insert({
+              'id': response.user!.id,
+              'email': pendingData['email'],
+              'full_name': pendingData['full_name'],
+              'phone_number': pendingData['phone_number'],
+              'role': pendingData['role'],
+              'is_verified': true,
+              'created_at': DateTime.now().toIso8601String(),
+            });
+
+            // If lawyer, create lawyer_profiles entry
+            if (pendingData['role'] == 'lawyer') {
+              await SupabaseService.from('lawyer_profiles').insert({
+                'user_id': response.user!.id,
+                'is_verified': false,
+                'is_available': true,
+                'created_at': DateTime.now().toIso8601String(),
+              });
+            }
+          } on PostgrestException catch (e) {
+            // Profile might already exist, continue anyway
+            if (!e.message.contains('duplicate')) {
+              state = state.copyWith(
+                status: AuthStatus.error,
+                errorMessage: 'Failed to create profile: ${e.message}',
+              );
+              return false;
+            }
+          }
+        }
+
+        await _fetchUserProfile(response.user!.id);
+        return true;
+      } else {
+        state = state.copyWith(
+          status: AuthStatus.error,
+          errorMessage: 'Verification failed. Please try again.',
+        );
+        return false;
+      }
+    } on AuthException catch (e) {
+      state = state.copyWith(
+        status: AuthStatus.pendingVerification,
+        errorMessage: e.message,
+      );
+      return false;
+    } catch (e) {
+      state = state.copyWith(
+        status: AuthStatus.pendingVerification,
+        errorMessage: 'Invalid OTP. Please try again.',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> resendOtp() async {
+    if (state.pendingEmail == null) {
+      state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: 'No pending verification found',
+      );
+      return false;
+    }
+
+    try {
+      await SupabaseService.resendOtp(state.pendingEmail!);
+      return true;
+    } on AuthException catch (e) {
+      state = state.copyWith(
+        errorMessage: e.message,
+      );
+      return false;
+    } catch (e) {
+      state = state.copyWith(
+        errorMessage: 'Failed to resend OTP',
+      );
+      return false;
     }
   }
 
