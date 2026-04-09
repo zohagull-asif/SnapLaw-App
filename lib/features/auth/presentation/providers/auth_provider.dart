@@ -102,7 +102,45 @@ class AuthNotifier extends StateNotifier<AuthState> {
         },
       );
 
-      // Store pending user data for after OTP verification
+      // If email confirmation is disabled, user is immediately authenticated
+      if (response.session != null && response.user != null) {
+        // Create profile directly
+        try {
+          await SupabaseService.from('profiles').insert({
+            'id': response.user!.id,
+            'email': email,
+            'full_name': fullName,
+            'phone_number': phoneNumber,
+            'role': role.name,
+            'is_verified': true,
+            'created_at': DateTime.now().toIso8601String(),
+          });
+
+          // If lawyer, create lawyer_profiles entry
+          if (role == UserRole.lawyer) {
+            await SupabaseService.from('lawyer_profiles').insert({
+              'user_id': response.user!.id,
+              'is_verified': false,
+              'is_available': true,
+              'created_at': DateTime.now().toIso8601String(),
+            });
+          }
+        } on PostgrestException catch (e) {
+          // Profile might already exist, continue anyway
+          if (!e.message.contains('duplicate')) {
+            state = state.copyWith(
+              status: AuthStatus.error,
+              errorMessage: 'Failed to create profile: ${e.message}',
+            );
+            return;
+          }
+        }
+
+        await _fetchUserProfile(response.user!.id);
+        return;
+      }
+
+      // If email confirmation is enabled, go to OTP verification
       final pendingData = {
         'email': email,
         'password': password,
@@ -112,8 +150,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
         'user_id': response.user?.id,
       };
 
-      // Supabase will send OTP email automatically on signup when email confirmation is enabled
-      // Set state to pending verification
       state = state.copyWith(
         status: AuthStatus.pendingVerification,
         pendingEmail: email,

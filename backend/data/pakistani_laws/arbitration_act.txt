@@ -1,0 +1,44 @@
+PAKISTAN ARBITRATION ACT 1940
+Key Provisions for Dispute Resolution
+
+SECTION 2: DEFINITIONS
+"Arbitration agreement" means a written agreement to submit present or future differences to arbitration, whether an arbitrator is named therein or not.
+
+SECTION 3: POWER OF COURT TO APPOINT ARBITRATOR
+Where an arbitration agreement provides that the reference shall be to an arbitrator to be appointed by a person named therein, and the person so named refuses to act, or neglects to act within a reasonable time, the Court may appoint an arbitrator.
+
+SECTION 4: STAY OF LEGAL PROCEEDINGS WHERE THERE IS ARBITRATION AGREEMENT
+Where any party to an arbitration agreement commences any legal proceedings against any other party to the agreement in respect of any matter agreed to be referred, any party to such legal proceedings may apply to the Court to stay the proceedings, and the Court shall make an order staying the proceedings.
+
+SECTION 12: CONDUCT OF ARBITRATION
+The arbitrators shall act fairly and impartially and shall give each party a reasonable opportunity to present his case. The arbitrators shall decide the dispute in accordance with the law applicable to the substance of the dispute.
+
+SECTION 14: AWARD
+When the arbitrators have made their award, they shall sign it and shall give notice in writing to the parties of the making and signing thereof and of the amount of fees and charges payable in respect of the arbitration and award.
+
+SECTION 30: GROUNDS FOR SETTING ASIDE AWARD
+An arbitral award may be set aside by the Court if: the arbitrator misconducted himself or the proceedings, the award was improperly procured, or the award is otherwise invalid.
+
+RECOGNITION AND ENFORCEMENT (ARBITRATION AGREEMENTS AND FOREIGN ARBITRAL AWARDS) ACT 2011
+
+Section 3: A foreign arbitral award shall be recognized and enforced in Pakistan in accordance with the provisions of this Act and the New York Convention.
+
+Section 5: Recognition or enforcement of an arbitral award may be refused only if: the parties were under some incapacity, the agreement is not valid, the party was not given proper notice, the award deals with matters not contemplated in the submission to arbitration, the composition of the arbitral authority was not in accordance with the agreement, or the award has been set aside by the competent authority of the country in which it was made.
+
+ALTERNATIVE DISPUTE RESOLUTION ACT 2017 (SINDH)
+
+Section 3: Mediation and conciliation are encouraged as means of settling disputes before resorting to arbitration or litigation.
+
+Section 5: Courts may refer cases to mediation with the consent of the parties at any stage of the proceedings.
+
+KEY PRINCIPLES FOR DISPUTE RESOLUTION CLAUSES IN CONTRACTS
+
+1. Arbitration clauses should specify the seat of arbitration within Pakistan unless there is a genuine international element.
+
+2. The governing law for domestic contracts between Pakistani entities should be Pakistani law. Choosing foreign law for purely domestic contracts may be challenged.
+
+3. Jurisdiction clauses must not restrict access to Pakistani courts for Pakistani citizens and entities.
+
+4. Multi-tier dispute resolution clauses (negotiation → mediation → arbitration → litigation) are recommended and enforceable in Pakistan.
+
+5. The time limit for commencing arbitration should not be unreasonably short and should comply with the Limitation Act 1908.

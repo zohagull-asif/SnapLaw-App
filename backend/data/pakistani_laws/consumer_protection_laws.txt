@@ -1,0 +1,59 @@
+PAKISTAN CONSUMER PROTECTION LAWS
+Key Provisions for Contract Analysis
+
+PUNJAB CONSUMER PROTECTION ACT 2005
+
+Section 2: Definitions
+"Consumer" means any person who buys any goods or hires or avails any services for a consideration.
+"Unfair trade practice" means a trade practice which adopts any unfair method or unfair or deceptive practice.
+
+Section 6: Rights of Consumers
+Every consumer shall have the right to be protected against marketing of goods and services which are hazardous to life and property, to be informed about the quality, quantity, potency, purity, standard and price of goods or services, and to be assured access to goods and services at competitive prices.
+
+Section 10: Unfair Trade Practices
+No service provider shall adopt any unfair trade practice including making false or misleading representations about the quality or standard of services, offering gifts or prizes with the intention of not providing them, or engaging in deceptive pricing practices.
+
+Section 14: Consumer Courts
+The Government shall establish Consumer Courts for the settlement of consumer disputes. A consumer may file a complaint before the Consumer Court for any unfair trade practice or defective goods or deficiency in services.
+
+SALE OF GOODS ACT 1930
+
+Section 12: Condition and Warranty
+A stipulation in a contract of sale with reference to goods which are the subject thereof may be a condition or a warranty. A condition is essential to the main purpose of the contract, the breach of which gives rise to a right to treat the contract as repudiated. A warranty is collateral to the main purpose of the contract, the breach of which gives rise to a claim for damages but not to a right to reject the goods.
+
+Section 14: Implied Conditions as to Quality or Fitness
+Where goods are bought by description from a seller who deals in goods of that description, there is an implied condition that the goods shall be of merchantable quality.
+
+Section 16: Implied Warranty of Quiet Possession
+There is an implied warranty that the buyer shall have and enjoy quiet possession of the goods and that the goods are free from any charge or encumbrance in favour of any third party.
+
+Section 55: Suit for Breach of Warranty
+Where there is a breach of warranty by the seller, the buyer may set up against the seller the breach of warranty in diminution or extinction of the price, or may sue the seller for damages for breach of warranty.
+
+Section 56: Damages for Breach
+Where there is a breach of a contract of sale, the damages shall be calculated according to the rules set forth in Section 73 of the Contract Act 1872.
+
+COMPETITION ACT 2010
+
+Section 3: Abuse of Dominant Position
+No undertaking shall abuse its dominant position. Abuse includes imposing unfair purchase or selling prices or other unfair trading conditions, limiting production, markets or technical development to the prejudice of consumers.
+
+Section 4: Prohibited Agreements
+All agreements between undertakings which have the object or effect of preventing, restricting or distorting competition shall be prohibited. This includes price-fixing, market division, limiting production, and tying arrangements.
+
+Section 10: Deceptive Marketing Practices
+No undertaking shall enter into deceptive marketing practices. Distribution of false or misleading information to consumers, including by packaging, advertising, or any other method, that is deceptive or misleading is prohibited.
+
+KEY CONSUMER PROTECTION PRINCIPLES FOR CONTRACTS
+
+1. Standard form contracts must not contain unfair terms that create a significant imbalance in the parties' rights and obligations to the detriment of the consumer.
+
+2. Terms and conditions must be written in clear, understandable language. Ambiguous terms shall be interpreted in favour of the consumer.
+
+3. Hidden charges or fees not disclosed at the time of contracting are prohibited.
+
+4. Automatic renewal clauses must provide adequate notice and an easy opt-out mechanism.
+
+5. Limitation of liability clauses in consumer contracts must not exclude liability for death or personal injury, or for breach of implied conditions under the Sale of Goods Act.
+
+6. Consumers have the right to return defective goods and receive a refund, repair, or replacement within a reasonable time.

@@ -5,9 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../services/supabase_service.dart';
+import '../../../../services/local_contract_analyzer.dart';
+import '../../../../services/document_text_extractor.dart';
 import '../../data/models/case_model.dart';
 import '../providers/cases_provider.dart';
 import '../providers/lawyers_provider.dart';
+import 'contract_risk_analysis_screen.dart';
 
 class CreateCaseScreen extends ConsumerStatefulWidget {
   final LawyerModel? selectedLawyer;
@@ -40,14 +44,20 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
         allowMultiple: true,
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'txt'],
+        withData: true, // CRITICAL: This loads file bytes for upload
       );
 
       if (result != null) {
         setState(() {
           _selectedFiles.addAll(result.files);
         });
+        print('✅ Selected ${result.files.length} file(s)');
+        for (final file in result.files) {
+          print('📄 File: ${file.name} (${file.size} bytes, has bytes: ${file.bytes != null})');
+        }
       }
     } catch (e) {
+      print('❌ Error picking files: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -63,6 +73,243 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
     setState(() {
       _selectedFiles.removeAt(index);
     });
+  }
+
+  /// Analyzes a document for risk using local Pakistani law dataset
+  Future<void> _analyzeDocument(PlatformFile file) async {
+    try {
+      print('📄 [RISK RADAR] Starting analysis for: ${file.name}');
+      print('   File size: ${file.size} bytes');
+      print('   File extension: ${file.extension}');
+      print('   Has bytes: ${file.bytes != null}');
+      print('   Bytes length: ${file.bytes?.length ?? 0}');
+
+      // CRITICAL: Check if file has bytes loaded
+      if (file.bytes == null || file.bytes!.isEmpty) {
+        print('❌ ERROR: File has no bytes loaded!');
+        print('⚠️ This means withData: true might not be working');
+        throw Exception(
+          'Cannot read file data. Please try:\n'
+          '1. Selecting the file again\n'
+          '2. Using a different file\n'
+          '3. Restarting the app');
+      }
+
+      print('✅ File bytes loaded successfully');
+
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Analyzing document...'),
+                  SizedBox(height: 8),
+                  Text(
+                    'Using local Pakistani law patterns',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      print('📄 [LOCAL] Analyzing document: ${file.name}');
+
+      // Step 1: Extract text from document
+      final textExtractor = DocumentTextExtractor();
+
+      if (!textExtractor.isSupportedFileType(file.extension)) {
+        Navigator.pop(context); // Close loading dialog
+        throw Exception(
+            'Unsupported file type. Please use TXT or PDF files for analysis.');
+      }
+
+      String documentText;
+      try {
+        documentText = await textExtractor.extractTextFromFile(file);
+        print('✅ Extracted ${documentText.length} characters from document');
+      } catch (e) {
+        Navigator.pop(context); // Close loading dialog
+        throw Exception('Could not read document: ${e.toString()}');
+      }
+
+      if (documentText.length < 100) {
+        Navigator.pop(context); // Close loading dialog
+        throw Exception(
+            'Document is too short or empty. Please provide a valid legal document.');
+      }
+
+      // Step 2: Validate document using local analyzer
+      print('🔍 Validating document with local patterns...');
+      final validation = await LocalContractAnalyzer.validateDocument(documentText);
+
+      if (!validation.isValid) {
+        Navigator.pop(context); // Close loading dialog
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.error_outline, color: AppColors.error),
+                  const SizedBox(width: 12),
+                  const Text('Invalid Document'),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(validation.reason),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Please upload a valid legal document such as:',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '• Contracts (sale, lease, employment)\n'
+                    '• Legal notices\n'
+                    '• Court petitions\n'
+                    '• Agreements (NDA, MOU, etc.)',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _removeFile(_selectedFiles.indexOf(file));
+                  },
+                  child: const Text('Remove File'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Keep Anyway'),
+                ),
+              ],
+            ),
+          );
+        }
+        return;
+      }
+
+      print('✅ Document validated: ${validation.documentType}');
+
+      // Step 3: Analyze contract risk using local patterns
+      print('🔍 Analyzing contract risk with local dataset...');
+      final analysis = await LocalContractAnalyzer.analyzeContract(documentText);
+
+      // Close loading dialog
+      Navigator.pop(context);
+
+      print('✅ Analysis complete: ${analysis.overallRiskLevel}');
+
+      // Step 4: Navigate to analysis screen
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContractRiskAnalysisScreen(
+              analysis: analysis,
+              documentName: file.name,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print('❌ Error analyzing document: $e');
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context); // Close loading dialog if still open
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<List<String>> _uploadDocuments() async {
+    final uploadedUrls = <String>[];
+
+    print('📦 Starting document upload for ${_selectedFiles.length} file(s)');
+
+    for (final file in _selectedFiles) {
+      try {
+        print('📄 Processing file: ${file.name}');
+        print('   Size: ${file.size} bytes');
+        print('   Extension: ${file.extension}');
+        print('   Has bytes: ${file.bytes != null}');
+
+        if (file.bytes == null) {
+          print('⚠️ File ${file.name} has no bytes, skipping');
+          print('⚠️ HINT: Make sure withData: true is set in FilePicker.pickFiles()');
+          continue;
+        }
+
+        // Create unique file name with timestamp
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final fileName = '${timestamp}_${file.name}';
+        final filePath = 'case_documents/$fileName';
+
+        print('📤 Uploading ${file.name} to Supabase...');
+        print('   Path: $filePath');
+        print('   Bucket: documents');
+        print('   Size: ${file.bytes!.length} bytes');
+
+        // Upload to Supabase Storage
+        final uploadResponse = await SupabaseService.storage
+            .from('documents')
+            .uploadBinary(
+              filePath,
+              file.bytes!,
+            );
+
+        print('📡 Upload response: $uploadResponse');
+
+        // Get public URL
+        final url = SupabaseService.storage
+            .from('documents')
+            .getPublicUrl(filePath);
+
+        uploadedUrls.add(url);
+        print('✅ Successfully uploaded ${file.name}');
+        print('   Public URL: $url');
+      } catch (e, stackTrace) {
+        print('❌ Error uploading ${file.name}: $e');
+        print('📚 Stack trace: $stackTrace');
+
+        // Show error to user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to upload ${file.name}: ${e.toString()}'),
+              backgroundColor: AppColors.error,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    }
+
+    print('📊 Upload summary: ${uploadedUrls.length}/${_selectedFiles.length} files uploaded');
+    return uploadedUrls;
   }
 
   Future<void> _handleCreateCase() async {
@@ -81,12 +328,21 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
         _isLoading = true;
       });
 
+      // Upload documents first if any
+      List<String>? documentUrls;
+      if (_selectedFiles.isNotEmpty) {
+        print('📤 Uploading ${_selectedFiles.length} documents...');
+        documentUrls = await _uploadDocuments();
+        print('✅ Uploaded ${documentUrls.length} documents');
+      }
+
       final success = await ref.read(casesProvider.notifier).createCase(
             title: _titleController.text.trim(),
             description: _descriptionController.text.trim(),
             type: _selectedType,
             isUrgent: _isUrgent,
             lawyerId: widget.selectedLawyer!.id,
+            documentUrls: documentUrls,
           );
 
       if (mounted) {
@@ -96,8 +352,12 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
 
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Case created successfully!'),
+            SnackBar(
+              content: Text(
+                documentUrls != null && documentUrls.isNotEmpty
+                    ? 'Case created with ${documentUrls.length} document(s)!'
+                    : 'Case created successfully!',
+              ),
               backgroundColor: AppColors.success,
             ),
           );
@@ -349,6 +609,13 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
                                       ),
                                     ],
                                   ),
+                                ),
+                                // Analyze Risk Button
+                                IconButton(
+                                  icon: const Icon(Icons.analytics_outlined, size: 20),
+                                  onPressed: () => _analyzeDocument(file),
+                                  tooltip: 'Analyze Risk',
+                                  color: AppColors.secondary,
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.close, size: 18),

@@ -170,7 +170,7 @@ class _CaseCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to case details
+          context.push('/client/case-progress/${caseItem.id}?title=${Uri.encodeComponent(caseItem.title)}');
         },
         borderRadius: BorderRadius.circular(16),
         child: Padding(

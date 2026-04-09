@@ -68,7 +68,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           break;
       }
     } else {
-      context.go('/login');
+      context.go('/portal-select');
     }
   }
 

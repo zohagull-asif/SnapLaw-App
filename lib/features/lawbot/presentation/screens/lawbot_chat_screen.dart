@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../providers/lawbot_provider.dart';
+import '../../data/models/chat_message_model.dart';
 
 class LawBotChatScreen extends ConsumerStatefulWidget {
   const LawBotChatScreen({super.key});
@@ -15,19 +17,6 @@ class LawBotChatScreen extends ConsumerStatefulWidget {
 class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  final List<_ChatMessage> _messages = [];
-  bool _isTyping = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Add initial bot greeting
-    _messages.add(_ChatMessage(
-      text: AppStrings.lawBotGreeting,
-      isBot: true,
-      timestamp: DateTime.now(),
-    ));
-  }
 
   @override
   void dispose() {
@@ -52,54 +41,41 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    // Add user message
-    setState(() {
-      _messages.add(_ChatMessage(
-        text: text,
-        isBot: false,
-        timestamp: DateTime.now(),
-      ));
-      _messageController.clear();
-      _isTyping = true;
-    });
+    _messageController.clear();
+
+    // Send message via provider
+    await ref.read(lawBotProvider.notifier).sendMessage(text);
 
     _scrollToBottom();
-
-    // Simulate bot response (TODO: Replace with actual API call)
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        _isTyping = false;
-        _messages.add(_ChatMessage(
-          text: _generateMockResponse(text),
-          isBot: true,
-          timestamp: DateTime.now(),
-        ));
-      });
-      _scrollToBottom();
-    }
-  }
-
-  String _generateMockResponse(String userMessage) {
-    // Mock responses for demonstration
-    final lowerMessage = userMessage.toLowerCase();
-
-    if (lowerMessage.contains('divorce') || lowerMessage.contains('marriage')) {
-      return "I understand you're asking about family law matters. Divorce proceedings typically involve several steps:\n\n1. Filing a petition for divorce\n2. Serving your spouse\n3. Negotiating terms (property division, custody, etc.)\n4. Court proceedings if necessary\n\nWould you like me to explain any of these steps in more detail, or would you prefer to connect with a family law specialist?";
-    } else if (lowerMessage.contains('contract') || lowerMessage.contains('agreement')) {
-      return "Contract law is an important area. Here are some key points to remember:\n\n• A valid contract requires offer, acceptance, consideration, and intention to create legal relations\n• Always read contracts thoroughly before signing\n• Keep copies of all signed agreements\n\nWould you like to discuss a specific contract issue or connect with a contract law specialist?";
-    } else if (lowerMessage.contains('lawyer') || lowerMessage.contains('attorney')) {
-      return "I can help you find the right lawyer! To give you the best recommendations, could you tell me:\n\n1. What type of legal issue do you have?\n2. What's your location?\n3. Do you have a budget in mind?\n\nAlternatively, you can use our 'Find Lawyers' feature to browse verified attorneys by specialization.";
-    } else if (lowerMessage.contains('help') || lowerMessage.contains('what can you do')) {
-      return "I'm LawBot, your AI legal assistant! Here's how I can help:\n\n• Answer general legal questions\n• Explain legal concepts and procedures\n• Help you understand your rights\n• Guide you to the right type of lawyer\n• Provide information about legal processes\n\nNote: I provide general information only. For specific legal advice, please consult with a qualified attorney.";
-    } else {
-      return "Thank you for your question. While I can provide general legal information, please note that:\n\n• This is not legal advice\n• Each situation is unique\n• Consulting a licensed attorney is recommended for specific matters\n\nCould you provide more details about your situation, or would you like me to help you find a qualified lawyer in our network?";
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final lawBotState = ref.watch(lawBotProvider);
+    final messages = lawBotState.messages;
+    final isLoading = lawBotState.isLoading;
+
+    // Listen for errors
+    ref.listen<LawBotState>(lawBotProvider, (previous, next) {
+      if (next.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: AppColors.warning,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        ref.read(lawBotProvider.notifier).clearError();
+      }
+    });
+
+    // Auto-scroll when new messages arrive
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (messages.isNotEmpty) {
+        _scrollToBottom();
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -126,7 +102,7 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 Text(
-                  _isTyping ? 'Typing...' : 'Online',
+                  isLoading ? 'Typing...' : 'Online',
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textLight.withOpacity(0.8),
@@ -187,18 +163,18 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: _messages.length + (_isTyping ? 1 : 0),
+              itemCount: messages.length + (isLoading ? 1 : 0),
               itemBuilder: (context, index) {
-                if (_isTyping && index == _messages.length) {
+                if (isLoading && index == messages.length) {
                   return const _TypingIndicator();
                 }
-                return _ChatBubble(message: _messages[index]);
+                return _ChatBubble(message: messages[index]);
               },
             ),
           ),
 
           // Quick Suggestions
-          if (_messages.length <= 2)
+          if (messages.length <= 2)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SingleChildScrollView(
@@ -253,6 +229,7 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
                       controller: _messageController,
                       textCapitalization: TextCapitalization.sentences,
                       maxLines: null,
+                      enabled: !isLoading,
                       decoration: InputDecoration(
                         hintText: AppStrings.typeMessage,
                         border: OutlineInputBorder(
@@ -277,7 +254,7 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.send, color: AppColors.textLight),
-                      onPressed: _sendMessage,
+                      onPressed: isLoading ? null : _sendMessage,
                     ),
                   ),
                 ],
@@ -300,14 +277,7 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
             title: const Text('Clear Chat'),
             onTap: () {
               Navigator.pop(context);
-              setState(() {
-                _messages.clear();
-                _messages.add(_ChatMessage(
-                  text: AppStrings.lawBotGreeting,
-                  isBot: true,
-                  timestamp: DateTime.now(),
-                ));
-              });
+              ref.read(lawBotProvider.notifier).clearChat();
             },
           ),
           ListTile(
@@ -320,7 +290,7 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
                 builder: (context) => AlertDialog(
                   title: const Text('About LawBot'),
                   content: const Text(
-                    'LawBot is an AI-powered legal assistant that provides general legal information and guidance. It can help answer common legal questions and direct you to appropriate resources.\n\nNote: LawBot does not provide legal advice. Always consult with a qualified attorney for specific legal matters.',
+                    'LawBot is an AI-powered legal assistant powered by ChatGPT that provides general legal information and guidance. It can help answer common legal questions and direct you to appropriate resources.\n\nNote: LawBot does not provide legal advice. Always consult with a qualified attorney for specific legal matters.',
                   ),
                   actions: [
                     TextButton(
@@ -338,20 +308,8 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
   }
 }
 
-class _ChatMessage {
-  final String text;
-  final bool isBot;
-  final DateTime timestamp;
-
-  _ChatMessage({
-    required this.text,
-    required this.isBot,
-    required this.timestamp,
-  });
-}
-
 class _ChatBubble extends StatelessWidget {
-  final _ChatMessage message;
+  final ChatMessageModel message;
 
   const _ChatBubble({required this.message});
 

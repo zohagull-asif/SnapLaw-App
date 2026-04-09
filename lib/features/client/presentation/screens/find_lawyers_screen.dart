@@ -6,6 +6,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
 import '../../data/models/case_model.dart';
 import '../providers/lawyers_provider.dart';
+import '../../../shared/presentation/providers/reviews_provider.dart';
 
 class FindLawyersScreen extends ConsumerStatefulWidget {
   const FindLawyersScreen({super.key});
@@ -324,18 +325,22 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-class _LawyerCard extends StatelessWidget {
+class _LawyerCard extends ConsumerWidget {
   final LawyerModel lawyer;
 
   const _LawyerCard({required this.lawyer});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final summaryAsync = ref.watch(lawyerRatingSummaryProvider(lawyer.id));
+    final reviewCount = summaryAsync.whenOrNull(data: (s) => s.reviewCount) ?? 0;
+    final avgRating = summaryAsync.whenOrNull(data: (s) => s.averageRating);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to lawyer profile
+          context.push('/client/lawyer-profile/${lawyer.id}?name=${Uri.encodeComponent(lawyer.name)}');
         },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -424,39 +429,61 @@ class _LawyerCard extends StatelessWidget {
                     Row(
                       children: [
                         // Rating
-                        Icon(
-                          Icons.star,
-                          size: 16,
-                          color: AppColors.secondary,
-                        ),
+                        const Icon(Icons.star_rounded, size: 16, color: Colors.amber),
                         const SizedBox(width: 4),
                         Text(
-                          lawyer.rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          avgRating != null ? avgRating.toStringAsFixed(1) : lawyer.rating.toStringAsFixed(1),
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 2),
+                        Text(
+                          '($reviewCount)',
+                          style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                        ),
+                        const SizedBox(width: 10),
 
                         // Experience
-                        Icon(
-                          Icons.work_outline,
-                          size: 16,
-                          color: AppColors.textSecondary,
-                        ),
+                        Icon(Icons.work_outline, size: 16, color: AppColors.textSecondary),
                         const SizedBox(width: 4),
-                        Text(
-                          '${lawyer.experienceYears} yrs',
-                          style: AppStyles.caption,
-                        ),
+                        Text('${lawyer.experienceYears} yrs', style: AppStyles.caption),
                         const Spacer(),
 
                         // Rate
                         Text(
-                          '\$${lawyer.hourlyRate.toStringAsFixed(0)}/hr',
-                          style: AppStyles.subtitle2.copyWith(
-                            color: AppColors.primary,
+                          'PKR ${lawyer.hourlyRate.toStringAsFixed(0)}/hr',
+                          style: AppStyles.subtitle2.copyWith(color: AppColors.primary),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton.icon(
+                          icon: const Icon(Icons.person_outline, size: 14),
+                          label: const Text('View Profile', style: TextStyle(fontSize: 12)),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            minimumSize: Size.zero,
+                          ),
+                          onPressed: () => context.push(
+                            '/client/lawyer-profile/${lawyer.id}?name=${Uri.encodeComponent(lawyer.name)}',
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.calendar_month, size: 14),
+                          label: const Text('Book', style: TextStyle(fontSize: 12)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            minimumSize: Size.zero,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          onPressed: () => context.push(
+                            '/client/book-lawyer/${lawyer.id}?name=${Uri.encodeComponent(lawyer.name)}',
                           ),
                         ),
                       ],

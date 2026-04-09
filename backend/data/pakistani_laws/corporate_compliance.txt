@@ -1,0 +1,80 @@
+PAKISTAN CORPORATE AND FINANCIAL COMPLIANCE
+Key Provisions for Contract Analysis
+
+COMPANIES ACT 2017
+
+Section 183: Related Party Transactions
+No company shall enter into any contract or arrangement with a related party without prior approval of the board of directors. Material related party transactions require shareholder approval.
+
+Section 184: Disclosure of Interest by Directors
+Every director shall disclose the nature of his concern or interest, direct or indirect, in any contract or arrangement entered into or proposed to be entered into with the company.
+
+Section 199: Restriction on Non-Cash Transactions Involving Directors
+No company shall enter into an arrangement by which a director of the company or its holding company acquires or is to acquire a non-cash asset of the requisite value from the company, without approval by a resolution of the members.
+
+Section 468: Corporate Governance
+Every listed company shall comply with the code of corporate governance as prescribed by SECP. This includes maintaining proper internal controls, audit committees, and transparent financial reporting.
+
+STAMP ACT 1899
+
+Section 3: Instruments Chargeable with Duty
+Every instrument mentioned in the Schedule shall be chargeable with duty of the amount indicated. Contracts, agreements, bonds, deeds, and other legal instruments require proper stamping.
+
+Section 35: Instruments Not Duly Stamped - Inadmissible in Evidence
+No instrument chargeable with duty shall be admitted in evidence for any purpose by any person having by law or consent of parties authority to receive evidence, unless such instrument is duly stamped.
+
+Section 48: Penalty for Unstamped Documents
+Any person who executes or signs any instrument chargeable with duty without it being properly stamped shall be punishable with a fine which may extend to five thousand rupees.
+
+INCOME TAX ORDINANCE 2001
+
+Section 149: Withholding Tax on Services
+Every prescribed person making a payment to a resident person for rendering of or providing of services shall deduct tax at the prescribed rate.
+
+Section 153: Withholding Tax on Goods and Services
+Every prescribed person making a payment to a resident person for supply of goods, rendering of services, or execution of a contract shall deduct tax at the rates specified.
+
+Section 164: Tax Deduction Certificate
+Every person deducting tax shall furnish to the person from whom tax is deducted a certificate of deduction of tax within the prescribed time.
+
+FOREIGN EXCHANGE REGULATION ACT 1947
+
+Section 4: No person in Pakistan shall make any payment to or for the credit of any person resident outside Pakistan except with the general or special permission of the State Bank of Pakistan.
+
+Section 5: Restrictions on dealing in foreign exchange. No person shall deal in or transfer any foreign exchange except through authorized dealers.
+
+Section 8: Export of goods and services. All payments for exports shall be received through banking channels in the manner prescribed by the State Bank.
+
+ANTI-MONEY LAUNDERING ACT 2010
+
+Section 3: Money Laundering Offence - A person shall be guilty of offence of money laundering if the person knows or has reason to believe that the property is the proceeds of crime.
+
+Section 6: Reporting Obligations - Financial institutions shall report suspicious transactions to the Financial Monitoring Unit (FMU).
+
+Section 7: Customer Due Diligence - Every financial institution shall identify and verify the identity of its customers and beneficial owners.
+
+DATA PROTECTION AND PRIVACY PRINCIPLES (Best Practices pending comprehensive legislation)
+
+1. Personal data must be collected only for specified, explicit, and legitimate purposes.
+2. Data must be adequate, relevant, and limited to what is necessary.
+3. Data must be accurate and kept up to date.
+4. Data must be kept in a form which permits identification of data subjects for no longer than necessary.
+5. Data must be processed in a manner that ensures appropriate security.
+6. Cross-border transfer of personal data requires adequate safeguards.
+7. Data breach notification to affected individuals and authorities should be done promptly.
+
+INTELLECTUAL PROPERTY LAWS
+
+Copyright Ordinance 1962: Copyright subsists in original literary, dramatic, musical, and artistic works, cinematograph films, and records. The term of copyright for literary works is the life of the author plus fifty years.
+
+Trade Marks Ordinance 2001: A registered trade mark gives the owner the exclusive right to use the mark in relation to the goods or services for which it is registered.
+
+Patents Ordinance 2000: A patent gives the inventor the exclusive right to prevent others from making, using, selling, or importing the patented invention for a period of twenty years from the filing date.
+
+KEY PRINCIPLES FOR INTELLECTUAL PROPERTY IN CONTRACTS
+
+1. IP created during employment generally belongs to the employer, unless the contract provides otherwise.
+2. Pre-existing IP should be clearly identified and excluded from any assignment clause.
+3. License terms for IP must specify scope, territory, duration, and exclusivity.
+4. Assignment of IP rights must be in writing and may require registration.
+5. Confidentiality provisions should clearly define what constitutes confidential information and the duration of the obligation.

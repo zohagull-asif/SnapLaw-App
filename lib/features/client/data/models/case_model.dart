@@ -1,5 +1,28 @@
 enum CaseStatus { open, inProgress, closed, pending }
 
+extension CaseStatusX on CaseStatus {
+  String get dbValue {
+    switch (this) {
+      case CaseStatus.inProgress:
+        return 'in_progress';
+      default:
+        return name;
+    }
+  }
+
+  static CaseStatus fromDb(String value) {
+    switch (value) {
+      case 'in_progress':
+        return CaseStatus.inProgress;
+      default:
+        return CaseStatus.values.firstWhere(
+          (e) => e.name == value,
+          orElse: () => CaseStatus.open,
+        );
+    }
+  }
+}
+
 enum CaseType {
   criminal,
   civil,
@@ -55,10 +78,7 @@ class CaseModel {
         (e) => e.name == json['type'],
         orElse: () => CaseType.other,
       ),
-      status: CaseStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => CaseStatus.open,
-      ),
+      status: CaseStatusX.fromDb(json['status'] as String? ?? 'open'),
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'] as String)
@@ -82,7 +102,7 @@ class CaseModel {
       'title': title,
       'description': description,
       'type': type.name,
-      'status': status.name,
+      'status': status.dbValue,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'closed_at': closedAt?.toIso8601String(),

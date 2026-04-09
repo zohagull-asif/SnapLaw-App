@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/utils/password_validator.dart';
+import '../../../../core/widgets/password_strength_indicator.dart';
 import '../../data/models/user_model.dart';
 import '../providers/auth_provider.dart';
 
@@ -194,15 +196,50 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Phone Number (Optional)
+                // Phone Number (Required - Pakistan format)
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.next,
                   decoration: AppStyles.inputDecoration(
-                    labelText: '${AppStrings.phoneNumber} (Optional)',
+                    labelText: AppStrings.phoneNumber,
                     prefixIcon: const Icon(Icons.phone_outlined),
+                    hintText: '+92 3XX XXXXXXX',
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Phone number is required';
+                    }
+
+                    // Remove spaces and dashes for validation
+                    final cleanNumber = value.replaceAll(RegExp(r'[\s\-]'), '');
+
+                    // Pakistan phone number validation
+                    // Format: +92 3XX XXXXXXX or 03XX XXXXXXX
+                    // Mobile numbers start with 03 and are 11 digits (including 0)
+                    // Or +92 3XX XXXXXXX (13 characters with +92)
+
+                    if (cleanNumber.startsWith('+92')) {
+                      // International format: +92 3XX XXXXXXX
+                      if (!RegExp(r'^\+923[0-9]{9}$').hasMatch(cleanNumber)) {
+                        return 'Invalid Pakistan number. Format: +92 3XX XXXXXXX';
+                      }
+                    } else if (cleanNumber.startsWith('92')) {
+                      // Without + sign: 92 3XX XXXXXXX
+                      if (!RegExp(r'^923[0-9]{9}$').hasMatch(cleanNumber)) {
+                        return 'Invalid Pakistan number. Format: 92 3XX XXXXXXX';
+                      }
+                    } else if (cleanNumber.startsWith('0')) {
+                      // Local format: 03XX XXXXXXX
+                      if (!RegExp(r'^03[0-9]{9}$').hasMatch(cleanNumber)) {
+                        return 'Invalid Pakistan number. Format: 03XX XXXXXXX';
+                      }
+                    } else {
+                      return 'Invalid format. Use +92 3XX XXXXXXX or 03XX XXXXXXX';
+                    }
+
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -211,6 +248,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.next,
+                  onChanged: (value) => setState(() {}), // Trigger rebuild for strength indicator
                   decoration: AppStyles.inputDecoration(
                     labelText: AppStrings.password,
                     prefixIcon: const Icon(Icons.lock_outlined),
@@ -228,15 +266,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppStrings.passwordRequired;
-                    }
-                    if (value.length < 6) {
-                      return AppStrings.passwordTooShort;
-                    }
-                    return null;
+                    return PasswordValidator.validate(value ?? '');
                   },
                 ),
+                const SizedBox(height: 12),
+
+                // Password Strength Indicator
+                if (_passwordController.text.isNotEmpty)
+                  PasswordStrengthIndicator(
+                    password: _passwordController.text,
+                  ),
+                const SizedBox(height: 12),
+
+                // Password Requirements
+                if (_passwordController.text.isNotEmpty)
+                  PasswordRequirements(
+                    password: _passwordController.text,
+                  ),
                 const SizedBox(height: 16),
 
                 // Confirm Password
@@ -262,13 +308,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppStrings.passwordRequired;
-                    }
-                    if (value != _passwordController.text) {
-                      return AppStrings.passwordsDoNotMatch;
-                    }
-                    return null;
+                    return PasswordValidator.validateConfirmPassword(
+                      _passwordController.text,
+                      value ?? '',
+                    );
                   },
                 ),
                 const SizedBox(height: 32),

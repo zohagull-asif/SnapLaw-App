@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
 import '../../../client/data/models/case_model.dart';
+import '../providers/lawyer_cases_provider.dart';
 
 class LawyerCasesScreen extends ConsumerStatefulWidget {
   const LawyerCasesScreen({super.key});
@@ -16,7 +17,6 @@ class LawyerCasesScreen extends ConsumerStatefulWidget {
 class _LawyerCasesScreenState extends ConsumerState<LawyerCasesScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final List<CaseModel> _cases = [];
 
   @override
   void initState() {
@@ -32,6 +32,8 @@ class _LawyerCasesScreenState extends ConsumerState<LawyerCasesScreen>
 
   @override
   Widget build(BuildContext context) {
+    final casesState = ref.watch(lawyerCasesProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.caseManagement),
@@ -47,12 +49,18 @@ class _LawyerCasesScreenState extends ConsumerState<LawyerCasesScreen>
           indicatorColor: AppColors.secondary,
           tabs: const [
             Tab(text: 'All'),
-            Tab(text: 'Active'),
-            Tab(text: 'Pending Review'),
+            Tab(text: 'Open'),
+            Tab(text: 'In Progress'),
             Tab(text: 'Closed'),
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              ref.read(lawyerCasesProvider.notifier).refreshCases();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
@@ -61,42 +69,78 @@ class _LawyerCasesScreenState extends ConsumerState<LawyerCasesScreen>
           ),
         ],
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildCasesList(null),
-          _buildCasesList(CaseStatus.inProgress),
-          _buildCasesList(CaseStatus.pending),
-          _buildCasesList(CaseStatus.closed),
-        ],
-      ),
+      body: casesState.isLoading && casesState.cases.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : casesState.errorMessage != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: AppColors.error.withOpacity(0.5),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        casesState.errorMessage!,
+                        style: AppStyles.subtitle1.copyWith(
+                          color: AppColors.error,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          ref.read(lawyerCasesProvider.notifier).refreshCases();
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                )
+              : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildCasesList(null, casesState.cases),
+                    _buildCasesList(CaseStatus.open, casesState.cases),
+                    _buildCasesList(CaseStatus.inProgress, casesState.cases),
+                    _buildCasesList(CaseStatus.closed, casesState.cases),
+                  ],
+                ),
     );
   }
 
-  Widget _buildCasesList(CaseStatus? status) {
+  Widget _buildCasesList(CaseStatus? status, List<CaseModel> allCases) {
     final filteredCases = status == null
-        ? _cases
-        : _cases.where((c) => c.status == status).toList();
+        ? allCases
+        : allCases.where((c) => c.status == status).toList();
 
     if (filteredCases.isEmpty) {
       return _buildEmptyState(status);
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: filteredCases.length,
-      itemBuilder: (context, index) {
-        final caseItem = filteredCases[index];
-        return _LawyerCaseCard(caseItem: caseItem);
-      },
+    return RefreshIndicator(
+      onRefresh: () => ref.read(lawyerCasesProvider.notifier).refreshCases(),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: filteredCases.length,
+        itemBuilder: (context, index) {
+          final caseItem = filteredCases[index];
+          return _LawyerCaseCard(caseItem: caseItem);
+        },
+      ),
     );
   }
 
   Widget _buildEmptyState(CaseStatus? status) {
     String message;
     switch (status) {
+      case CaseStatus.open:
+        message = 'No open cases';
+        break;
       case CaseStatus.inProgress:
-        message = 'No active cases';
+        message = 'No cases in progress';
         break;
       case CaseStatus.pending:
         message = 'No pending reviews';
@@ -284,21 +328,22 @@ class _LawyerCaseCard extends StatelessWidget {
                     icon: Icons.visibility_outlined,
                     label: 'View',
                     onTap: () {
-                      // TODO: View case details
+                      context.push('/lawyer/case-detail', extra: caseItem);
                     },
                   ),
                   _ActionButton(
                     icon: Icons.edit_outlined,
                     label: 'Update',
                     onTap: () {
-                      // TODO: Update case
+                      context.push('/lawyer/case-detail', extra: caseItem);
                     },
                   ),
                   _ActionButton(
                     icon: Icons.chat_outlined,
                     label: 'Message',
                     onTap: () {
-                      // TODO: Message client
+                      context.push('/lawyer/message-client/${caseItem.clientId}',
+                          extra: caseItem);
                     },
                   ),
                 ],

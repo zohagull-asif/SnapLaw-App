@@ -1,0 +1,56 @@
+PAKISTAN CONTRACT ACT 1872
+Key Provisions for Contract Analysis
+
+SECTION 2: DEFINITIONS
+"Agreement" means every promise and every set of promises, forming the consideration for each other.
+"Contract" means an agreement enforceable by law.
+"Void agreement" means an agreement not enforceable by law.
+"Voidable contract" means an agreement enforceable by law at the option of one or more parties but not at the option of the other.
+
+SECTION 10: ESSENTIAL ELEMENTS OF A VALID CONTRACT
+All agreements are contracts if they are made by the free consent of parties competent to contract, for a lawful consideration and with a lawful object, and are not hereby expressly declared to be void.
+
+SECTION 11: COMPETENCE TO CONTRACT
+Every person is competent to contract who is of the age of majority according to the law to which he is subject, and who is of sound mind, and is not disqualified from contracting by any law to which he is subject.
+
+SECTION 13: CONSENT
+Two or more persons are said to consent when they agree upon the same thing in the same sense.
+
+SECTION 14: FREE CONSENT
+Consent is said to be free when it is not caused by coercion (Section 15), undue influence (Section 16), fraud (Section 17), misrepresentation (Section 18), or mistake (Sections 20, 21, 22). A contract where consent is not free is voidable at the option of the party whose consent was not free.
+
+SECTION 15: COERCION
+Coercion is the committing, or threatening to commit, any act forbidden by the Pakistan Penal Code, or the unlawful detaining or threatening to detain any property, to the prejudice of any person whatever, with the intention of causing any person to enter into an agreement.
+
+SECTION 16: UNDUE INFLUENCE
+A contract is said to be induced by undue influence where the relations subsisting between the parties are such that one of the parties is in a position to dominate the will of the other and uses that position to obtain an unfair advantage over the other.
+
+SECTION 17: FRAUD
+Fraud means and includes any of the following acts committed by a party to a contract with intent to deceive another party thereto or his agent, or to induce him to enter into the contract.
+
+SECTION 23: LAWFUL CONSIDERATION AND OBJECT
+The consideration or object of an agreement is lawful, unless it is forbidden by law, or is of such a nature that, if permitted, it would defeat the provisions of any law, or is fraudulent, or involves or implies injury to the person or property of another, or the Court regards it as immoral, or opposed to public policy.
+
+SECTION 24: VOID AGREEMENTS
+If any part of a single consideration for one or more objects, or any one or any part of any one of several considerations for a single object, is unlawful, the agreement is void.
+
+SECTION 25: AGREEMENT WITHOUT CONSIDERATION IS VOID
+An agreement made without consideration is void, unless it is expressed in writing and registered, or is a promise to compensate for something done, or is a promise to pay a debt barred by limitation law.
+
+SECTION 27: RESTRAINT OF TRADE
+Every agreement by which anyone is restrained from exercising a lawful profession, trade or business of any kind, is to that extent void. Exception: One who sells the goodwill of a business may agree with the buyer to refrain from carrying on a similar business, within specified local limits, so long as the buyer or any person deriving title to the goodwill from him, carries on a like business therein.
+
+SECTION 28: AGREEMENTS IN RESTRAINT OF LEGAL PROCEEDINGS
+Every agreement by which any party thereto is restricted absolutely from enforcing his rights under or in respect of any contract, by the usual legal proceedings in the ordinary tribunals, or which limits the time within which he may thus enforce his rights, is void to that extent.
+
+SECTION 56: DOCTRINE OF FRUSTRATION
+An agreement to do an act impossible in itself is void. A contract to do an act which, after the contract is made, becomes impossible, or by reason of some event which the promisor could not prevent, unlawful, becomes void when the act becomes impossible or unlawful. When a person has promised to do something which he knew, or with reasonable diligence might have known, and which the promisee did not know to be impossible or unlawful, such promisor must make compensation to the promisee for any loss which such promisee sustains through the non-performance of the promise.
+
+SECTION 73: COMPENSATION FOR BREACH
+When a contract has been broken, the party who suffers by such breach is entitled to receive, as compensation for any loss or damage caused to him thereby, such compensation as naturally arose in the usual course of things from such breach, or which the parties knew, when they made the contract, to be likely to result from the breach of it. Such compensation is not to be given for any remote and indirect loss or damage sustained by reason of the breach.
+
+SECTION 74: PENALTY AND LIQUIDATED DAMAGES
+When a contract has been broken, if a sum is named in the contract as the amount to be paid in case of such breach, or if the contract contains any other stipulation by way of penalty, the party complaining of the breach is entitled, whether or not actual damage or loss is proved to have been caused thereby, to receive from the party who has broken the contract reasonable compensation not exceeding the amount so named or, as the case may be, the penalty stipulated for. A stipulation for increased interest from the date of default may be a stipulation by way of penalty.
+
+SECTION 75: COMPENSATION FOR PARTY RIGHTFULLY RESCINDING
+A person who rightfully rescinds a contract is entitled to compensation for any damage which he has sustained through the non-fulfillment of the contract.

@@ -1,0 +1,64 @@
+PAKISTAN PROPERTY LAWS
+Key Provisions for Property and Real Estate Matters
+
+TRANSFER OF PROPERTY ACT 1882
+
+Section 5: Transfer of Property Defined - Transfer of property means an act by which a living person conveys property, in present or in future, to one or more other living persons, or to himself and one or more other living persons. Transfer of property includes sale, mortgage, lease, exchange, and gift.
+[Source: Transfer of Property Act 1882]
+
+Section 54: Sale Defined - Sale is a transfer of ownership in exchange for a price paid or promised or part-paid and part-promised. A contract for the sale of immovable property of the value of one hundred rupees or upwards can be made only by a registered instrument. Delivery of tangible immovable property takes place when the seller places the buyer in possession of the property.
+[Source: Transfer of Property Act 1882]
+
+Section 58: Mortgage - A mortgage is the transfer of an interest in specific immovable property for the purpose of securing the payment of money advanced or to be advanced by way of loan, or an existing or future debt, or the performance of an engagement which may give rise to a pecuniary liability. The transferor is called a mortgagor, the transferee a mortgagee.
+[Source: Transfer of Property Act 1882]
+
+Section 105: Lease Defined - A lease of immovable property is a transfer of a right to enjoy such property, made for a certain time, express or implied, or in perpetuity, in consideration of a price paid or promised, or of money, a share of crops, service, or any other thing of value. The transferor is called the lessor, the transferee the lessee.
+[Source: Transfer of Property Act 1882]
+
+Section 106: Duration of Lease - In the absence of a written contract or established custom, a lease of immovable property for agricultural purposes shall be deemed to be a lease from year to year, and for non-agricultural purposes from month to month. Either party may terminate such lease by giving fifteen days notice for monthly leases and six months notice for yearly leases.
+[Source: Transfer of Property Act 1882]
+
+Section 108: Rights and Liabilities of Lessor and Lessee - The lessor is bound to disclose material defects in the property, to put the lessee in possession, and not to disturb the lessee's possession. The lessee is bound to pay rent, to keep the property in good condition, and to restore the property on termination of the lease.
+[Source: Transfer of Property Act 1882]
+
+Section 122: Gift - Gift is the transfer of certain existing movable or immovable property made voluntarily and without consideration by one person called the donor to another called the donee. A gift of immovable property must be effected by a registered instrument signed by or on behalf of the donor.
+[Source: Transfer of Property Act 1882]
+
+REGISTRATION ACT 1908
+
+Section 17: Documents Required to be Registered - The following documents shall be registered: instruments of gift of immovable property, leases of immovable property from year to year or for any term exceeding one year, and all non-testamentary instruments which purport to create, declare, assign, limit, or extinguish any right, title, or interest in immovable property exceeding the value of one hundred rupees.
+[Source: Registration Act 1908]
+
+Section 49: Effect of Non-Registration - No document required to be registered shall affect any immovable property comprised therein, or be received as evidence of any transaction affecting such property, unless it has been registered. An unregistered sale deed of immovable property is not admissible as evidence.
+[Source: Registration Act 1908]
+
+LAND REVENUE ACT 1967
+
+Record of Rights (Fard) - The revenue record maintained by the Board of Revenue contains details of ownership, tenancy, and all rights and interests in land. The Fard is the primary evidence of ownership of agricultural land in Pakistan. Any person claiming ownership must ensure their name appears in the revenue record. Mutation (Intiqal) is the process of updating the revenue record when ownership changes through sale, inheritance, or gift.
+[Source: Land Revenue Act 1967]
+
+Mutation Process - When property is transferred through sale, gift, or inheritance, the new owner must apply for mutation at the Revenue Office. The Patwari (village record keeper) verifies the transaction and prepares the mutation entry. The Revenue Officer sanctions the mutation after verifying all documents and hearing any objections. Mutation does not create title but is evidence of ownership.
+[Source: Land Revenue Act 1967]
+
+RENT RESTRICTION LAWS
+
+Punjab Rented Premises Act 2009 - A landlord cannot evict a tenant except through due process of law. Grounds for eviction include non-payment of rent for two consecutive months, subletting without consent, causing damage to the property, using the property for illegal purposes, or the landlord's bona fide personal need. The landlord must give the tenant a notice of eviction as prescribed by law.
+[Source: Punjab Rented Premises Act 2009]
+
+Tenant Rights - A tenant has the right to peaceful enjoyment of the rented property, protection against arbitrary rent increases, and protection against unlawful eviction. The landlord cannot disconnect utilities or harass the tenant to force eviction. Any dispute between landlord and tenant shall be adjudicated by the Rent Tribunal.
+[Source: Punjab Rented Premises Act 2009]
+
+STAMP ACT 1899
+
+Section 3: Instruments Chargeable with Stamp Duty - Every instrument mentioned in the Schedule to the Act shall be chargeable with stamp duty of the amount indicated in the Schedule. No instrument chargeable with duty shall be admitted in evidence for any purpose unless it has been duly stamped. Stamp duty varies by province and by the nature and value of the transaction.
+[Source: Stamp Act 1899]
+
+PARTITION AND INHERITANCE
+
+Under Islamic law, property is distributed among legal heirs according to fixed shares prescribed in the Holy Quran. Sons receive double the share of daughters. The wife receives one-eighth of the husband's estate if there are children, and one-fourth if there are no children. The husband receives one-fourth of the wife's estate if there are children, and one-half if there are no children. A person may dispose of up to one-third of their estate through a will (Wasiyyat), but the remaining two-thirds must be distributed among legal heirs.
+[Source: Muslim Personal Law (Shariat) Application Act 1962]
+
+POWER OF ATTORNEY
+
+A Power of Attorney is a legal document authorizing one person (agent) to act on behalf of another (principal) in legal and property matters. For property transactions, a Power of Attorney must be registered and attested by a Notary Public. A General Power of Attorney gives broad authority, while a Special Power of Attorney is limited to specific transactions. The principal may revoke the Power of Attorney at any time.
+[Source: Power of Attorney Act 1882]

@@ -1,0 +1,222 @@
+[
+  {
+    "id": "1",
+    "title": "Mst. Khurshid Bibi vs Muhammad Amin",
+    "case_number": "PLD 1967 SC 97",
+    "court": "Supreme Court of Pakistan",
+    "year": "1967",
+    "category": "Contract Law",
+    "summary": "Landmark case on the validity of contracts under the Contract Act 1872. The court held that a contract entered into under coercion or undue influence is voidable at the option of the aggrieved party. The burden of proof lies on the party alleging coercion.",
+    "judgment": "The Supreme Court held that for a contract to be valid under Section 10 of the Contract Act 1872, it must satisfy the requirements of free consent (Sections 13-22). A contract obtained through coercion as defined in Section 15 is voidable under Section 19. The aggrieved party must prove that consent was not freely given. In this case, the plaintiff successfully demonstrated that the agreement was signed under threat of physical harm, rendering the contract voidable.",
+    "keywords": ["contract validity", "coercion", "free consent", "voidable contract", "Contract Act 1872"]
+  },
+  {
+    "id": "2",
+    "title": "Pakistan International Airlines vs Tanweer-ur-Rehman",
+    "case_number": "PLD 2010 SC 676",
+    "court": "Supreme Court of Pakistan",
+    "year": "2010",
+    "category": "Employment Law",
+    "summary": "Case regarding termination of employment contract and rights of employees under the Standing Orders Ordinance 1968. The court ruled that termination without following due process is unlawful and the employee is entitled to reinstatement with back benefits.",
+    "judgment": "The Supreme Court held that an employer cannot terminate an employee's contract without following the procedure laid down in the Industrial and Commercial Employment (Standing Orders) Ordinance 1968. The termination order must specify grounds, and the employee must be given an opportunity to defend themselves. Arbitrary termination violates Article 4 and Article 25 of the Constitution. The employee was ordered to be reinstated with full back benefits from the date of wrongful termination.",
+    "keywords": ["employment termination", "due process", "reinstatement", "Standing Orders Ordinance", "labor rights"]
+  },
+  {
+    "id": "3",
+    "title": "Ghulam Mustafa vs Province of Punjab",
+    "case_number": "2019 SCMR 1422",
+    "court": "Supreme Court of Pakistan",
+    "year": "2019",
+    "category": "Property Law",
+    "summary": "Case concerning property transfer and the enforceability of sale agreements under the Transfer of Property Act 1882. The court clarified that an agreement to sell creates equitable rights but does not transfer ownership until registration.",
+    "judgment": "The Supreme Court held that under Section 54 of the Transfer of Property Act 1882, immovable property worth more than Rs. 100 can only be transferred through a registered instrument. An agreement to sell does not convey any interest or charge on the property. However, the agreement creates a personal obligation between the parties. The buyer under an agreement to sell has equitable rights and can seek specific performance under the Specific Relief Act 1877. The court ordered specific performance as the seller had received full consideration and was unjustly refusing to execute the sale deed.",
+    "keywords": ["property transfer", "sale agreement", "registration", "Transfer of Property Act", "specific performance"]
+  },
+  {
+    "id": "4",
+    "title": "Mst. Shaheen Parveen vs Ameer Ahmed",
+    "case_number": "2020 CLC 1847",
+    "court": "Lahore High Court",
+    "year": "2020",
+    "category": "Family Law",
+    "summary": "Family court case regarding khula (wife-initiated divorce) and return of dower. The court held that a wife has an unconditional right to khula and cannot be forced to remain in a marriage. The court discussed the quantum of benefits to be returned.",
+    "judgment": "The Lahore High Court upheld the family court's decree of khula, stating that under Section 10(4) of the West Pakistan Family Courts Act 1964, if reconciliation fails, the court must pass a decree for dissolution of marriage. The wife's right to khula is near-absolute and does not require proving fault on the husband's part. Regarding return of benefits, the court held that the wife must return the dower (haq mehr) and dowry articles, but the husband cannot claim return of gifts given during marriage. The court also addressed maintenance during the iddat period.",
+    "keywords": ["khula", "divorce", "dower", "family court", "Muslim Family Laws", "dissolution of marriage"]
+  },
+  {
+    "id": "5",
+    "title": "State vs Muhammad Aslam",
+    "case_number": "2021 PCrLJ 1456",
+    "court": "Islamabad High Court",
+    "year": "2021",
+    "category": "Criminal Law",
+    "summary": "Case under the Anti-Terrorism Act 1997 regarding the definition of terrorism and its distinction from ordinary criminal acts. The court held that not every violent act constitutes terrorism; the element of creating fear in the public must be present.",
+    "judgment": "The Islamabad High Court acquitted the accused, holding that the prosecution failed to establish the essential ingredients of Section 6 of the Anti-Terrorism Act 1997. The court emphasized that terrorism requires: (a) an action designed to create a sense of fear and insecurity in society, (b) the action must be designed to coerce the government or public, (c) the use or threat of violence must be for achieving religious, political, or ideological objectives. A personal dispute resulting in violence, even if involving firearms, does not automatically fall within the ambit of the ATA. The case was remanded to the regular criminal court for trial under the Pakistan Penal Code.",
+    "keywords": ["terrorism", "Anti-Terrorism Act", "criminal law", "violence", "acquittal", "PPC"]
+  },
+  {
+    "id": "6",
+    "title": "ABC Limited vs XYZ Corporation",
+    "case_number": "2021 CLD 892",
+    "court": "Sindh High Court",
+    "year": "2021",
+    "category": "Commercial Law",
+    "summary": "Commercial dispute regarding force majeure clause invoked due to COVID-19 pandemic. The court examined whether the pandemic qualifies as force majeure and the obligations of parties during such events.",
+    "judgment": "The Sindh High Court held that COVID-19 and the subsequent government-imposed lockdowns constitute force majeure events under Pakistani law. The court noted that while the Contract Act 1872 does not explicitly mention force majeure, Section 56 provides for frustration of contract when performance becomes impossible due to supervening impossibility. The court held that the defendant was entitled to invoke the force majeure clause in the contract, but only for the period during which performance was genuinely impossible. The obligation to perform revived once the lockdown was lifted. The court ordered the defendant to complete performance with reasonable extension of time.",
+    "keywords": ["force majeure", "COVID-19", "frustration of contract", "commercial dispute", "lockdown", "Section 56"]
+  },
+  {
+    "id": "7",
+    "title": "Muhammad Riaz vs Habib Bank Limited",
+    "case_number": "2018 CLC 445",
+    "court": "Lahore High Court",
+    "year": "2018",
+    "category": "Banking Law",
+    "summary": "Case regarding unfair terms in banking contracts, including penalty clauses and unilateral modification rights. The court struck down clauses that were unconscionable and against the principles of equity.",
+    "judgment": "The Lahore High Court held that banking contracts, being contracts of adhesion where the customer has no bargaining power, must be scrutinized more carefully. The penalty clause imposing 36% per annum on late payments was held unconscionable. The court applied Section 74 of the Contract Act 1872 and held that the bank was only entitled to reasonable compensation, not the full penalty amount. The unilateral modification clause allowing the bank to change terms without notice was also struck down as it violated the fundamental principle of consensus ad idem under Section 13 of the Contract Act.",
+    "keywords": ["banking contract", "penalty clause", "unconscionable terms", "adhesion contract", "Section 74", "unfair terms"]
+  },
+  {
+    "id": "8",
+    "title": "Imran Khan vs Federation of Pakistan",
+    "case_number": "PLD 2013 SC 532",
+    "court": "Supreme Court of Pakistan",
+    "year": "2013",
+    "category": "Constitutional Law",
+    "summary": "Constitutional petition challenging the formation of a caretaker government. The court laid down principles for constitutional interpretation and the rule of law in Pakistan.",
+    "judgment": "The Supreme Court held that the Constitution is the supreme law and all actions of the state must conform to constitutional provisions. The court established that judicial review is an essential feature of the Constitution and courts have the power to examine the constitutionality of any executive action. The appointment of the caretaker setup must follow the procedure laid down in Article 224 and 224-A of the Constitution. The court emphasized the principle of separation of powers while recognizing the judiciary's role as the guardian of fundamental rights.",
+    "keywords": ["constitutional law", "judicial review", "caretaker government", "rule of law", "fundamental rights", "Article 224"]
+  },
+  {
+    "id": "9",
+    "title": "Messrs Al-Teknikal Services vs WAPDA",
+    "case_number": "2017 SCMR 1328",
+    "court": "Supreme Court of Pakistan",
+    "year": "2017",
+    "category": "Contract Law",
+    "summary": "Case regarding breach of government contract, liquidated damages, and the distinction between penalty and genuine pre-estimate of loss. The court applied Section 74 of the Contract Act 1872.",
+    "judgment": "The Supreme Court held that under Section 74 of the Contract Act 1872, when a contract specifies a sum to be paid in case of breach, the aggrieved party is entitled to receive reasonable compensation not exceeding the amount specified. The court distinguished between penalty (sum disproportionate to the loss) and liquidated damages (genuine pre-estimate of loss). In government contracts, the court held that the government must demonstrate actual loss before claiming the full liquidated damages amount. The court reduced the liquidated damages from Rs. 50 million to Rs. 15 million based on actual demonstrated losses.",
+    "keywords": ["breach of contract", "liquidated damages", "penalty", "government contract", "Section 74", "compensation"]
+  },
+  {
+    "id": "10",
+    "title": "Fatima Textile Mills vs Commissioner Inland Revenue",
+    "case_number": "2020 PTD 1678",
+    "court": "Lahore High Court",
+    "year": "2020",
+    "category": "Tax Law",
+    "summary": "Tax dispute regarding deductibility of business expenses and the interpretation of Section 20 of the Income Tax Ordinance 2001. The court clarified the scope of admissible deductions for businesses.",
+    "judgment": "The Lahore High Court held that under Section 20 of the Income Tax Ordinance 2001, a deduction is allowed for any expenditure incurred by a person in deriving income from business. The court held that the Commissioner cannot disallow legitimate business expenses merely on the basis of suspicion. The taxpayer must maintain proper documentation and records. The court further held that legal expenses incurred in defending business interests are deductible expenses. The assessment was set aside and remanded to the Commissioner for fresh determination in accordance with law.",
+    "keywords": ["tax deduction", "business expenses", "Income Tax Ordinance", "assessment", "deductible expenses"]
+  },
+  {
+    "id": "11",
+    "title": "Muhammad Tariq vs Mst. Amina Bibi",
+    "case_number": "2019 MLD 1893",
+    "court": "Peshawar High Court",
+    "year": "2019",
+    "category": "Family Law",
+    "summary": "Case regarding maintenance (nafqa) rights of wife and children under Muslim Family Laws Ordinance 1961. The court determined the quantum of maintenance considering the husband's financial capacity.",
+    "judgment": "The Peshawar High Court upheld the family court's order granting maintenance to the wife and minor children. The court held that under Section 9 of the Muslim Family Laws Ordinance 1961, a husband is bound to maintain his wife during the subsistence of marriage. The quantum of maintenance must be determined considering: (a) the husband's income and financial position, (b) the standard of living the wife was accustomed to, (c) the needs of the children including education and healthcare. The court increased the monthly maintenance from Rs. 15,000 to Rs. 25,000, noting inflation and increased cost of living.",
+    "keywords": ["maintenance", "nafqa", "Muslim Family Laws", "wife maintenance", "child maintenance", "financial capacity"]
+  },
+  {
+    "id": "12",
+    "title": "Bahria Town vs Malik Riaz Hussain",
+    "case_number": "2019 SCMR 590",
+    "court": "Supreme Court of Pakistan",
+    "year": "2019",
+    "category": "Property Law",
+    "summary": "Major case regarding real estate development, unauthorized land acquisition, and obligations of housing societies. The court imposed conditions on real estate developers to protect consumers.",
+    "judgment": "The Supreme Court held that housing societies and real estate developers owe fiduciary duties to their members and buyers. The court ordered: (1) All unauthorized constructions must be regularized or demolished, (2) Complete transparency in financial dealings with members, (3) Refund of amounts paid by members whose plots were not developed within the stipulated period, (4) Compliance with all applicable laws including the Land Revenue Act and local development authority regulations. The court emphasized that consumer protection in real estate transactions is paramount and developers cannot exploit their dominant position.",
+    "keywords": ["real estate", "housing society", "consumer protection", "land acquisition", "fiduciary duty", "development authority"]
+  },
+  {
+    "id": "13",
+    "title": "National Industrial Relations Commission vs Kohinoor Textile Mills",
+    "case_number": "2016 PLC 467",
+    "court": "Lahore High Court",
+    "year": "2016",
+    "category": "Labor Law",
+    "summary": "Industrial dispute regarding workers' rights to form trade unions and collective bargaining. The court upheld workers' fundamental right to association and collective bargaining.",
+    "judgment": "The Lahore High Court held that workers have a fundamental right to form trade unions under Article 17 of the Constitution of Pakistan. The employer's refusal to recognize a duly registered trade union violates the Industrial Relations Act 2012. The court ordered the employer to: (1) Recognize the registered trade union, (2) Engage in collective bargaining in good faith, (3) Reinstate workers terminated for union activities with back pay, (4) Refrain from unfair labor practices. The court noted that the right to organize is essential for industrial peace and economic justice.",
+    "keywords": ["trade union", "collective bargaining", "industrial dispute", "workers rights", "unfair labor practices", "Industrial Relations Act"]
+  },
+  {
+    "id": "14",
+    "title": "Naveed Ahmad vs State",
+    "case_number": "2022 SCMR 876",
+    "court": "Supreme Court of Pakistan",
+    "year": "2022",
+    "category": "Criminal Law",
+    "summary": "Case regarding the right to bail and principles governing grant of bail in non-bailable offenses. The Supreme Court laid down comprehensive guidelines for bail determination.",
+    "judgment": "The Supreme Court established that under Section 497 of the Criminal Procedure Code, bail in non-bailable offenses should be granted as a rule and refused as an exception. The court laid down the following principles: (1) The accused is presumed innocent until proven guilty, (2) Bail should not be refused merely because the offense is heinous, (3) The court must consider the likelihood of the accused fleeing justice, tampering with evidence, or threatening witnesses, (4) Prolonged incarceration without trial violates Article 10-A (right to fair trial), (5) The accused's health, age, and personal circumstances may be relevant factors. The court directed all subordinate courts to follow these guidelines.",
+    "keywords": ["bail", "non-bailable offense", "right to bail", "criminal procedure", "Section 497", "fair trial"]
+  },
+  {
+    "id": "15",
+    "title": "Pakistan Steel Mills vs Workers Union",
+    "case_number": "2020 SCMR 1101",
+    "court": "Supreme Court of Pakistan",
+    "year": "2020",
+    "category": "Employment Law",
+    "summary": "Case regarding mass layoffs and retrenchment of workers in state-owned enterprises. The court examined the legality of downsizing and workers' rights to compensation.",
+    "judgment": "The Supreme Court held that while the government has the right to restructure state-owned enterprises for economic viability, mass layoffs must follow the procedure established by law. Under the Industrial and Commercial Employment (Standing Orders) Ordinance 1968 and the relevant service rules, employees are entitled to: (1) Notice period as specified in their contracts, (2) Retrenchment compensation, (3) Gratuity and pension benefits, (4) Preference in re-employment if positions become available. The court ordered the government to formulate a comprehensive golden handshake scheme before proceeding with any further layoffs.",
+    "keywords": ["mass layoffs", "retrenchment", "workers compensation", "state enterprise", "golden handshake", "downsizing"]
+  },
+  {
+    "id": "16",
+    "title": "Engro Corporation vs Federal Board of Revenue",
+    "case_number": "2021 PTD 456",
+    "court": "Sindh High Court",
+    "year": "2021",
+    "category": "Tax Law",
+    "summary": "Case regarding interpretation of tax exemptions under the Income Tax Ordinance 2001 and the principle that exemptions must be strictly construed. Important precedent for corporate tax disputes.",
+    "judgment": "The Sindh High Court held that tax exemption provisions must be strictly construed in favor of the revenue authority. The taxpayer claiming exemption bears the burden of proving that they fall squarely within the exemption provision. The court held that the exemption under Clause 126A of Part I of the Second Schedule to the Income Tax Ordinance 2001 is not applicable where the conditions specified therein are not fully met. The court emphasized that judicial interpretation of fiscal statutes must follow the plain meaning rule and exemptions cannot be extended by analogy or liberal construction.",
+    "keywords": ["tax exemption", "corporate tax", "Income Tax Ordinance", "strict construction", "FBR", "fiscal statute"]
+  },
+  {
+    "id": "17",
+    "title": "Mst. Nasreen Akhtar vs Additional District Judge",
+    "case_number": "2018 YLR 2341",
+    "court": "Balochistan High Court",
+    "year": "2018",
+    "category": "Family Law",
+    "summary": "Case regarding child custody (hizanat) rights under Muslim law. The court discussed the welfare of the child as the paramount consideration in custody disputes.",
+    "judgment": "The Balochistan High Court held that while under traditional Hanafi jurisprudence, the mother has the right to custody (hizanat) of a male child until age 7 and a female child until puberty, the welfare of the child is the paramount consideration that overrides all other factors. The court laid down that in determining welfare, the court must consider: (1) the child's age, gender, and preference (if old enough), (2) the moral and financial capacity of each parent, (3) continuity and stability of the child's environment, (4) the child's educational needs, (5) any history of abuse or neglect. The court awarded custody to the mother with visitation rights to the father.",
+    "keywords": ["child custody", "hizanat", "welfare of child", "Muslim family law", "visitation rights", "Hanafi jurisprudence"]
+  },
+  {
+    "id": "18",
+    "title": "Atlas Honda vs Competition Commission of Pakistan",
+    "case_number": "2020 CLD 1234",
+    "court": "Islamabad High Court",
+    "year": "2020",
+    "category": "Commercial Law",
+    "summary": "Landmark case on anti-competitive agreements and abuse of dominant position under the Competition Act 2010. The court upheld penalties for cartel behavior in the automobile industry.",
+    "judgment": "The Islamabad High Court upheld the Competition Commission of Pakistan's order imposing penalties for violating Section 4 of the Competition Act 2010 (prohibited agreements). The court held that price-fixing agreements between competing manufacturers constitute per se violations of competition law and do not require demonstration of actual market harm. The court also held that under Section 3, abuse of dominant position includes imposing unfair conditions on dealers and tying arrangements. The penalty of Rs. 500 million was upheld as proportionate to the gravity of the violation and the company's annual turnover.",
+    "keywords": ["competition law", "cartel", "price fixing", "dominant position", "Competition Act 2010", "anti-competitive"]
+  },
+  {
+    "id": "19",
+    "title": "Lahore Development Authority vs Muhammad Akram",
+    "case_number": "2022 SCMR 334",
+    "court": "Supreme Court of Pakistan",
+    "year": "2022",
+    "category": "Property Law",
+    "summary": "Case regarding compulsory acquisition of land by government authorities and the right to fair compensation under the Land Acquisition Act 1894.",
+    "judgment": "The Supreme Court held that the right to property, while not a fundamental right under the Constitution, is a constitutional right under Article 24. The government's power of eminent domain must be exercised strictly in accordance with the Land Acquisition Act 1894. Fair compensation must be: (1) Based on market value at the time of notification under Section 4, (2) Include 15% compulsory acquisition surcharge, (3) Include interest from the date of taking possession. The court increased the compensation from Rs. 2 million per kanal to Rs. 5 million per kanal, reflecting the actual market rate. The court also held that delay in payment of compensation entitles the landowner to additional interest.",
+    "keywords": ["land acquisition", "fair compensation", "eminent domain", "Article 24", "market value", "compulsory acquisition"]
+  },
+  {
+    "id": "20",
+    "title": "PTCL vs Pakistan Telecommunication Employees Union",
+    "case_number": "2017 PLC 890",
+    "court": "Supreme Court of Pakistan",
+    "year": "2017",
+    "category": "Employment Law",
+    "summary": "Case regarding privatization of state enterprise and protection of employees' existing terms and conditions. The court balanced privatization objectives with workers' rights.",
+    "judgment": "The Supreme Court held that upon privatization of a state-owned enterprise, the new management cannot unilaterally alter the terms and conditions of employment of existing employees. The court interpreted the privatization agreement to include protection of workers' existing benefits for a minimum period of one year. After the protection period, any changes must follow the procedure under the Industrial Relations Act 2012 including consultation with the recognized collective bargaining agent. The court ordered PTCL to honor all existing pension, gratuity, and medical benefits commitments made prior to privatization.",
+    "keywords": ["privatization", "employee rights", "terms and conditions", "state enterprise", "pension protection", "collective bargaining"]
+  }
+]

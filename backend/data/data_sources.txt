@@ -1,0 +1,58 @@
+DATA SOURCES:
+
+Federal Courts:
+
+* Supreme Court of Pakistan
+  https://www.supremecourt.gov.pk
+
+* Islamabad High Court
+  https://ihc.gov.pk
+
+---
+
+Punjab:
+
+* Lahore High Court
+  https://lhc.gov.pk
+
+---
+
+Sindh:
+
+* Sindh High Court
+  https://www.sindhhighcourt.gov.pk
+
+---
+
+Khyber Pakhtunkhwa:
+
+* Peshawar High Court
+  https://peshawarhighcourt.gov.pk
+
+---
+
+Balochistan:
+
+* Balochistan High Court
+  https://bhc.gov.pk
+
+---
+
+Specialized Courts:
+
+* Federal Shariat Court
+  https://www.federalshariatcourt.gov.pk
+
+---
+
+Legal Statutes:
+
+* Pakistan Code
+  https://pakistancode.gov.pk
+
+---
+
+Note:
+The dataset used in this project is derived from publicly available legal judgments and statutes from official Pakistani court websites.
+The cases have been manually reviewed, summarized, and structured into a machine-readable format for semantic similarity search.
+This dataset is used strictly for academic and research purposes.

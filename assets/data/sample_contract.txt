@@ -1,0 +1,40 @@
+SERVICE AGREEMENT CONTRACT
+Between: ABC Technologies (Pvt.) Ltd. ("Company")
+And: XYZ Solutions ("Service Provider")
+Date: March 15, 2026
+
+1. SCOPE OF WORK
+The Service Provider shall provide software development services including web application development, mobile app development, and technical consulting as directed by the Company.
+
+2. PAYMENT TERMS
+The Company shall pay the Service Provider PKR 500,000 per month. Payment shall be made within 120 days of invoice submission. No interest shall accrue on late payments. The Company reserves the right to withhold payment indefinitely if not satisfied with the quality of work.
+
+3. TERMINATION
+Either party may terminate this agreement immediately without any notice period and without providing any reason. Upon termination, the Service Provider shall forfeit all pending payments and shall not be entitled to any compensation whatsoever.
+
+4. INTELLECTUAL PROPERTY
+All intellectual property created by the Service Provider during the engagement, including any pre-existing IP or tools brought by the Service Provider, shall become the exclusive property of the Company without any additional compensation.
+
+5. NON-COMPETE CLAUSE
+The Service Provider agrees not to engage in any software development business or provide services to any other client anywhere in Pakistan for a period of 10 years after the termination of this agreement.
+
+6. LIABILITY
+The Service Provider shall bear unlimited liability for any and all damages, including consequential, incidental, and punitive damages, arising from the services provided. The Company shall bear no liability whatsoever under any circumstances.
+
+7. PENALTY CLAUSE
+In case of any breach by the Service Provider, the Service Provider shall pay a penalty of PKR 50,000,000 (fifty million) to the Company, regardless of the nature or extent of the breach.
+
+8. CONFIDENTIALITY
+The Service Provider shall maintain confidentiality of all information received from the Company for an unlimited duration, even after termination of this agreement. There is no obligation of confidentiality from the Company's side regarding the Service Provider's proprietary information.
+
+9. INDEMNIFICATION
+The Service Provider shall indemnify, defend, and hold harmless the Company from and against all claims, damages, losses, and expenses without any limitation or cap. The Company has no indemnification obligations toward the Service Provider.
+
+10. DISPUTE RESOLUTION
+All disputes shall be resolved exclusively in the courts of London, United Kingdom, under English law. The Service Provider waives the right to any arbitration or mediation.
+
+11. WORKING HOURS
+The Service Provider's team shall be available 24/7, seven days a week, including all public holidays, without any additional overtime compensation.
+
+12. GOVERNING LAW
+This agreement shall be governed by the laws of the United Kingdom. Pakistani laws shall have no applicability to this agreement.

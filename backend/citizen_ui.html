@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnapLaw — Citizen Portal</title>
+<style>
+  :root {
+    --navy: #1a2b4a;
+    --navy-dark: #111d33;
+    --blue: #2563eb;
+    --green: #16a34a;
+    --purple: #7c3aed;
+    --orange: #ea580c;
+    --red: #dc2626;
+    --gold: #d97706;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #1e293b;
+    --sub: #64748b;
+    --border: #e2e8f0;
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Topbar ── */
+  #topbar {
+    background: var(--navy);
+    color: white;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+
+  #topbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  #topbar .brand span { opacity: 0.7; font-weight: 400; font-size: 14px; }
+
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+    transition: all 0.3s;
+  }
+
+  .status-dot.offline { background: #94a3b8; box-shadow: none; }
+
+  #offline-banner {
+    display: none;
+    background: #7f1d1d;
+    color: white;
+    text-align: center;
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+  .screen.active { display: block; }
+
+  /* ── Back button ── */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 20px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { background: var(--navy); color: white; border-color: var(--navy); }
+
+  /* ── Section title ── */
+  .screen-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .screen-sub {
+    color: var(--sub);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  /* ── Cards grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+  }
+
+  .module-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px 22px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    border-top: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
+  .module-card .emoji { font-size: 36px; margin-bottom: 14px; display: block; }
+  .module-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .module-card p { font-size: 13px; color: var(--sub); line-height: 1.5; }
+
+  .module-card.blue  { border-top-color: var(--blue);   background: linear-gradient(135deg, #eff6ff, #fff); }
+  .module-card.green { border-top-color: var(--green);  background: linear-gradient(135deg, #f0fdf4, #fff); }
+  .module-card.purple{ border-top-color: var(--purple); background: linear-gradient(135deg, #faf5ff, #fff); }
+  .module-card.orange{ border-top-color: var(--orange); background: linear-gradient(135deg, #fff7ed, #fff); }
+
+  /* ── Home hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2563eb 100%);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    color: white;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '⚖️';
+    position: absolute;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.15;
+  }
+  .hero h1 { font-size: 28px; font-weight: 800; margin-bottom: 10px; }
+  .hero p  { font-size: 15px; opacity: 0.85; max-width: 500px; line-height: 1.6; }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Category cards ── */
+  .cat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 5px solid transparent;
+    transition: all 0.2s;
+  }
+  .cat-card:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .cat-card .cat-icon {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .cat-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+  .cat-card span { font-size: 12px; color: var(--sub); }
+  .cat-list { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ── Article list ── */
+  .article-item {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 18px 20px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+  }
+  .article-item:hover { border-color: var(--blue); background: #eff6ff; }
+  .article-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .article-item span { font-size: 12px; color: var(--sub); }
+  .articles-list { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ── Article detail ── */
+  .article-body {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .article-body h2 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+  .article-body p  { font-size: 15px; line-height: 1.8; color: #374151; }
+  .law-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eff6ff;
+    color: var(--blue);
+    border: 1px solid #bfdbfe;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 20px;
+  }
+  .save-btn {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+  }
+  .save-btn:hover { background: var(--blue); }
+
+  /* ── Justice Tracker ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .summary-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .summary-card .big { font-size: 26px; font-weight: 800; color: var(--navy); }
+  .summary-card .label { font-size: 12px; color: var(--sub); margin-top: 4px; }
+
+  .court-table {
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 28px;
+  }
+  .court-table table { width: 100%; border-collapse: collapse; }
+  .court-table th {
+    background: var(--navy);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .court-table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .court-table tr:last-child td { border-bottom: none; }
+  .court-table tr:hover td { background: #f8fafc; }
+
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .case-type-card {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .case-type-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.6s; }
+  .days-label { font-size: 13px; font-weight: 700; min-width: 80px; text-align: right; }
+  .success-label { font-size: 12px; color: var(--sub); }
+
+  /* ── Quiz ── */
+  .stats-bar {
+    display: flex;
+    gap: 20px;
+    background: var(--navy);
+    color: white;
+    border-radius: var(--radius);
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-item .val { font-size: 22px; font-weight: 800; }
+  .stat-item .lbl { font-size: 11px; opacity: 0.7; }
+
+  .level-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .level-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 12px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: relative;
+  }
+  .level-card.locked { opacity: 0.5; cursor: not-allowed; }
+  .level-card:not(.locked):hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+  .level-card .emoji { font-size: 28px; margin-bottom: 8px; display: block; }
+  .level-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .level-card .stars { font-size: 16px; margin-bottom: 10px; }
+  .play-btn {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+  }
+  .play-btn:hover { background: var(--blue); }
+
+  .quiz-container {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .quiz-progress { margin-bottom: 20px; }
+  .quiz-progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 8px; }
+  .quiz-progress-fill { height: 100%; background: var(--blue); border-radius: 3px; transition: width 0.4s; }
+  .quiz-progress-label { font-size: 12px; color: var(--sub); }
+  .question-text { font-size: 18px; font-weight: 600; line-height: 1.5; margin-bottom: 24px; color: var(--navy); }
+  .options-grid { display: flex; flex-direction: column; gap: 12px; }
+  .option-btn {
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    padding: 14px 18px;
+    border-radius: 10px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--blue); background: #eff6ff; }
+  .option-btn.correct { background: #f0fdf4; border-color: #16a34a; color: #15803d; }
+  .option-btn.wrong   { background: #fef2f2; border-color: #dc2626; color: #b91c1c; }
+  .option-label { background: var(--navy); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .option-btn.correct .option-label { background: #16a34a; }
+  .option-btn.wrong   .option-label { background: #dc2626; }
+  .explanation-box {
+    background: #f8fafc;
+    border-left: 4px solid var(--blue);
+    padding: 14px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.6;
+  }
+  .next-btn {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+    transition: background 0.2s;
+  }
+  .next-btn:hover { background: var(--blue); }
+
+  .result-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 36px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .result-card .score-big { font-size: 60px; font-weight: 900; color: var(--navy); }
+  .result-card .score-sub { font-size: 14px; color: var(--sub); margin-bottom: 16px; }
+  .result-banner { padding: 14px; border-radius: 10px; margin: 16px 0; }
+  .result-banner.pass { background: #f0fdf4; color: #15803d; }
+  .result-banner.fail { background: #fef2f2; color: #b91c1c; }
+  .result-btn {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 12px;
+    transition: background 0.2s;
+  }
+  .result-btn:hover { background: var(--blue); }
+
+  /* ── Offline / FAQ ── */
+  .offline-status-card {
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .offline-status-card.online { background: #f0fdf4; border: 1px solid #86efac; }
+  .offline-status-card.offline { background: #fef2f2; border: 1px solid #fca5a5; }
+
+  .faq-item {
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .faq-question {
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .faq-question:hover { background: #f8fafc; }
+  .faq-answer {
+    display: none;
+    padding: 0 20px 16px;
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+  .faq-answer.open { display: block; }
+
+  .saved-list {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .saved-list h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--navy); }
+  .saved-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    padding: 6px 0;
+    color: var(--sub);
+  }
+  .saved-item .check { color: #16a34a; font-weight: 700; }
+
+  .notes-area {
+    width: 100%;
+    min-height: 140px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    background: var(--card);
+    color: var(--text);
+    outline: none;
+  }
+  .notes-area:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  .notes-saved { font-size: 12px; color: #16a34a; margin-top: 6px; display: none; }
+
+  /* ── Streak bar ── */
+  .streak-bar {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    color: white;
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .streak-bar .fire { font-size: 32px; }
+  .streak-bar h4 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .streak-bar p  { font-size: 12px; opacity: 0.8; }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .level-grid { grid-template-columns: repeat(3, 1fr); }
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .summary-grid { grid-template-columns: 1fr; }
+    .level-grid { grid-template-columns: repeat(2, 1fr); }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+
+  /* loading spinner */
+  .spinner { display: flex; align-items: center; justify-content: center; padding: 40px; }
+  .spinner::after {
+    content: '';
+    width: 36px; height: 36px;
+    border: 4px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div id="topbar">
+  <div class="brand">
+    ⚖️ SnapLaw
+    <span>| Citizen Portal</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span id="status-label" style="font-size:12px;opacity:0.7;">Online</span>
+    <div class="status-dot" id="status-dot"></div>
+  </div>
+</div>
+
+<!-- Offline Banner -->
+<div id="offline-banner">
+  📶 You are offline — showing saved content from local cache
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- HOME SCREEN -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div class="hero">
+    <div class="badge">🇵🇰 Pakistan Citizen Portal — No Login Required</div>
+    <h1>Welcome to SnapLaw Citizen Portal</h1>
+    <p>Know your rights. Learn the law. Track justice. Available to every Pakistani citizen — completely free, no account needed.</p>
+  </div>
+
+  <div class="cards-grid">
+    <div class="module-card blue" onclick="showScreen('guidance')">
+      <span class="emoji">📚</span>
+      <h3>Guidance Laws</h3>
+      <p>Know your legal rights in simple, easy-to-understand language across 6 life categories.</p>
+    </div>
+    <div class="module-card green" onclick="showScreen('tracker')">
+      <span class="emoji">📊</span>
+      <h3>Justice Tracker</h3>
+      <p>See how fast Pakistan's courts resolve cases and how long YOUR case might take.</p>
+    </div>
+    <div class="module-card purple" onclick="showScreen('quiz-home')">
+      <span class="emoji">🎮</span>
+      <h3>Legal Learning</h3>
+      <p>Learn Pakistani law through fun quizzes. Earn points, build streaks, level up!</p>
+    </div>
+    <div class="module-card orange" onclick="showScreen('offline')">
+      <span class="emoji">📥</span>
+      <h3>Offline Mode</h3>
+      <p>Access all content without internet. Save FAQs and take notes anytime, anywhere.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODULE 1 — GUIDANCE LAWS -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-guidance" class="screen">
+  <button class="back-btn" onclick="showScreen('home')">← Back</button>
+  <h2 class="screen-title">📚 Guidance Laws</h2>
+  <p class="screen-sub">Select a category to learn your rights in simple language</p>
+  <div id="cat-list" class="cat-list"><div class="spinner"></div></div>
+</div>
+
+<div id="screen-articles" class="screen">
+  <button class="back-btn" onclick="showScreen('guidance')">← Categories</button>
+  <h2 class="screen-title" id="articles-title"></h2>
+  <p class="screen-sub">Click an article to read in full</p>
+  <div id="articles-list" class="articles-list"><div class="spinner"></div></div>
+</div>
+
+<div id="screen-article" class="screen">
+  <button class="back-btn" id="article-back-btn">← Articles</button>
+  <div id="article-content"></div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODULE 2 — JUSTICE TRACKER -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-tracker" class="screen">
+  <button class="back-btn" onclick="showScreen('home')">← Back</button>
+  <h2 class="screen-title">📊 Justice Tracker</h2>
+  <p class="screen-sub">Pakistan Court System — Case Backlog Statistics</p>
+  <small style="color:var(--sub);font-size:12px;display:block;margin-bottom:20px;">📌 Data is representative of current court backlogs based on official reports</small>
+
+  <div id="summary-cards" class="summary-grid"><div class="spinner"></div></div>
+  <div id="court-table-wrap"></div>
+  <h3 style="font-size:17px;font-weight:700;margin:28px 0 16px;color:var(--navy);">⏱️ How Long Will MY Case Take?</h3>
+  <div id="case-types-wrap"></div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODULE 3 — QUIZ HOME -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-quiz-home" class="screen">
+  <button class="back-btn" onclick="showScreen('home')">← Back</button>
+  <h2 class="screen-title">🎮 Legal Learning</h2>
+  <p class="screen-sub">Learn Pakistani law through gamified quizzes. Pass each level to unlock the next!</p>
+
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-item">
+      <div class="val" id="stat-points">0</div>
+      <div class="lbl">⭐ Points</div>
+    </div>
+    <div class="stat-item">
+      <div class="val" id="stat-streak">0🔥</div>
+      <div class="lbl">Streak Days</div>
+    </div>
+    <div class="stat-item">
+      <div class="val" id="stat-level">1</div>
+      <div class="lbl">🏆 Current Level</div>
+    </div>
+    <div class="stat-item">
+      <div class="val" id="stat-answered">0</div>
+      <div class="lbl">Questions Today</div>
+    </div>
+  </div>
+
+  <div id="streak-bar-wrap"></div>
+  <div id="level-grid" class="level-grid"><div class="spinner"></div></div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODULE 3 — QUIZ PLAYING -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-quiz-play" class="screen">
+  <button class="back-btn" onclick="showScreen('quiz-home')">← Levels</button>
+  <div class="quiz-container" id="quiz-container"></div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODULE 3 — QUIZ RESULT -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-quiz-result" class="screen">
+  <div style="max-width:700px;margin:0 auto;">
+    <button class="back-btn" onclick="showScreen('quiz-home')">← Levels</button>
+    <div id="result-container"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODULE 4 — OFFLINE MODE -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-offline" class="screen">
+  <button class="back-btn" onclick="showScreen('home')">← Back</button>
+  <h2 class="screen-title">📥 Offline Mode</h2>
+  <p class="screen-sub">Access content without internet. Everything is saved locally in your browser.</p>
+
+  <div id="offline-status-card" class="offline-status-card online">
+    <span style="font-size:28px;">🟢</span>
+    <div>
+      <div style="font-weight:700;font-size:15px;color:#15803d;">You are Online</div>
+      <div style="font-size:13px;color:#166534;">All content is being saved for offline use</div>
+    </div>
+  </div>
+
+  <div class="saved-list">
+    <h4>📦 Content Available Offline</h4>
+    <div class="saved-item"><span class="check">✅</span> <span id="offline-articles-count">0 Guidance Law articles</span></div>
+    <div class="saved-item"><span class="check">✅</span> <span id="offline-quiz-count">0 Quiz questions (all 5 levels)</span></div>
+    <div class="saved-item"><span class="check">✅</span> <span id="offline-faq-count">0 FAQs</span></div>
+    <div class="saved-item"><span class="check">✅</span> Your personal notes</div>
+  </div>
+
+  <h3 style="font-size:17px;font-weight:700;margin-bottom:16px;color:var(--navy);">❓ Frequently Asked Questions</h3>
+  <div id="faq-list"></div>
+
+  <h3 style="font-size:17px;font-weight:700;margin:28px 0 12px;color:var(--navy);">📝 Your Legal Notes</h3>
+  <p style="font-size:13px;color:var(--sub);margin-bottom:10px;">Type and save notes about your legal situation. Saved automatically, works offline.</p>
+  <textarea class="notes-area" id="notes-area" placeholder="Write your notes here..."></textarea>
+  <div class="notes-saved" id="notes-saved">✅ Notes saved!</div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<script>
+const API = 'http://localhost:8003';
+let currentCategory = '';
+let currentCategoryLabel = '';
+let currentLevel = 1;
+let quizQuestions = [];
+let currentQIndex = 0;
+let currentScore = 0;
+let answeredToday = 0;
+let wrongAnswers = [];
+
+// ── Screen navigation ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (id === 'guidance') loadCategories();
+  if (id === 'tracker') loadTracker();
+  if (id === 'quiz-home') loadQuizHome();
+  if (id === 'offline') loadOffline();
+}
+
+// ── Online/Offline detection ──
+function updateOnlineStatus() {
+  const dot = document.getElementById('status-dot');
+  const lbl = document.getElementById('status-label');
+  const banner = document.getElementById('offline-banner');
+  if (navigator.onLine) {
+    dot.classList.remove('offline');
+    lbl.textContent = 'Online';
+    banner.style.display = 'none';
+    cacheAllContent();
+  } else {
+    dot.classList.add('offline');
+    lbl.textContent = 'Offline';
+    banner.style.display = 'block';
+  }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// ── Fetch with fallback ──
+async function fetchWithCache(url, cacheKey) {
+  if (navigator.onLine) {
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+      return data;
+    } catch (e) {
+      const cached = localStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : null;
+    }
+  } else {
+    const cached = localStorage.getItem(cacheKey);
+    return cached ? JSON.parse(cached) : null;
+  }
+}
+
+async function cacheAllContent() {
+  const articles = await fetchWithCache(`${API}/api/guidance/articles/all`, 'snaplaw_articles');
+  const quiz = await fetchWithCache(`${API}/api/quiz/questions/all`, 'snaplaw_quiz');
+  const faqs = await fetchWithCache(`${API}/api/faqs`, 'snaplaw_faqs');
+  localStorage.setItem('snaplaw_last_synced', new Date().toISOString());
+  updateOfflineCounts(articles, quiz, faqs);
+}
+
+function updateOfflineCounts(articles, quiz, faqs) {
+  if (articles) document.getElementById('offline-articles-count').textContent = `${articles.length} Guidance Law articles`;
+  if (quiz)     document.getElementById('offline-quiz-count').textContent = `${quiz.length} Quiz questions (all 5 levels)`;
+  if (faqs)     document.getElementById('offline-faq-count').textContent = `${faqs.length} FAQs`;
+}
+
+// ══════════════════════════════════════════
+// MODULE 1 — GUIDANCE LAWS
+// ══════════════════════════════════════════
+async function loadCategories() {
+  const wrap = document.getElementById('cat-list');
+  wrap.innerHTML = '<div class="spinner"></div>';
+  const data = await fetchWithCache(`${API}/api/guidance/categories`, 'snaplaw_categories');
+  if (!data) { wrap.innerHTML = '<p style="color:red">Failed to load. Please try again.</p>'; return; }
+
+  wrap.innerHTML = data.map(cat => `
+    <div class="cat-card" onclick="loadArticles('${cat.key}', '${cat.label}')"
+         style="border-left-color:${cat.color}">
+      <div class="cat-icon" style="background:${cat.color}20">${cat.icon}</div>
+      <div>
+        <h4>${cat.label}</h4>
+        <span>${cat.article_count} articles</span>
+      </div>
+      <div style="margin-left:auto;color:#94a3b8;">›</div>
+    </div>
+  `).join('');
+}
+
+async function loadArticles(catKey, catLabel) {
+  currentCategory = catKey;
+  currentCategoryLabel = catLabel;
+  showScreen('articles');
+  document.getElementById('articles-title').textContent = catLabel;
+  const wrap = document.getElementById('articles-list');
+  wrap.innerHTML = '<div class="spinner"></div>';
+
+  let data;
+  if (!navigator.onLine) {
+    const all = JSON.parse(localStorage.getItem('snaplaw_articles') || '[]');
+    data = all.filter(a => a.category === catKey);
+  } else {
+    data = await fetchWithCache(`${API}/api/guidance/articles/${catKey}`, `snaplaw_articles_${catKey}`);
+  }
+  if (!data) { wrap.innerHTML = '<p>No articles found.</p>'; return; }
+
+  wrap.innerHTML = data.map(a => `
+    <div class="article-item" onclick="showArticle(${a.id})">
+      <div>
+        <h4>${a.title}</h4>
+        <span>${a.relevant_law}</span>
+      </div>
+      <span style="color:#94a3b8;font-size:20px;">›</span>
+    </div>
+  `).join('');
+}
+
+async function showArticle(id) {
+  showScreen('article');
+  document.getElementById('article-back-btn').onclick = () => loadArticles(currentCategory, currentCategoryLabel);
+
+  let article;
+  if (!navigator.onLine) {
+    const all = JSON.parse(localStorage.getItem('snaplaw_articles') || '[]');
+    article = all.find(a => a.id === id);
+  } else {
+    article = await fetchWithCache(`${API}/api/guidance/article/${id}`, `snaplaw_article_${id}`);
+  }
+  if (!article) return;
+
+  document.getElementById('article-content').innerHTML = `
+    <div class="article-body">
+      <h2>${article.title}</h2>
+      <p>${article.content.replace(/\n/g, '<br>')}</p>
+      <div style="margin-top:20px;">
+        <span class="law-pill">📜 ${article.relevant_law}</span>
+      </div>
+      <button class="save-btn" onclick="saveArticleOffline(${article.id})">
+        📋 Save for Offline Reading
+      </button>
+    </div>
+  `;
+}
+
+function saveArticleOffline(id) {
+  let saved = JSON.parse(localStorage.getItem('snaplaw_saved_articles') || '[]');
+  if (!saved.includes(id)) {
+    saved.push(id);
+    localStorage.setItem('snaplaw_saved_articles', JSON.stringify(saved));
+  }
+  const btn = document.querySelector('.save-btn');
+  if (btn) { btn.textContent = '✅ Saved!'; btn.disabled = true; }
+}
+
+// ══════════════════════════════════════════
+// MODULE 2 — JUSTICE TRACKER
+// ══════════════════════════════════════════
+async function loadTracker() {
+  document.getElementById('summary-cards').innerHTML = '<div class="spinner"></div>';
+
+  const [summary, courts, caseTypes] = await Promise.all([
+    fetchWithCache(`${API}/api/justice/summary`, 'snaplaw_justice_summary'),
+    fetchWithCache(`${API}/api/justice/courts`, 'snaplaw_justice_courts'),
+    fetchWithCache(`${API}/api/justice/case-types`, 'snaplaw_justice_types'),
+  ]);
+
+  if (summary) {
+    document.getElementById('summary-cards').innerHTML = `
+      <div class="summary-card">
+        <div class="big">${summary.total_pending_cases.toLocaleString()}</div>
+        <div class="label">📋 Total Pending Cases</div>
+      </div>
+      <div class="summary-card">
+        <div class="big">${summary.courts_tracked}</div>
+        <div class="label">🏛️ Courts Tracked</div>
+      </div>
+      <div class="summary-card">
+        <div class="big">${summary.avg_resolution_days}</div>
+        <div class="label">📅 Avg Resolution (days)</div>
+      </div>
+    `;
+  }
+
+  if (courts) {
+    document.getElementById('court-table-wrap').innerHTML = `
+      <div class="court-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Court</th>
+              <th>City</th>
+              <th>Pending Cases</th>
+              <th>Avg Days</th>
+              <th>Resolved/Month</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${courts.map(c => `
+              <tr>
+                <td style="font-weight:600">${c.court_type}</td>
+                <td>${c.city}</td>
+                <td style="font-weight:700;color:#1e293b">${c.total_pending_cases.toLocaleString()}</td>
+                <td>${c.avg_resolution_days}</td>
+                <td style="color:#16a34a">${c.cases_resolved_this_month.toLocaleString()}</td>
+                <td>
+                  <span class="status-badge" style="background:${c.status_color}20;color:${c.status_color}">
+                    ${c.status === 'Manageable' ? '🟢' : c.status === 'Backlogged' ? '🟡' : '🔴'} ${c.status}
+                  </span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  if (caseTypes) {
+    document.getElementById('case-types-wrap').innerHTML = caseTypes.map(t => `
+      <div class="case-type-card">
+        <h4>${t.case_type}</h4>
+        <div class="progress-row">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${t.bar_percent}%;background:${t.bar_color}"></div>
+          </div>
+          <div class="days-label" style="color:${t.bar_color}">${t.avg_days_to_resolve} days</div>
+        </div>
+        <div class="success-label">✅ ${t.success_rate_percent}% success rate · ${t.total_cases_2023.toLocaleString()} cases in 2023</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ══════════════════════════════════════════
+// MODULE 3 — QUIZ
+// ══════════════════════════════════════════
+function getProgress() {
+  return {
+    points: parseInt(localStorage.getItem('snaplaw_points') || '0'),
+    streak: parseInt(localStorage.getItem('snaplaw_streak') || '0'),
+    lastPlayed: localStorage.getItem('snaplaw_last_played') || '',
+    currentLevel: parseInt(localStorage.getItem('snaplaw_current_level') || '1'),
+    completedLevels: JSON.parse(localStorage.getItem('snaplaw_completed_levels') || '[]'),
+    answeredToday: parseInt(localStorage.getItem('snaplaw_answered_today') || '0'),
+    todayDate: localStorage.getItem('snaplaw_today_date') || '',
+  };
+}
+
+function saveProgress(p) {
+  localStorage.setItem('snaplaw_points', p.points);
+  localStorage.setItem('snaplaw_streak', p.streak);
+  localStorage.setItem('snaplaw_last_played', p.lastPlayed);
+  localStorage.setItem('snaplaw_current_level', p.currentLevel);
+  localStorage.setItem('snaplaw_completed_levels', JSON.stringify(p.completedLevels));
+  localStorage.setItem('snaplaw_answered_today', p.answeredToday);
+  localStorage.setItem('snaplaw_today_date', p.todayDate);
+}
+
+function updateStreak(p) {
+  const today = new Date().toDateString();
+  if (p.todayDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (p.lastPlayed === yesterday || p.lastPlayed === today) {
+      // continue streak
+    } else if (p.lastPlayed !== today) {
+      p.streak = 0; // reset
+    }
+    p.todayDate = today;
+    p.answeredToday = 0;
+  }
+  return p;
+}
+
+async function loadQuizHome() {
+  let p = getProgress();
+  p = updateStreak(p);
+  saveProgress(p);
+
+  document.getElementById('stat-points').textContent = p.points;
+  document.getElementById('stat-streak').textContent = p.streak + '🔥';
+  document.getElementById('stat-level').textContent = p.currentLevel;
+  document.getElementById('stat-answered').textContent = p.answeredToday;
+
+  // Streak motivational message
+  let streakMsg = '';
+  if (p.streak >= 7) streakMsg = "Amazing streak! You're a legal eagle! 🦅";
+  else if (p.streak >= 3) streakMsg = "You're on a roll! 🔥";
+  else if (p.streak >= 1) streakMsg = "Good start! Keep going!";
+
+  const streakWrap = document.getElementById('streak-bar-wrap');
+  if (p.streak > 0 && streakMsg) {
+    streakWrap.innerHTML = `
+      <div class="streak-bar">
+        <div class="fire">🔥</div>
+        <div>
+          <h4>${p.streak}-Day Learning Streak!</h4>
+          <p>${streakMsg}</p>
+        </div>
+      </div>
+    `;
+  } else {
+    streakWrap.innerHTML = '';
+  }
+
+  const levels = [
+    {level:1, name:'Beginner', emoji:'🟢'},
+    {level:2, name:'Easy', emoji:'🟡'},
+    {level:3, name:'Medium', emoji:'🟠'},
+    {level:4, name:'Hard', emoji:'🔴'},
+    {level:5, name:'Expert', emoji:'🟣'},
+  ];
+
+  const grid = document.getElementById('level-grid');
+  grid.innerHTML = levels.map(l => {
+    const unlocked = l.level === 1 || p.completedLevels.includes(l.level - 1);
+    const completed = p.completedLevels.includes(l.level);
+    const stars = completed ? '⭐⭐⭐' : unlocked ? '☆☆☆' : '🔒🔒🔒';
+    return `
+      <div class="level-card ${!unlocked ? 'locked' : ''}">
+        <span class="emoji">${l.emoji}</span>
+        <h4>Level ${l.level}<br>${l.name}</h4>
+        <div class="stars">${stars}</div>
+        ${unlocked
+          ? `<button class="play-btn" onclick="startLevel(${l.level})">▶ Play</button>`
+          : `<div style="font-size:11px;color:#94a3b8;margin-top:4px;">Complete Level ${l.level-1} first</div>`
+        }
+      </div>
+    `;
+  }).join('');
+}
+
+async function startLevel(level) {
+  currentLevel = level;
+  currentQIndex = 0;
+  currentScore = 0;
+  wrongAnswers = [];
+
+  let data;
+  if (!navigator.onLine) {
+    const all = JSON.parse(localStorage.getItem('snaplaw_quiz') || '[]');
+    data = all.filter(q => q.level === level);
+  } else {
+    data = await fetchWithCache(`${API}/api/quiz/questions/${level}`, `snaplaw_quiz_level_${level}`);
+  }
+
+  quizQuestions = data || [];
+  if (quizQuestions.length === 0) {
+    alert('Could not load questions. Please try again.');
+    return;
+  }
+
+  showScreen('quiz-play');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizQuestions[currentQIndex];
+  const pct = Math.round(((currentQIndex) / quizQuestions.length) * 100);
+
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="quiz-progress">
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="quiz-progress-label">Question ${currentQIndex + 1} of ${quizQuestions.length} · Score: ${currentScore}/${currentQIndex}</div>
+    </div>
+    <div class="question-text">Q${currentQIndex + 1}. ${q.question}</div>
+    <div class="options-grid">
+      ${['a','b','c','d'].map(opt => `
+        <button class="option-btn" id="opt-${opt}" onclick="selectAnswer('${opt}')">
+          <div class="option-label">${opt.toUpperCase()}</div>
+          ${q['option_' + opt]}
+        </button>
+      `).join('')}
+    </div>
+    <div id="explanation-box"></div>
+    <div id="next-wrap"></div>
+  `;
+}
+
+function selectAnswer(selected) {
+  const q = quizQuestions[currentQIndex];
+  const correct = q.correct_answer;
+
+  // Track for streak
+  let p = getProgress();
+  p.answeredToday++;
+  const today = new Date().toDateString();
+  p.todayDate = today;
+  if (p.answeredToday === 1 && p.lastPlayed !== today) {
+    p.lastPlayed = today;
+    p.streak++;
+  }
+  saveProgress(p);
+  document.getElementById('stat-answered').textContent = p.answeredToday;
+
+  // Disable all buttons
+  ['a','b','c','d'].forEach(opt => {
+    const btn = document.getElementById('opt-' + opt);
+    btn.disabled = true;
+    btn.onclick = null;
+    if (opt === correct) btn.classList.add('correct');
+    if (opt === selected && selected !== correct) {
+      btn.classList.add('wrong');
+      wrongAnswers.push(currentQIndex);
+    }
+  });
+
+  if (selected === correct) {
+    currentScore++;
+    // +10 points
+    p = getProgress();
+    p.points += 10;
+    saveProgress(p);
+    document.getElementById('stat-points').textContent = p.points;
+  }
+
+  // Show explanation
+  document.getElementById('explanation-box').innerHTML = `
+    <div class="explanation-box">
+      ${selected === correct ? '✅ Correct!' : '❌ Incorrect!'} ${q.explanation}
+    </div>
+  `;
+
+  // Next button
+  const isLast = currentQIndex === quizQuestions.length - 1;
+  document.getElementById('next-wrap').innerHTML = `
+    <button class="next-btn" onclick="${isLast ? 'showResult()' : 'nextQuestion()'}">
+      ${isLast ? '📊 See Results' : 'Next Question →'}
+    </button>
+  `;
+}
+
+function nextQuestion() {
+  currentQIndex++;
+  renderQuestion();
+}
+
+function showResult() {
+  const passed = currentScore >= 7;
+  let p = getProgress();
+
+  if (passed && !p.completedLevels.includes(currentLevel)) {
+    p.completedLevels.push(currentLevel);
+    p.points += 50; // bonus
+    if (currentLevel < 5) p.currentLevel = currentLevel + 1;
+    saveProgress(p);
+  }
+
+  showScreen('quiz-result');
+  const container = document.getElementById('result-container');
+  container.innerHTML = `
+    <div class="result-card">
+      <div class="score-big">${currentScore}/10</div>
+      <div class="score-sub">Level ${currentLevel} — ${['','Beginner','Easy','Medium','Hard','Expert'][currentLevel]}</div>
+      <div class="result-banner ${passed ? 'pass' : 'fail'}">
+        ${passed
+          ? `🎉 Level Complete! +50 bonus points! ${currentLevel < 5 ? `Level ${currentLevel+1} unlocked!` : '🏆 All levels mastered!'}`
+          : `😔 Need 7/10 to pass. You got ${currentScore}/10. Keep practicing!`
+        }
+      </div>
+      <div style="font-size:14px;color:#64748b;margin-bottom:16px;">
+        Points earned this round: ${currentScore * 10}${passed ? ' + 50 bonus' : ''}
+        <br>Total points: ${p.points}
+      </div>
+      ${wrongAnswers.length > 0 ? `
+        <div style="background:#fef2f2;border-radius:8px;padding:12px;text-align:left;margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:700;color:#b91c1c;margin-bottom:8px;">Questions to review:</div>
+          ${wrongAnswers.map(i => `
+            <div style="font-size:12px;color:#374151;margin-bottom:4px;">• ${quizQuestions[i].question.substring(0, 60)}...</div>
+          `).join('')}
+        </div>
+      ` : ''}
+      <button class="result-btn" onclick="startLevel(${currentLevel})">🔄 Play Again</button>
+      <button class="result-btn" style="background:#f1f5f9;color:var(--navy);margin-top:8px;" onclick="showScreen('quiz-home')">← Back to Levels</button>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════
+// MODULE 4 — OFFLINE MODE
+// ══════════════════════════════════════════
+async function loadOffline() {
+  // Status card
+  const isOnline = navigator.onLine;
+  const statusCard = document.getElementById('offline-status-card');
+  if (isOnline) {
+    statusCard.className = 'offline-status-card online';
+    statusCard.innerHTML = `
+      <span style="font-size:28px;">🟢</span>
+      <div>
+        <div style="font-weight:700;font-size:15px;color:#15803d;">You are Online</div>
+        <div style="font-size:13px;color:#166534;">All content is being saved for offline use automatically</div>
+      </div>
+    `;
+  } else {
+    statusCard.className = 'offline-status-card offline';
+    statusCard.innerHTML = `
+      <span style="font-size:28px;">🔴</span>
+      <div>
+        <div style="font-weight:700;font-size:15px;color:#b91c1c;">You are Offline</div>
+        <div style="font-size:13px;color:#7f1d1d;">Showing content saved from your last visit</div>
+      </div>
+    `;
+  }
+
+  // Update counts
+  const articles = JSON.parse(localStorage.getItem('snaplaw_articles') || '[]');
+  const quiz = JSON.parse(localStorage.getItem('snaplaw_quiz') || '[]');
+  const faqs = JSON.parse(localStorage.getItem('snaplaw_faqs') || '[]');
+  updateOfflineCounts(articles, quiz, faqs.length ? faqs : null);
+
+  // Load FAQs
+  let faqData = faqs;
+  if (isOnline && faqData.length === 0) {
+    faqData = await fetchWithCache(`${API}/api/faqs`, 'snaplaw_faqs');
+  }
+
+  const faqList = document.getElementById('faq-list');
+  if (faqData && faqData.length > 0) {
+    faqList.innerHTML = faqData.map((f, i) => `
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(${i})">
+          <span>❓ ${f.question}</span>
+          <span id="faq-arrow-${i}">▼</span>
+        </div>
+        <div class="faq-answer" id="faq-answer-${i}">${f.answer}</div>
+      </div>
+    `).join('');
+  } else {
+    faqList.innerHTML = '<p style="color:var(--sub);font-size:14px;">No FAQs loaded yet. Connect to internet to download.</p>';
+  }
+
+  // Notes
+  const notes = document.getElementById('notes-area');
+  notes.value = localStorage.getItem('snaplaw_notes') || '';
+  let saveTimer;
+  notes.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      localStorage.setItem('snaplaw_notes', notes.value);
+      const saved = document.getElementById('notes-saved');
+      saved.style.display = 'block';
+      setTimeout(() => saved.style.display = 'none', 2000);
+    }, 600);
+  });
+}
+
+function toggleFaq(i) {
+  const answer = document.getElementById('faq-answer-' + i);
+  const arrow  = document.getElementById('faq-arrow-' + i);
+  answer.classList.toggle('open');
+  arrow.textContent = answer.classList.contains('open') ? '▲' : '▼';
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  updateOnlineStatus();
+  if (navigator.onLine) cacheAllContent();
+});
+</script>
+</body>
+</html>

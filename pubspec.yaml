@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.7.2
 
 dependencies:
   flutter:
@@ -16,6 +16,8 @@ dependencies:
   flutter_svg: ^2.0.10+1
   shimmer: ^3.0.0
   cached_network_image: ^3.3.1
+  lottie: ^3.1.0
+  fl_chart: ^0.68.0
 
   # Backend & Authentication
   supabase_flutter: ^2.8.4
@@ -34,11 +36,17 @@ dependencies:
   image_picker: ^1.1.2
   file_picker: ^8.1.7
 
+  # PDF Report Generation
+  pdf: ^3.11.1
+  printing: ^5.13.4
+
   # Utilities
   intl: ^0.19.0
   url_launcher: ^6.3.1
   timeago: ^3.7.0
   http: ^1.2.2
+  http_parser: ^4.0.2
+  uuid: ^4.5.1
 
   # Notifications
   flutter_local_notifications: ^18.0.1
@@ -55,3 +63,5 @@ flutter:
     - .env
     - assets/images/
     - assets/icons/
+    - assets/lottie/
+    - assets/data/contracts_dataset.csv

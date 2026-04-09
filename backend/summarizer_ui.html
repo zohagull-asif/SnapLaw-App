@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Summarizer — SnapLaw</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f4f8;
+    color: #1a2b4a;
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: #1a2b4a;
+    color: white;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .topbar-back {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: white;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .topbar-back:hover { background: rgba(255,255,255,0.22); }
+  .topbar-title { font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
+  .topbar-badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .subtitle-bar {
+    background: #243858;
+    color: rgba(255,255,255,0.75);
+    text-align: center;
+    padding: 10px 24px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  /* ── MAIN CONTAINER ── */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 24px 120px;
+  }
+
+  /* ── UPLOAD CARD ── */
+  .upload-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  .upload-card h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a2b4a;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .dropzone {
+    border: 2.5px dashed #c5d3e8;
+    border-radius: 14px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fafbfd;
+    position: relative;
+  }
+  .dropzone:hover, .dropzone.dragover {
+    border-color: #2563eb;
+    background: #eff6ff;
+  }
+  .dropzone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .dropzone-icon { font-size: 52px; margin-bottom: 12px; display: block; }
+  .dropzone-main { font-size: 16px; font-weight: 600; color: #1a2b4a; margin-bottom: 6px; }
+  .dropzone-sub { font-size: 13px; color: #6b7280; }
+
+  .file-selected {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    background: #f0fdf4;
+    border: 2px solid #22c55e;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+  .file-selected.show { display: flex; }
+  .file-selected-icon { font-size: 28px; }
+  .file-selected-info { flex: 1; }
+  .file-selected-name { font-weight: 700; font-size: 14px; color: #166534; }
+  .file-selected-size { font-size: 12px; color: #4b7c61; margin-top: 2px; }
+  .file-check { font-size: 24px; color: #22c55e; }
+
+  .info-pills {
+    display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .pill {
+    background: #f1f5f9;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 12.5px;
+    color: #475569;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-generate {
+    width: 100%;
+    margin-top: 24px;
+    padding: 15px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-generate:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+  .btn-generate:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ── LOADING ── */
+  #loading { display: none; }
+  .loading-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    text-align: center;
+  }
+  .loading-title {
+    font-size: 20px; font-weight: 700; color: #1a2b4a; margin-bottom: 8px;
+  }
+  .loading-subtitle { font-size: 14px; color: #64748b; margin-bottom: 32px; }
+
+  .steps { text-align: left; max-width: 380px; margin: 0 auto 28px; }
+  .step {
+    display: flex; align-items: center; gap: 14px;
+    padding: 10px 0;
+    font-size: 14.5px;
+    color: #94a3b8;
+    transition: color 0.3s;
+  }
+  .step.active { color: #1a2b4a; font-weight: 600; }
+  .step.done { color: #22c55e; }
+  .step-icon { font-size: 20px; width: 28px; text-align: center; }
+  .step-spinner {
+    width: 20px; height: 20px;
+    border: 2.5px solid #e2e8f0;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+  }
+
+  .progress-bar-wrap {
+    background: #e2e8f0;
+    border-radius: 99px;
+    height: 8px;
+    overflow: hidden;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.8s ease;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── ERROR ── */
+  #error { display: none; }
+  .error-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border-left: 5px solid #ef4444;
+  }
+  .error-icon { font-size: 40px; margin-bottom: 12px; }
+  .error-title { font-size: 18px; font-weight: 700; color: #dc2626; margin-bottom: 8px; }
+  .error-msg { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+  .btn-retry {
+    padding: 10px 24px;
+    background: #ef4444;
+    color: white; border: none;
+    border-radius: 8px; cursor: pointer;
+    font-size: 14px; font-weight: 600;
+    transition: background 0.2s;
+  }
+  .btn-retry:hover { background: #dc2626; }
+
+  /* ── RESULTS ── */
+  #results { display: none; }
+
+  .truncation-warning {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #9a3412;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .stat-icon { font-size: 24px; margin-bottom: 6px; }
+  .stat-value { font-size: 22px; font-weight: 800; color: #1a2b4a; }
+  .stat-label { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 500; }
+
+  .action-row {
+    display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;
+  }
+  .btn-action {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-copy { border-color: #1a2b4a; color: #1a2b4a; background: white; }
+  .btn-copy:hover { background: #1a2b4a; color: white; }
+  .btn-download { border-color: #059669; color: #059669; background: white; }
+  .btn-download:hover { background: #059669; color: white; }
+  .btn-new { border-color: #7c3aed; color: #7c3aed; background: white; }
+  .btn-new:hover { background: #7c3aed; color: white; }
+
+  /* ── SUMMARY SECTIONS ── */
+  .summary-container { display: flex; flex-direction: column; gap: 12px; }
+
+  .section-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .section-header {
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 14.5px;
+    color: white;
+    letter-spacing: 0.3px;
+  }
+  .section-header .section-emoji { font-size: 18px; }
+
+  .section-body {
+    padding: 18px 20px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #1e293b;
+  }
+  .section-body strong { color: #1a2b4a; font-weight: 700; }
+  .section-body ul { padding-left: 20px; }
+  .section-body li { margin-bottom: 4px; }
+  .section-body p { margin-bottom: 8px; }
+
+  /* Section header color themes */
+  .theme-navy   { background: #1a2b4a; }
+  .theme-blue   { background: #1e40af; }
+  .theme-green  { background: #15803d; }
+  .theme-purple { background: #6d28d9; }
+  .theme-teal   { background: #0f766e; }
+  .theme-orange { background: #c2410c; }
+
+  /* KEY LEGAL POINTS highlight */
+  .section-card.key-points {
+    border: 2px solid #6d28d9;
+    box-shadow: 0 2px 12px rgba(109,40,217,0.15);
+  }
+  .key-points .section-body {
+    background: #faf5ff;
+  }
+  .key-points .section-body li {
+    background: white;
+    border-left: 3px solid #7c3aed;
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 8px;
+    list-style: none;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .key-points .section-body ul { padding-left: 0; }
+
+  /* Verdict badge */
+  .verdict-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+  .verdict-guilty     { background: #fef2f2; color: #dc2626; border: 1.5px solid #fca5a5; }
+  .verdict-notguilty  { background: #f0fdf4; color: #16a34a; border: 1.5px solid #86efac; }
+  .verdict-allowed    { background: #eff6ff; color: #2563eb; border: 1.5px solid #93c5fd; }
+  .verdict-dismissed  { background: #fff7ed; color: #ea580c; border: 1.5px solid #fdba74; }
+  .verdict-acquitted  { background: #f0fdf4; color: #16a34a; border: 1.5px solid #86efac; }
+  .verdict-remanded   { background: #fefce8; color: #ca8a04; border: 1.5px solid #fde047; }
+
+  /* Strength badge */
+  .strength-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+    margin-left: auto;
+  }
+  .strength-strong { background: #dcfce7; color: #15803d; }
+  .strength-medium { background: #ffedd5; color: #c2410c; }
+  .strength-weak   { background: #fee2e2; color: #dc2626; }
+
+  /* ── STICKY BOTTOM BAR ── */
+  .sticky-bar {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    padding: 12px 24px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 99;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+  }
+  .sticky-bar.show { display: flex; }
+  .sticky-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1.5px solid;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.2s;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 80px; right: 24px;
+    background: #1a2b4a; color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13.5px; font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ensure only upload is visible on initial load */
+  #loading, #error, #results { display: none; }
+  #upload { display: block; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="topbar-back" onclick="history.back()">←</button>
+  <span class="topbar-title">⚖️ Case Summarizer</span>
+  <span class="topbar-badge">LAWYER TOOL</span>
+</div>
+<div class="subtitle-bar">
+  Upload any court judgment or legal document and get a complete structured summary instantly
+</div>
+
+<div class="main">
+
+  <!-- ─── UPLOAD SECTION ─── -->
+  <div id="upload">
+    <div class="upload-card">
+      <h2>📂 Upload Judgment or Case Document</h2>
+
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.tiff,.webp"
+               onchange="onFileSelected(this)">
+        <span class="dropzone-icon" id="dropIcon">⚖️</span>
+        <div class="dropzone-main">Click to upload or drag and drop</div>
+        <div class="dropzone-sub">PDF, JPG, PNG supported &nbsp;•&nbsp; Max 20MB</div>
+      </div>
+
+      <div class="file-selected" id="fileSelected">
+        <span class="file-selected-icon">📄</span>
+        <div class="file-selected-info">
+          <div class="file-selected-name" id="fileName">—</div>
+          <div class="file-selected-size" id="fileSize">—</div>
+        </div>
+        <span class="file-check">✅</span>
+      </div>
+
+      <div class="info-pills">
+        <div class="pill">🔒 Your document is processed securely</div>
+        <div class="pill">⚡ Summary ready in 15–30 seconds</div>
+      </div>
+
+      <button class="btn-generate" id="btnGenerate" disabled onclick="generateSummary()">
+        ⚖️ Generate Summary
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── LOADING SECTION ─── -->
+  <div id="loading">
+    <div class="loading-card">
+      <div class="loading-title">Analyzing Document…</div>
+      <div class="loading-subtitle">Please wait while AI reads and summarizes your case</div>
+
+      <div class="steps" id="steps">
+        <div class="step" id="step0"><span class="step-icon">📄</span> Reading document…</div>
+        <div class="step" id="step1"><span class="step-icon">🔍</span> Extracting text…</div>
+        <div class="step" id="step2"><span class="step-icon">⚖️</span> Analyzing case details…</div>
+        <div class="step" id="step3"><span class="step-icon">🤖</span> Generating summary…</div>
+        <div class="step" id="step4"><span class="step-icon">✨</span> Formatting results…</div>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <p id="elapsedTime" style="margin-top:14px;font-size:13px;color:#94a3b8;">0s elapsed…</p>
+      <p style="margin-top:6px;font-size:12px;color:#cbd5e1;">Large documents may take up to 2 minutes</p>
+    </div>
+  </div>
+
+  <!-- ─── ERROR SECTION ─── -->
+  <div id="error">
+    <div class="error-card">
+      <div class="error-icon">❌</div>
+      <div class="error-title">Something went wrong</div>
+      <div class="error-msg" id="errorMsg">An error occurred.</div>
+      <button class="btn-retry" onclick="showUpload()">🔄 Try Again</button>
+    </div>
+  </div>
+
+  <!-- ─── RESULTS SECTION ─── -->
+  <div id="results">
+
+    <div class="truncation-warning" id="truncationWarning" style="display:none">
+      ⚠️ Note: Document was very long. Summary based on first 30,000 characters of text.
+    </div>
+
+    <div class="stats-row" id="statsRow"></div>
+
+    <div class="action-row">
+      <button class="btn-action btn-copy" onclick="copySummary()">📋 Copy Summary</button>
+      <button class="btn-action btn-download" onclick="downloadSummary()">📥 Download as TXT</button>
+      <button class="btn-action btn-new" onclick="showUpload()">🔄 Summarize Another</button>
+    </div>
+
+    <div class="summary-container" id="summaryContainer"></div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- STICKY BOTTOM BAR -->
+<div class="sticky-bar" id="stickyBar">
+  <button class="sticky-btn" style="border-color:#1a2b4a;color:#1a2b4a" onclick="copySummary()">📋 Copy</button>
+  <button class="sticky-btn" style="border-color:#059669;color:#059669" onclick="downloadSummary()">📥 Download</button>
+  <button class="sticky-btn" style="border-color:#7c3aed;color:#7c3aed" onclick="showUpload()">🔄 New Document</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentData = null;
+  let stepTimer = null;
+  let progressTimer = null;
+
+  // Ensure correct initial state on page load
+  document.addEventListener('DOMContentLoaded', () => showSection('upload'));
+
+  // ── FILE SELECTION ──
+  function onFileSelected(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const sizeStr = file.size > 1024*1024
+      ? (file.size / (1024*1024)).toFixed(1) + ' MB'
+      : (file.size / 1024).toFixed(1) + ' KB';
+
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = sizeStr + ' · ' + file.type;
+    document.getElementById('fileSelected').classList.add('show');
+    document.getElementById('dropIcon').textContent = '📄';
+    document.getElementById('btnGenerate').disabled = false;
+  }
+
+  // Drag & drop
+  const dropzone = document.getElementById('dropzone');
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      document.getElementById('fileInput').files = e.dataTransfer.files;
+      onFileSelected(document.getElementById('fileInput'));
+    }
+  });
+
+  // ── SECTION VISIBILITY ──
+  function showSection(id) {
+    ['upload', 'loading', 'error', 'results'].forEach(s => {
+      document.getElementById(s).style.display = (s === id) ? 'block' : 'none';
+    });
+    document.getElementById('stickyBar').classList.toggle('show', id === 'results');
+  }
+
+  function showUpload() {
+    clearTimers();
+    showSection('upload');
+    document.getElementById('fileInput').value = '';
+    document.getElementById('fileSelected').classList.remove('show');
+    document.getElementById('dropIcon').textContent = '⚖️';
+    document.getElementById('btnGenerate').disabled = true;
+  }
+
+  function showError(msg) {
+    clearTimers();
+    document.getElementById('errorMsg').textContent = msg;
+    showSection('error');
+  }
+
+  function clearTimers() {
+    if (stepTimer) clearInterval(stepTimer);
+    if (progressTimer) clearInterval(progressTimer);
+  }
+
+  // ── LOADING ANIMATION ──
+  const defaultIcons = ['📄', '🔍', '⚖️', '🤖', '✨'];
+  function showLoading() {
+    showSection('loading');
+    const steps = document.querySelectorAll('.step');
+    steps.forEach((s, i) => {
+      s.className = 'step';
+      s.querySelector('.step-icon').textContent = defaultIcons[i] || '⏳';
+    });
+
+    let current = 0;
+    const spinnerHTML = '<span class="step-spinner"></span>';
+
+    function activateStep(idx) {
+      if (idx > 0) {
+        steps[idx - 1].classList.remove('active');
+        steps[idx - 1].classList.add('done');
+        steps[idx - 1].querySelector('.step-icon').textContent = '✅';
+      }
+      if (idx < steps.length) {
+        steps[idx].classList.add('active');
+        steps[idx].querySelector('.step-icon').innerHTML = spinnerHTML;
+      }
+    }
+
+    // Activate first step immediately, then 1 per 1.5s
+    activateStep(0);
+    current = 1;
+    stepTimer = setInterval(() => {
+      if (current < steps.length) {
+        activateStep(current);
+        current++;
+      }
+    }, 1500);
+
+    // Progress bar
+    let prog = 0;
+    progressTimer = setInterval(() => {
+      prog = Math.min(prog + Math.random() * 4, 90);
+      document.getElementById('progressBar').style.width = prog + '%';
+    }, 300);
+  }
+
+  function finishLoading() {
+    clearTimers();
+    document.querySelectorAll('.step').forEach(s => {
+      s.classList.remove('active');
+      s.classList.add('done');
+      s.querySelector('.step-icon').textContent = '✅';
+    });
+    document.getElementById('progressBar').style.width = '100%';
+  }
+
+  // ── MAIN API CALL ──
+  async function generateSummary() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    showLoading();
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Abort after 120 seconds
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000);
+
+    // Show elapsed time counter
+    let elapsed = 0;
+    const elapsedTimer = setInterval(() => {
+      elapsed++;
+      const el = document.getElementById('elapsedTime');
+      if (el) el.textContent = `${elapsed}s elapsed…`;
+    }, 1000);
+
+    try {
+      const response = await fetch('http://localhost:8002/api/summarize', {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+      clearInterval(elapsedTimer);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError(data.detail || 'Something went wrong. Please try again.');
+        return;
+      }
+
+      finishLoading();
+      setTimeout(() => showResults(data), 400);
+
+    } catch (err) {
+      clearTimeout(timeoutId);
+      clearInterval(elapsedTimer);
+      if (err.name === 'AbortError') {
+        showError('Request timed out after 2 minutes. Try a smaller document or a shorter PDF.');
+      } else {
+        showError('Cannot connect to server. Make sure the Case Summarizer backend is running on port 8002.');
+      }
+    }
+  }
+
+  // ── SHOW RESULTS ──
+  function showResults(data) {
+    currentData = data;
+
+    // Truncation warning
+    document.getElementById('truncationWarning').style.display =
+      data.truncated ? 'flex' : 'none';
+
+    // Stats
+    const words = str => str.trim().split(/\s+/).length;
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-icon">📄</div>
+        <div class="stat-value">${data.pages}</div>
+        <div class="stat-label">Pages Processed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-value">${words(data.original_text).toLocaleString()}</div>
+        <div class="stat-label">Original Words</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value">${words(data.summary).toLocaleString()}</div>
+        <div class="stat-label">Summary Words</div>
+      </div>
+    `;
+
+    // Render summary
+    document.getElementById('summaryContainer').innerHTML = renderSummary(data.summary);
+
+    showSection('results');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── SUMMARY RENDERER ──
+  function renderSummary(text) {
+    const sectionDefs = [
+      { key: 'CASE SUMMARY',           emoji: '📋', theme: 'theme-navy',   cls: '' },
+      { key: 'PARTIES INVOLVED',        emoji: '⚖️', theme: 'theme-blue',   cls: '' },
+      { key: 'WHAT THIS CASE IS ABOUT', emoji: '📖', theme: 'theme-blue',   cls: '' },
+      { key: 'ARGUMENTS MADE',          emoji: '🗣️', theme: 'theme-blue',   cls: '' },
+      { key: 'LAWS AND SECTIONS CITED', emoji: '📜', theme: 'theme-teal',   cls: '' },
+      { key: "COURT'S DECISION",        emoji: '⚖️', theme: 'theme-green',  cls: '', verdict: true },
+      { key: 'REASONING',               emoji: '🧠', theme: 'theme-blue',   cls: '' },
+      { key: 'KEY LEGAL POINTS',        emoji: '📌', theme: 'theme-purple', cls: 'key-points' },
+      { key: 'PAST CASES REFERENCED',   emoji: '🔍', theme: 'theme-blue',   cls: '' },
+      { key: 'CASE STRENGTH ANALYSIS',  emoji: '📊', theme: 'theme-navy',   cls: '', strength: true },
+    ];
+
+    // Split text by section dividers ━━━
+    const lines = text.split('\n');
+    const sections = [];
+    let cur = null;
+
+    for (const line of lines) {
+      if (line.includes('━━━') && line.trim().length > 3) continue; // divider line
+
+      const stripped = line.replace(/[📋⚖️📖🗣️📜🧠📌🔍📊]/u, '').trim();
+      const matchedDef = sectionDefs.find(d =>
+        stripped.toUpperCase().includes(d.key) && stripped.length < 60
+      );
+
+      if (matchedDef) {
+        if (cur) sections.push(cur);
+        cur = { def: matchedDef, lines: [] };
+      } else if (cur) {
+        cur.lines.push(line);
+      }
+    }
+    if (cur) sections.push(cur);
+
+    if (sections.length === 0) {
+      // Fallback: render raw text
+      return `<div class="section-card"><div class="section-header theme-navy"><span class="section-emoji">📋</span> Summary</div><div class="section-body">${formatBody(text)}</div></div>`;
+    }
+
+    return sections.map(sec => {
+      const { def, lines } = sec;
+      const bodyText = lines.join('\n').trim();
+
+      // Detect verdict badge
+      let verdictBadge = '';
+      if (def.verdict) {
+        const upper = bodyText.toUpperCase();
+        if (upper.includes('NOT GUILTY') || upper.includes('ACQUITTED'))
+          verdictBadge = '<span class="verdict-badge verdict-notguilty">NOT GUILTY</span>';
+        else if (upper.includes('GUILTY') || upper.includes('CONVICTED'))
+          verdictBadge = '<span class="verdict-badge verdict-guilty">GUILTY</span>';
+        else if (upper.includes('APPEAL ALLOWED'))
+          verdictBadge = '<span class="verdict-badge verdict-allowed">APPEAL ALLOWED</span>';
+        else if (upper.includes('APPEAL DISMISSED'))
+          verdictBadge = '<span class="verdict-badge verdict-dismissed">APPEAL DISMISSED</span>';
+        else if (upper.includes('REMANDED'))
+          verdictBadge = '<span class="verdict-badge verdict-remanded">REMANDED</span>';
+      }
+
+      // Detect strength badge
+      let strengthBadge = '';
+      if (def.strength) {
+        const upper = bodyText.toUpperCase();
+        if (upper.includes('STRONG'))
+          strengthBadge = '<span class="strength-badge strength-strong">⬛ STRONG</span>';
+        else if (upper.includes('MEDIUM'))
+          strengthBadge = '<span class="strength-badge strength-medium">⬛ MEDIUM</span>';
+        else if (upper.includes('WEAK'))
+          strengthBadge = '<span class="strength-badge strength-weak">⬛ WEAK</span>';
+      }
+
+      const badge = verdictBadge || strengthBadge;
+
+      return `
+        <div class="section-card ${def.cls}">
+          <div class="section-header ${def.theme}">
+            <span class="section-emoji">${def.emoji}</span>
+            ${def.key}
+            ${badge}
+          </div>
+          <div class="section-body">${formatBody(bodyText)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function formatBody(text) {
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) {
+        if (inList) { html += '</ul>'; inList = false; }
+        continue;
+      }
+
+      // Bold **text**
+      line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+      if (line.startsWith('- ') || line.startsWith('• ')) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${line.slice(2)}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        // Bold label lines like **VERDICT:**
+        if (line.startsWith('<strong>') && line.includes(':')) {
+          html += `<p>${line}</p>`;
+        } else {
+          html += `<p>${line}</p>`;
+        }
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  // ── COPY & DOWNLOAD ──
+  function copySummary() {
+    if (!currentData) return;
+    navigator.clipboard.writeText(currentData.summary).then(() => {
+      showToast('✅ Summary copied to clipboard!');
+    });
+  }
+
+  function downloadSummary() {
+    if (!currentData) return;
+    const header = `SNAPLAW CASE SUMMARY\nFile: ${currentData.filename}\nGenerated: ${new Date().toLocaleString()}\n${'═'.repeat(60)}\n\n`;
+    const content = header + currentData.summary;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = currentData.filename.replace(/\.[^.]+$/, '') + '_summary.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📥 Summary downloaded!');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>

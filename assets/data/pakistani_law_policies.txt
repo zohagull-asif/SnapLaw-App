@@ -1,0 +1,121 @@
+COMPANY LEGAL COMPLIANCE POLICIES - PAKISTAN
+Based on Pakistani Law and Regulatory Framework
+============================================================
+
+SECTION 1: CONTRACT LAW POLICIES (Contract Act 1872)
+
+1.1 All contracts must involve free consent of parties as defined under Section 14 of the Contract Act 1872. Any contract obtained through coercion, undue influence, fraud, misrepresentation, or mistake shall be voidable.
+
+1.2 Every contract must have lawful consideration and lawful object as per Sections 23-25 of the Contract Act 1872. Agreements without consideration are void unless made in writing and registered, or made on account of natural love and affection.
+
+1.3 Parties entering into a contract must be competent to contract under Section 11. Minors, persons of unsound mind, and persons disqualified by law cannot enter into valid contracts.
+
+1.4 All agreements in restraint of trade are void under Section 27 of the Contract Act 1872, unless they fall within recognized exceptions such as sale of goodwill.
+
+1.5 Penalty clauses must be reasonable. Under Section 74, when a contract is broken, the party suffering can claim reasonable compensation not exceeding the amount named in the contract as penalty.
+
+1.6 Limitation period for contract disputes is three years from the date of breach under the Limitation Act 1908.
+
+1.7 Force majeure clauses must be clearly defined. Under Pakistani law, the doctrine of frustration under Section 56 applies when performance becomes impossible due to events beyond the control of parties.
+
+SECTION 2: EMPLOYMENT LAW POLICIES
+
+2.1 Minimum wage must comply with the Minimum Wages Ordinance 1961 and provincial minimum wage notifications. Current minimum wage in Pakistan must be adhered to for all employment contracts.
+
+2.2 Working hours must not exceed 48 hours per week and 9 hours per day as per the Factories Act 1934 and Shops and Establishments Ordinance 1969. Overtime must be compensated at double the normal rate.
+
+2.3 All employees are entitled to annual leave of 14 days, casual leave of 10 days, and sick leave of 8 days per year under applicable labor laws.
+
+2.4 Termination of employment requires one month's notice or payment in lieu of notice under the Industrial and Commercial Employment (Standing Orders) Ordinance 1968. Termination without cause may attract penalties.
+
+2.5 Gratuity must be paid to employees who have completed at least one year of continuous service, at the rate of 30 days wages for each completed year of service.
+
+2.6 Employers must register employees with EOBI (Employees Old-Age Benefits Institution) and contribute to social security under the Provincial Employees Social Security Ordinance 1965.
+
+2.7 Non-compete clauses in employment contracts must be reasonable in scope, duration, and geographical area. Unreasonable restrictions are void under Section 27 of the Contract Act.
+
+2.8 Sexual harassment policies must comply with the Protection Against Harassment of Women at the Workplace Act 2010.
+
+SECTION 3: PAYMENT AND FINANCIAL POLICIES
+
+3.1 All payments must comply with the Foreign Exchange Regulation Act 1947 and State Bank of Pakistan regulations. International payments require SBP approval where applicable.
+
+3.2 Interest rates in contracts must not exceed the limits prescribed by the State Bank of Pakistan. Usurious rates are prohibited under Pakistani law and Islamic principles.
+
+3.3 Payment terms should not exceed 90 days from invoice date. Late payment penalties must be clearly specified and reasonable.
+
+3.4 All financial transactions must comply with the Anti-Money Laundering Act 2010 and FATF requirements. Suspicious transactions must be reported.
+
+3.5 Tax deductions at source must be made as per the Income Tax Ordinance 2001. Withholding tax certificates must be provided to vendors.
+
+3.6 Stamp duty must be paid on all agreements as per the Stamp Act 1899. Unstamped agreements may not be admissible as evidence.
+
+SECTION 4: INTELLECTUAL PROPERTY POLICIES
+
+4.1 All intellectual property rights must be clearly defined in contracts. IP created during employment belongs to the employer unless otherwise agreed, as per the Copyright Ordinance 1962.
+
+4.2 Trademark usage must comply with the Trade Marks Ordinance 2001. Unauthorized use of trademarks is prohibited.
+
+4.3 Patent rights are governed by the Patents Ordinance 2000. Contracts involving patented technology must include proper licensing terms.
+
+4.4 Confidentiality and trade secret provisions must be reasonable and clearly defined. NDAs should specify the duration, scope, and type of confidential information.
+
+SECTION 5: DISPUTE RESOLUTION POLICIES
+
+5.1 All contracts should include an arbitration clause referencing the Arbitration Act 1940. Arbitration is the preferred method of dispute resolution.
+
+5.2 The governing law for domestic contracts shall be the laws of Pakistan. Jurisdiction should be specified as the courts of a particular city in Pakistan.
+
+5.3 Mediation should be attempted before resorting to litigation or arbitration. Alternative dispute resolution is encouraged.
+
+5.4 International contracts must specify whether Pakistani law or foreign law applies, and should include provisions for enforcement of foreign arbitral awards under the Recognition and Enforcement (Arbitration Agreements and Foreign Arbitral Awards) Act 2011.
+
+SECTION 6: LIABILITY AND INDEMNITY POLICIES
+
+6.1 Limitation of liability clauses must be clearly stated and reasonable. Complete exclusion of liability for negligence causing death or personal injury is not enforceable.
+
+6.2 Indemnity clauses must be mutual and balanced. One-sided indemnity clauses are discouraged and may be challenged as unconscionable.
+
+6.3 Insurance requirements must be specified where applicable. Professional indemnity insurance should be maintained for service contracts.
+
+6.4 Consequential damages limitations must be explicitly stated. Without clear limitation, parties may be liable for all foreseeable losses.
+
+SECTION 7: DATA PROTECTION AND PRIVACY POLICIES
+
+7.1 Personal data must be collected and processed in accordance with applicable privacy principles. Although Pakistan does not have a comprehensive data protection law yet, best practices should be followed.
+
+7.2 Customer and employee data must be stored securely and not shared with third parties without consent.
+
+7.3 Cross-border data transfer must comply with any applicable regulations and contractual safeguards must be in place.
+
+7.4 Data breach notification procedures must be established in all contracts involving personal data processing.
+
+SECTION 8: CORPORATE GOVERNANCE POLICIES
+
+8.1 All corporate contracts must comply with the Companies Act 2017. Board resolutions may be required for significant contracts.
+
+8.2 Related party transactions must be disclosed and approved as per SECP (Securities and Exchange Commission of Pakistan) regulations.
+
+8.3 Compliance with the Competition Act 2010 is mandatory. Anti-competitive agreements and abuse of dominant position are prohibited.
+
+8.4 Consumer protection obligations under the Consumer Protection Acts of respective provinces must be observed in all consumer-facing contracts.
+
+SECTION 9: REAL ESTATE AND PROPERTY POLICIES
+
+9.1 All property transactions must comply with the Transfer of Property Act 1882 and the Registration Act 1908.
+
+9.2 Property contracts must be registered with the relevant sub-registrar's office. Unregistered documents affecting immovable property of value exceeding Rs. 100 are not admissible as evidence.
+
+9.3 Stamp duty and capital value tax must be paid on property transactions as per provincial requirements.
+
+9.4 Tenancy agreements must comply with the relevant provincial Rent Restriction laws.
+
+SECTION 10: TERMINATION AND EXIT POLICIES
+
+10.1 Termination clauses must specify grounds for termination, notice period (minimum 30 days), and consequences of termination.
+
+10.2 Termination for convenience must include reasonable compensation to the non-terminating party.
+
+10.3 Post-termination obligations including return of property, confidentiality survival, and handover procedures must be clearly defined.
+
+10.4 Survival clauses must specify which provisions continue after termination, including indemnity, confidentiality, and dispute resolution.
