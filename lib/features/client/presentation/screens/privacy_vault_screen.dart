@@ -1,14 +1,15 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:typed_data';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/web_download.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:printing/printing.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/supabase_service.dart';
 
 class PrivacyVaultScreen extends StatefulWidget {
@@ -85,7 +86,10 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
     if (result == null || result.files.isEmpty) return;
 
     final file = result.files.first;
-    if (file.bytes == null) return;
+    if (file.bytes == null || file.bytes!.isEmpty) {
+      _showError('Could not read file data. Please try selecting the file again.');
+      return;
+    }
 
     if (file.size > 20 * 1024 * 1024) {
       _showError('File too large. Maximum size is 20MB.');
@@ -129,7 +133,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: const Color(0xFF0F1535),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -141,7 +145,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(file.name, style: const TextStyle(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
-                                Text('${(file.size / 1024).toStringAsFixed(1)} KB', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                                Text('${(file.size / 1024).toStringAsFixed(1)} KB', style: TextStyle(color: const Color(0xFF8892B0), fontSize: 12)),
                               ],
                             ),
                           ),
@@ -289,7 +293,12 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                           _showError(err['detail'] ?? 'Upload failed');
                         }
                       } catch (e) {
-                        _showError('Upload failed: $e');
+                        final msg = e.toString();
+                        if (msg.contains('Connection refused') || msg.contains('SocketException')) {
+                          _showError('Backend server is not running.\n\nStart it with:\n  cd backend\n  .\\venv\\Scripts\\activate\n  uvicorn main:app --reload --port 8000');
+                        } else {
+                          _showError('Upload failed: $msg');
+                        }
                       } finally {
                         setState(() => _isUploading = false);
                       }
@@ -324,7 +333,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: const Color(0xFF0F1535),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -395,10 +404,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
     // PDFs: open in new browser tab using blob URL (native browser PDF viewer)
     if (fileType == 'application/pdf') {
       if (kIsWeb) {
-        final blob = html.Blob([bytes], 'application/pdf');
-        final url = html.Url.createObjectUrlFromBlob(blob);
-        html.window.open(url, '_blank');
-        Future.delayed(const Duration(seconds: 2), () => html.Url.revokeObjectUrl(url));
+        openPdfOnWeb(bytes);
         _showSuccess('PDF opened in new tab!');
       } else {
         _showPdfDialog(filename, bytes);
@@ -446,9 +452,9 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: const Color(0xFF0F1535),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[300]!),
+                    border: Border.all(color: const Color(0x33F4A324)),
                   ),
                   child: fileType.startsWith('image/')
                       ? InteractiveViewer(
@@ -468,10 +474,10 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.insert_drive_file, size: 64, color: Colors.grey[400]),
+                                  Icon(Icons.insert_drive_file, size: 64, color: const Color(0xFF8892B0)),
                                   const SizedBox(height: 12),
-                                  Text('File decrypted successfully', style: TextStyle(color: Colors.grey[600])),
-                                  Text('${(bytes.length / 1024).toStringAsFixed(1)} KB', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                                  Text('File decrypted successfully', style: TextStyle(color: const Color(0xFF8892B0))),
+                                  Text('${(bytes.length / 1024).toStringAsFixed(1)} KB', style: TextStyle(fontSize: 12, color: const Color(0xFF8892B0))),
                                   const SizedBox(height: 16),
                                   ElevatedButton.icon(
                                     icon: const Icon(Icons.download),
@@ -534,13 +540,10 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
 
   void _saveFileToDevice(String filename, Uint8List bytes, String fileType) {
     if (kIsWeb) {
-      final blob = html.Blob([bytes], fileType);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..setAttribute('download', filename)
-        ..click();
-      html.Url.revokeObjectUrl(url);
+      downloadFileOnWeb(filename, bytes, fileType);
       _showSuccess('Download started!');
+    } else {
+      _showSuccess('File decrypted successfully.');
     }
   }
 
@@ -746,29 +749,31 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Privacy Vault', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF1E3A5F),
+        title: const Text('Privacy Vault', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: const Color(0xFF0D1130),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: _loadFiles,
             tooltip: 'Refresh',
           ),
         ],
       ),
-      body: Column(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: Column(
         children: [
           // Header section
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: Color(0xFF1E3A5F),
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D1130).withOpacity(0.9),
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(24),
                 bottomRight: Radius.circular(24),
               ),
@@ -806,8 +811,8 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                       icon: const Icon(Icons.upload_file),
                       label: const Text('Upload File'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF1E3A5F),
+                        backgroundColor: const Color(0xFFF4A324),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
                       onPressed: _uploadFile,
@@ -835,7 +840,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                         selectedColor: Colors.white,
                         backgroundColor: Colors.white.withOpacity(0.15),
                         labelStyle: TextStyle(
-                          color: isSelected ? const Color(0xFF1E3A5F) : Colors.white,
+                          color: isSelected ? const Color(0xFF0F1535) : Colors.white,
                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                           fontSize: 12,
                         ),
@@ -856,7 +861,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
               children: [
                 Text(
                   '${_files.length} file${_files.length == 1 ? '' : 's'} in vault',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.6), fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -876,9 +881,10 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
           ),
         ],
       ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _uploadFile,
-        backgroundColor: const Color(0xFF1E3A5F),
+        backgroundColor: SnapLawColors.clientBlue,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('Upload'),
@@ -891,17 +897,17 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.lock_outline, size: 80, color: Colors.grey[300]),
+          Icon(Icons.lock_outline, size: 80, color: const Color(0xFF4A5580)),
           const SizedBox(height: 16),
-          Text('No files in your vault', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.grey[600])),
+          Text('No files in your vault', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white.withOpacity(0.7))),
           const SizedBox(height: 8),
-          Text('Upload your first encrypted document', style: TextStyle(color: Colors.grey[500])),
+          Text('Upload your first encrypted document', style: TextStyle(color: Colors.white.withOpacity(0.5))),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             icon: const Icon(Icons.upload_file),
             label: const Text('Upload File'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1E3A5F),
+              backgroundColor: const Color(0xFF0F1535),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
@@ -960,11 +966,11 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Icon(Icons.lock, size: 12, color: Colors.grey[500]),
+                      Icon(Icons.lock, size: 12, color: const Color(0xFF8892B0)),
                       const SizedBox(width: 4),
-                      Text('Encrypted', style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+                      Text('Encrypted', style: TextStyle(fontSize: 11, color: const Color(0xFF8892B0))),
                       const SizedBox(width: 8),
-                      Text(_formatFileSize(file['size'] ?? 0), style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+                      Text(_formatFileSize(file['size'] ?? 0), style: TextStyle(fontSize: 11, color: const Color(0xFF8892B0))),
                       if (file['has_share_link'] == true) ...[
                         const SizedBox(width: 8),
                         Icon(Icons.link, size: 12, color: Colors.blue[400]),
@@ -977,7 +983,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
                     const SizedBox(height: 4),
                     Text(
                       file['description'],
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 12, color: const Color(0xFF8892B0)),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -992,7 +998,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
               children: [
                 Text(
                   _formatDate(file['uploaded_at'] ?? DateTime.now().toIso8601String()),
-                  style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                  style: TextStyle(fontSize: 11, color: const Color(0xFF8892B0)),
                 ),
               ],
             ),
@@ -1000,7 +1006,7 @@ class _PrivacyVaultScreenState extends State<PrivacyVaultScreen> {
 
             // Action buttons
             PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+              icon: Icon(Icons.more_vert, color: const Color(0xFF8892B0)),
               onSelected: (action) {
                 switch (action) {
                   case 'download':

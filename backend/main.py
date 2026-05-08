@@ -106,6 +106,7 @@ from routers.precedent_router import router as precedent_router
 from routers.lawbot_router import router as lawbot_router
 from routers.scanner_router import router as scanner_router
 from routers.vault_router import router as vault_router
+from routers.summarizer_router import router as summarizer_router
 
 app.include_router(policy_router)
 app.include_router(contract_router)
@@ -113,6 +114,7 @@ app.include_router(precedent_router)
 app.include_router(lawbot_router)
 app.include_router(scanner_router)
 app.include_router(vault_router)
+app.include_router(summarizer_router)
 
 
 @app.get("/")

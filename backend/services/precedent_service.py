@@ -148,9 +148,28 @@ class PrecedentService:
             )
             search_texts.append(case_text)
 
-        # Embed all cases using LegalBERT
+        # Embed all cases (with disk cache)
         logger.info("Embedding legal cases with LegalBERT...")
-        embeddings = legal_bert.embed_texts(search_texts)
+        cache_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "data", "precedent_embeddings_cache.npy"
+        )
+        if os.path.exists(cache_path):
+            try:
+                cached = np.load(cache_path)
+                if cached.shape[0] == len(search_texts):
+                    embeddings = cached
+                    logger.info(f"Loaded precedent embeddings from cache: shape {embeddings.shape}")
+                else:
+                    logger.info("Cache size mismatch — re-embedding precedents")
+                    embeddings = legal_bert.embed_texts(search_texts)
+                    np.save(cache_path, embeddings)
+            except Exception:
+                embeddings = legal_bert.embed_texts(search_texts)
+                np.save(cache_path, embeddings)
+        else:
+            embeddings = legal_bert.embed_texts(search_texts)
+            np.save(cache_path, embeddings)
+            logger.info(f"Cached precedent embeddings: shape {embeddings.shape}")
 
         # Build FAISS index
         faiss_service.build_precedent_index(self.cases, embeddings)

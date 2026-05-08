@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/lawbot_api_service.dart';
 
 class SimplifierScreen extends StatefulWidget {
@@ -55,15 +57,20 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Contract Simplifier'),
+        backgroundColor: SnapLawColors.bgDark,
+        elevation: 0,
+        title: const Text('Contract Simplifier',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +89,7 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                   const Expanded(
                     child: Text(
                       'Paste contract text below and we\'ll convert complex legal jargon into simple, easy-to-understand language. You can also translate it to Urdu.',
-                      style: TextStyle(fontSize: 13, height: 1.4),
+                      style: TextStyle(fontSize: 13, height: 1.4, color: Colors.white70),
                     ),
                   ),
                 ],
@@ -96,17 +103,18 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
             TextField(
               controller: _controller,
               maxLines: 8,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Paste your contract clause or legal text here...\n\ne.g., "The party hereinafter referred to as the Lessee shall notwithstanding any provisions..."',
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: const Color(0xFF0F1535),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: const Color(0x33F4A324)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: const Color(0x33F4A324)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -181,7 +189,7 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[200]!),
+                  border: Border.all(color: const Color(0x33F4A324)),
                 ),
                 child: Row(
                   children: [
@@ -197,14 +205,14 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.language, size: 18, color: !_showUrdu ? Colors.white : Colors.grey[600]),
+                              Icon(Icons.language, size: 18, color: !_showUrdu ? Colors.white : const Color(0xFF8892B0)),
                               const SizedBox(width: 6),
                               Text(
                                 'English',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
-                                  color: !_showUrdu ? Colors.white : Colors.grey[600],
+                                  color: !_showUrdu ? Colors.white : const Color(0xFF8892B0),
                                 ),
                               ),
                             ],
@@ -222,20 +230,20 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
-                            color: _showUrdu ? const Color(0xFF1565C0) : Colors.transparent,
+                            color: _showUrdu ? const Color(0xFF3B82F6) : Colors.transparent,
                             borderRadius: BorderRadius.circular(11),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.translate, size: 18, color: _showUrdu ? Colors.white : Colors.grey[600]),
+                              Icon(Icons.translate, size: 18, color: _showUrdu ? Colors.white : const Color(0xFF8892B0)),
                               const SizedBox(width: 6),
                               Text(
                                 'اردو',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
-                                  color: _showUrdu ? Colors.white : Colors.grey[600],
+                                  color: _showUrdu ? Colors.white : const Color(0xFF8892B0),
                                 ),
                               ),
                             ],
@@ -262,7 +270,7 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: _showUrdu
-                        ? const Color(0xFF1565C0).withOpacity(0.3)
+                        ? const Color(0xFF3B82F6).withOpacity(0.3)
                         : const Color(0xFF4CAF50).withOpacity(0.3),
                   ),
                 ),
@@ -272,6 +280,7 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                   style: TextStyle(
                     fontSize: _showUrdu ? 16 : 14,
                     height: 1.8,
+                    color: const Color(0xFF1A1A2E),
                     fontFamily: _showUrdu ? 'Noto Naskh Arabic' : null,
                   ),
                 ),
@@ -286,7 +295,7 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(color: const Color(0x33F4A324)),
                   ),
                   child: Column(
                     children: _result!.changesMade.asMap().entries.map((entry) {
@@ -295,7 +304,7 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
-                          border: isLast ? null : Border(bottom: BorderSide(color: Colors.grey[100]!)),
+                          border: isLast ? null : Border(bottom: BorderSide(color: const Color(0xFF0F1535)!)),
                         ),
                         child: Row(
                           children: [
@@ -316,7 +325,7 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
                             ),
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8),
-                              child: Icon(Icons.arrow_forward, size: 16, color: Colors.grey),
+                              child: Icon(Icons.arrow_forward, size: 16, color: const Color(0xFF8892B0)),
                             ),
                             Flexible(
                               child: Container(
@@ -345,6 +354,7 @@ class _SimplifierScreenState extends State<SimplifierScreen> {
             ],
           ],
         ),
+      ),
       ),
     );
   }

@@ -1,9 +1,12 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../auth/data/models/user_model.dart';
 
 class UserManagementScreen extends ConsumerStatefulWidget {
@@ -18,12 +21,14 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _searchController = TextEditingController();
-  final List<UserModel> _users = [];
+  List<UserModel> _users = [];
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadUsers();
   }
 
   @override
@@ -33,20 +38,47 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen>
     super.dispose();
   }
 
+  Future<void> _loadUsers() async {
+    setState(() => _loading = true);
+    try {
+      final rows = await Supabase.instance.client
+          .from('profiles')
+          .select()
+          .neq('role', 'admin')
+          .order('created_at', ascending: false);
+      setState(() {
+        _users = (rows as List)
+            .map((r) => UserModel.fromJson(r as Map<String, dynamic>))
+            .toList();
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() => _loading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text(AppStrings.userManagement),
+        backgroundColor: SnapLawColors.bgDark,
+        title: const Text(AppStrings.userManagement, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white70),
+            onPressed: _loadUsers,
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppColors.textLight,
-          unselectedLabelColor: AppColors.textLight.withOpacity(0.6),
-          indicatorColor: AppColors.secondary,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white38,
+          indicatorColor: SnapLawColors.accent,
           tabs: const [
             Tab(text: 'All Users'),
             Tab(text: 'Clients'),
@@ -54,29 +86,45 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen>
           ],
         ),
       ),
-      body: Column(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            : Column(
         children: [
           // Search Bar
           Container(
             padding: const EdgeInsets.all(16),
-            color: AppColors.surface,
+            color: SnapLawColors.bgDark.withOpacity(0.8),
             child: TextField(
               controller: _searchController,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Search users...',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+                prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.5)),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.5)),
                         onPressed: () {
                           _searchController.clear();
                           setState(() {});
                         },
                       )
                     : null,
+                filled: true,
+                fillColor: const Color(0xFF0F1535).withOpacity(0.08),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: SnapLawColors.accent, width: 1.5),
                 ),
               ),
               onChanged: (value) {
@@ -98,13 +146,20 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen>
           ),
         ],
       ),
+      ),
     );
   }
 
   Widget _buildUserList(UserRole? role) {
-    final filteredUsers = role == null
-        ? _users
-        : _users.where((u) => u.role == role).toList();
+    final query = _searchController.text.toLowerCase();
+    final filtered = _users.where((u) {
+      final matchRole = role == null || u.role == role;
+      final matchSearch = query.isEmpty ||
+          u.fullName.toLowerCase().contains(query) ||
+          u.email.toLowerCase().contains(query);
+      return matchRole && matchSearch;
+    }).toList();
+    final filteredUsers = filtered;
 
     if (filteredUsers.isEmpty) {
       return _buildEmptyState(role);

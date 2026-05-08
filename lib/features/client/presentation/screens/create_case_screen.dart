@@ -1,10 +1,12 @@
-import 'package:file_picker/file_picker.dart';
+﻿import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/supabase_service.dart';
 import '../../../../services/local_contract_analyzer.dart';
 import '../../../../services/document_text_extractor.dart';
@@ -114,7 +116,7 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
                   SizedBox(height: 8),
                   Text(
                     'Using local Pakistani law patterns',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: const Color(0xFF8892B0)),
                   ),
                 ],
               ),
@@ -257,9 +259,13 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
         print('   Extension: ${file.extension}');
         print('   Has bytes: ${file.bytes != null}');
 
-        if (file.bytes == null) {
-          print('⚠️ File ${file.name} has no bytes, skipping');
-          print('⚠️ HINT: Make sure withData: true is set in FilePicker.pickFiles()');
+        if (file.bytes == null || file.bytes!.isEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Could not read ${file.name}. Please try selecting it again.'),
+              backgroundColor: AppColors.error,
+            ));
+          }
           continue;
         }
 
@@ -291,19 +297,22 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
         uploadedUrls.add(url);
         print('✅ Successfully uploaded ${file.name}');
         print('   Public URL: $url');
-      } catch (e, stackTrace) {
-        print('❌ Error uploading ${file.name}: $e');
-        print('📚 Stack trace: $stackTrace');
-
-        // Show error to user
+      } catch (e) {
+        final msg = e.toString();
+        String userMessage;
+        if (msg.toLowerCase().contains('bucket') || msg.toLowerCase().contains('not found')) {
+          userMessage = 'Storage not set up. Run complete_supabase_setup.sql in your Supabase dashboard first.';
+        } else if (msg.toLowerCase().contains('row-level') || msg.toLowerCase().contains('policy')) {
+          userMessage = 'Permission denied uploading ${file.name}. Make sure you are logged in.';
+        } else {
+          userMessage = 'Failed to upload ${file.name}: $msg';
+        }
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to upload ${file.name}: ${e.toString()}'),
-              backgroundColor: AppColors.error,
-              duration: const Duration(seconds: 3),
-            ),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(userMessage),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 5),
+          ));
         }
       }
     }
@@ -379,14 +388,20 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text(AppStrings.createCase),
+        backgroundColor: const Color(0xFF0D1130),
+        elevation: 0,
+        title: const Text(AppStrings.createCase,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
@@ -661,6 +676,7 @@ class _CreateCaseScreenState extends ConsumerState<CreateCaseScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

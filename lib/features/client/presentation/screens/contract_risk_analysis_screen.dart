@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/contract_risk_analyzer_service.dart';
 
 class ContractRiskAnalysisScreen extends StatelessWidget {
@@ -16,11 +18,15 @@ class ContractRiskAnalysisScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Contract Risk Analysis'),
-        backgroundColor: AppColors.primary,
+        title: const Text('Contract Risk Analysis', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF0D1130),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,6 +65,7 @@ class ContractRiskAnalysisScreen extends StatelessWidget {
             _buildDisclaimer(),
           ],
         ),
+      ),
       ),
     );
   }

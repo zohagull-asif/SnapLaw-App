@@ -99,11 +99,30 @@ class PakistaniLawLoader:
         cat_summary = {cat: len(idxs) for cat, idxs in self._category_indices.items()}
         logger.info(f"Category distribution: {cat_summary}")
 
-        # Step 3: Embed all chunks
+        # Step 3: Embed all chunks (with disk cache to avoid re-embedding on restart)
         from models.embeddings import legal_bert
+        cache_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "law_embeddings_cache.npy")
         chunk_texts = [c.text for c in self._chunks]
-        self._embeddings = legal_bert.embed_texts(chunk_texts)
-        logger.info(f"Generated embeddings: shape {self._embeddings.shape}")
+
+        if os.path.exists(cache_path):
+            try:
+                cached = np.load(cache_path)
+                if cached.shape[0] == len(chunk_texts):
+                    self._embeddings = cached
+                    logger.info(f"Loaded embeddings from cache: shape {self._embeddings.shape}")
+                else:
+                    logger.info("Cache size mismatch — re-embedding")
+                    self._embeddings = legal_bert.embed_texts(chunk_texts)
+                    np.save(cache_path, self._embeddings)
+                    logger.info(f"Generated & cached embeddings: shape {self._embeddings.shape}")
+            except Exception as e:
+                logger.warning(f"Cache load failed ({e}), re-embedding")
+                self._embeddings = legal_bert.embed_texts(chunk_texts)
+                np.save(cache_path, self._embeddings)
+        else:
+            self._embeddings = legal_bert.embed_texts(chunk_texts)
+            np.save(cache_path, self._embeddings)
+            logger.info(f"Generated & cached embeddings: shape {self._embeddings.shape}")
 
         # Step 4: Build FAISS index
         import faiss

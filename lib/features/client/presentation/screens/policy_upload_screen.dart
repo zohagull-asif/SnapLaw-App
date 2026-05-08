@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/rag_api_service.dart';
 import '../../../../services/supabase_service.dart';
 
@@ -156,10 +158,12 @@ class _PolicyUploadScreenState extends ConsumerState<PolicyUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Company Policies'),
+        backgroundColor: const Color(0xFF0D1130),
+        title: const Text('Company Policies', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
@@ -176,10 +180,13 @@ class _PolicyUploadScreenState extends ConsumerState<PolicyUploadScreen> {
               )
             : const Icon(Icons.upload_file),
         label: Text(_isUploading ? 'Processing...' : 'Upload Policy'),
-        backgroundColor: AppColors.primary,
+        backgroundColor: SnapLawColors.clientBlue,
         foregroundColor: Colors.white,
       ),
-      body: _buildBody(),
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: _buildBody(),
+      ),
     );
   }
 
@@ -195,7 +202,7 @@ class _PolicyUploadScreenState extends ConsumerState<PolicyUploadScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.cloud_off, size: 48, color: Colors.grey[400]),
+              Icon(Icons.cloud_off, size: 48, color: const Color(0xFF8892B0)),
               const SizedBox(height: 16),
               Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary)),
               const SizedBox(height: 16),
@@ -269,7 +276,7 @@ class _PolicyUploadScreenState extends ConsumerState<PolicyUploadScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.policy_outlined, size: 64, color: Colors.grey[300]),
+          Icon(Icons.policy_outlined, size: 64, color: const Color(0xFF4A5580)),
           const SizedBox(height: 16),
           const Text(
             'No Policies Uploaded',

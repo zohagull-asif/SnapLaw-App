@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/supabase_service.dart';
 import '../../../shared/data/models/appointment_model.dart';
 import '../../../shared/presentation/providers/appointments_provider.dart';
@@ -20,43 +22,50 @@ class ClientAppointmentsScreen extends ConsumerWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: const Color(0xFF020818),
         appBar: AppBar(
-          title: const Text('My Appointments'),
+          backgroundColor: const Color(0xFF0D1130),
+          elevation: 0,
+          title: const Text('My Appointments',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.pop(),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh, color: Colors.white70),
               onPressed: () => ref.read(appointmentsProvider.notifier).refresh(),
             ),
           ],
-          bottom: const TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            indicatorColor: Colors.white,
-            tabs: [
+          bottom: TabBar(
+            labelColor: SnapLawColors.clientBlue,
+            unselectedLabelColor: Colors.white54,
+            indicatorColor: SnapLawColors.clientBlue,
+            tabs: const [
               Tab(text: 'Upcoming'),
               Tab(text: 'Past'),
             ],
           ),
         ),
-        body: state.isLoading && state.appointments.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-            : state.errorMessage != null && state.appointments.isEmpty
-                ? _buildErrorView(context, ref, state.errorMessage!)
-                : TabBarView(
-                    children: [
-                      _buildAppointmentsList(context, ref, state.upcoming, false),
-                      _buildAppointmentsList(context, ref, state.past, true),
-                    ],
-                  ),
+        body: AppBackground(
+        overlayOpacity: 0.55,
+        child: state.isLoading && state.appointments.isEmpty
+              ? const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)))
+              : state.errorMessage != null && state.appointments.isEmpty
+                  ? _buildErrorView(context, ref, state.errorMessage!)
+                  : TabBarView(
+                      children: [
+                        _buildAppointmentsList(context, ref, state.upcoming, false),
+                        _buildAppointmentsList(context, ref, state.past, true),
+                      ],
+                    ),
+        ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => _showRequestDialog(context, ref),
-          icon: const Icon(Icons.add),
-          label: const Text('Request Appointment'),
-          backgroundColor: AppColors.primary,
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: const Text('Request Appointment', style: TextStyle(color: Colors.white)),
+          backgroundColor: SnapLawColors.clientBlue,
           foregroundColor: Colors.white,
         ),
       ),
@@ -137,7 +146,7 @@ class ClientAppointmentsScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
+                    border: Border.all(color: const Color(0x33F4A324)),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: DropdownButtonHideUnderline(
@@ -159,7 +168,7 @@ class ClientAppointmentsScreen extends ConsumerWidget {
                               Text(c.typeDisplayName,
                                   style: TextStyle(
                                       fontSize: 11,
-                                      color: Colors.grey[500])),
+                                      color: const Color(0xFF8892B0))),
                             ],
                           ),
                         );
@@ -205,7 +214,7 @@ class ClientAppointmentsScreen extends ConsumerWidget {
                     hintText:
                         'e.g. Preferred time, what to discuss...',
                     hintStyle: TextStyle(
-                        color: Colors.grey[400], fontSize: 12),
+                        color: const Color(0xFF8892B0), fontSize: 12),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     contentPadding: const EdgeInsets.all(12),
@@ -288,11 +297,11 @@ class ClientAppointmentsScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+            Icon(Icons.error_outline, size: 64, color: const Color(0xFF8892B0)),
             const SizedBox(height: 16),
             Text(error,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600])),
+                style: TextStyle(color: const Color(0xFF8892B0))),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () =>
@@ -422,7 +431,7 @@ class _AppointmentCard extends StatelessWidget {
       case 'completed':
         return Colors.blue;
       default:
-        return Colors.grey;
+        return const Color(0xFF8892B0);
     }
   }
 
@@ -624,14 +633,14 @@ class _AppointmentCard extends StatelessWidget {
                                 ? Icons.link
                                 : Icons.location_on,
                             size: 16,
-                            color: Colors.grey[600],
+                            color: const Color(0xFF8892B0),
                           ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(appointment.location!,
                                 style: TextStyle(
                                     fontSize: 13,
-                                    color: Colors.grey[700])),
+                                    color: const Color(0xFF8892B0))),
                           ),
                         ],
                       ),
@@ -696,7 +705,7 @@ class _AppointmentCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text('How was your experience?',
                       style:
-                          TextStyle(fontSize: 12, color: Colors.grey[600])),
+                          TextStyle(fontSize: 12, color: const Color(0xFF8892B0))),
                   const Spacer(),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.star_rounded, size: 16),

@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../data/models/case_model.dart';
 import '../providers/lawyers_provider.dart';
 import '../../../shared/presentation/providers/reviews_provider.dart';
@@ -41,36 +43,44 @@ class _FindLawyersScreenState extends ConsumerState<FindLawyersScreen> {
     final lawyers = lawyersState.lawyers;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text(AppStrings.findLawyers),
+        backgroundColor: const Color(0xFF0D1130),
+        elevation: 0,
+        title: const Text(AppStrings.findLawyers,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list, color: Colors.white70),
             onPressed: _showFilterBottomSheet,
           ),
         ],
       ),
-      body: Column(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: Column(
         children: [
           // Search Bar
           Container(
-            padding: const EdgeInsets.all(16),
-            color: AppColors.primary,
+            padding: const EdgeInsets.all(14),
+            color: const Color(0xFF0D1130),
             child: TextField(
               controller: _searchController,
+              style: const TextStyle(color: Colors.white),
               onChanged: (value) {
                 ref.read(lawyersProvider.notifier).searchLawyers(value);
               },
               decoration: InputDecoration(
                 hintText: 'Search by name or specialization...',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.40), fontSize: 13),
+                prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.55)),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.55)),
                         onPressed: () {
                           _searchController.clear();
                           ref.read(lawyersProvider.notifier).loadLawyers();
@@ -78,10 +88,18 @@ class _FindLawyersScreenState extends ConsumerState<FindLawyersScreen> {
                       )
                     : null,
                 filled: true,
-                fillColor: AppColors.surface,
+                fillColor: const Color(0xFF0F1535).withOpacity(0.08),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: SnapLawColors.clientBlue.withOpacity(0.70)),
                 ),
               ),
             ),
@@ -133,7 +151,7 @@ class _FindLawyersScreenState extends ConsumerState<FindLawyersScreen> {
           // Lawyers List
           Expanded(
             child: lawyersState.isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)))
                 : lawyers.isEmpty
                     ? _buildEmptyState()
                     : ListView.builder(
@@ -146,6 +164,7 @@ class _FindLawyersScreenState extends ConsumerState<FindLawyersScreen> {
                       ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -352,7 +371,7 @@ class _LawyerCard extends ConsumerWidget {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: Colors.white.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: lawyer.avatarUrl != null
@@ -366,7 +385,7 @@ class _LawyerCard extends ConsumerWidget {
                     : const Icon(
                         Icons.person,
                         size: 32,
-                        color: AppColors.primary,
+                        color: Colors.white60,
                       ),
               ),
               const SizedBox(width: 12),
@@ -438,7 +457,7 @@ class _LawyerCard extends ConsumerWidget {
                         const SizedBox(width: 2),
                         Text(
                           '($reviewCount)',
-                          style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                          style: TextStyle(fontSize: 11, color: const Color(0xFF8892B0)),
                         ),
                         const SizedBox(width: 10),
 

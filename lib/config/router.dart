@@ -5,6 +5,7 @@ import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/auth/presentation/screens/role_selection_screen.dart';
 import '../features/auth/presentation/screens/otp_verification_screen.dart';
+import '../features/auth/presentation/screens/reset_password_screen.dart';
 import '../features/client/presentation/screens/client_dashboard_screen.dart';
 import '../features/client/presentation/screens/client_cases_screen.dart';
 import '../features/client/presentation/screens/find_lawyers_screen.dart';
@@ -29,9 +30,15 @@ import '../features/lawyer/presentation/screens/lawyer_appointments_screen.dart'
 import '../features/lawyer/presentation/screens/legal_precedent_finder_screen.dart';
 import '../features/lawyer/presentation/screens/case_detail_screen.dart';
 import '../features/lawyer/presentation/screens/message_client_screen.dart';
+import '../features/lawyer/presentation/screens/lawyer_messages_screen.dart';
+import '../features/lawyer/presentation/screens/case_summarizer_screen.dart';
+import '../features/lawyer/presentation/screens/lawyer_documents_screen.dart';
+import '../features/lawyer/presentation/screens/lawyer_tasks_screen.dart';
+import '../features/lawyer/presentation/screens/lawyer_pending_screen.dart';
 import '../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../features/admin/presentation/screens/user_management_screen.dart';
 import '../features/admin/presentation/screens/lawyer_verification_screen.dart';
+import '../features/admin/presentation/screens/system_reports_screen.dart';
 import '../features/lawbot/presentation/screens/lawbot_hub_screen.dart';
 import '../features/lawbot/presentation/screens/legal_qa_screen.dart';
 import '../features/lawbot/presentation/screens/simplifier_screen.dart';
@@ -52,10 +59,18 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) {
+      // Supabase redirects to /?error=... when a link is invalid/expired.
+      // Forward these to /reset-password so the screen can show a clear message.
+      if (state.matchedLocation == '/' &&
+          state.uri.queryParameters.containsKey('error')) {
+        return '/reset-password?${state.uri.query}';
+      }
+
       final isAuthenticated = SupabaseService.isAuthenticated;
       final isAuthRoute = state.matchedLocation == '/login' ||
           state.matchedLocation == '/register' ||
           state.matchedLocation == '/forgot-password' ||
+          state.matchedLocation == '/reset-password' ||
           state.matchedLocation == '/verify-otp' ||
           state.matchedLocation == '/portal-select' ||
           state.matchedLocation == '/citizen' ||
@@ -63,6 +78,11 @@ class AppRouter {
           state.matchedLocation.startsWith('/citizen');
 
       if (!isAuthenticated && !isAuthRoute) {
+        return '/login';
+      }
+
+      // Protect admin routes — unauthenticated users are sent to login
+      if (state.matchedLocation.startsWith('/admin') && !isAuthenticated) {
         return '/login';
       }
 
@@ -95,10 +115,19 @@ class AppRouter {
         builder: (context, state) => const CitizenPortalScreen(initialTab: 5),
       ),
 
+      // Password reset (Supabase email redirect lands here)
+      GoRoute(
+        path: '/reset-password',
+        builder: (context, state) => const ResetPasswordScreen(),
+      ),
+
       // Auth routes
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) {
+          final role = state.uri.queryParameters['role'];
+          return LoginScreen(requiredRole: role);
+        },
       ),
       GoRoute(
         path: '/register',
@@ -243,11 +272,23 @@ class AppRouter {
           ),
           GoRoute(
             path: 'documents',
-            builder: (context, state) => const LawyerCasesScreen(), // Placeholder
+            builder: (context, state) => const LawyerDocumentsScreen(),
           ),
           GoRoute(
             path: 'tasks',
-            builder: (context, state) => const LawyerCasesScreen(), // Placeholder
+            builder: (context, state) => const LawyerTasksScreen(),
+          ),
+          GoRoute(
+            path: 'pending',
+            builder: (context, state) => const LawyerPendingScreen(),
+          ),
+          GoRoute(
+            path: 'messages',
+            builder: (context, state) => const LawyerMessagesScreen(),
+          ),
+          GoRoute(
+            path: 'case-summarizer',
+            builder: (context, state) => const CaseSummarizerScreen(),
           ),
           GoRoute(
             path: 'case-detail',
@@ -279,6 +320,10 @@ class AppRouter {
           GoRoute(
             path: 'verify-lawyers',
             builder: (context, state) => const LawyerVerificationScreen(),
+          ),
+          GoRoute(
+            path: 'reports',
+            builder: (context, state) => const SystemReportsScreen(),
           ),
         ],
       ),

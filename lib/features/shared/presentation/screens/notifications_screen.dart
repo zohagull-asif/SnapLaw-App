@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -20,10 +22,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text(AppStrings.notifications),
+        backgroundColor: SnapLawColors.bgDark,
+        elevation: 0,
+        title: const Text(AppStrings.notifications,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -36,14 +42,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   }
                 });
               },
-              child: Text(
-                'Mark all read',
-                style: TextStyle(color: AppColors.textLight),
-              ),
+              child: Text('Mark all read',
+                style: TextStyle(color: SnapLawColors.primary)),
             ),
         ],
       ),
-      body: _notifications.isEmpty
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: _notifications.isEmpty
           ? _buildEmptyState()
           : ListView.builder(
               itemCount: _notifications.length,
@@ -64,6 +70,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 );
               },
             ),
+      ),
     );
   }
 

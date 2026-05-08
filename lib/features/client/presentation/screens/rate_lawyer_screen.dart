@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../shared/presentation/providers/reviews_provider.dart';
 
 class RateLawyerScreen extends ConsumerStatefulWidget {
@@ -115,14 +117,14 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
             Text(
               'Thank you for rating ${widget.lawyerName}. Your review helps other clients make better decisions.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: const Color(0xFF8892B0), fontSize: 14),
             ),
             const SizedBox(height: 24),
             Row(
               children: List.generate(5, (i) => Expanded(
                 child: Icon(
                   Icons.star,
-                  color: i < _selectedRating ? Colors.amber : Colors.grey[300],
+                  color: i < _selectedRating ? Colors.amber : const Color(0xFF4A5580),
                   size: 32,
                 ),
               )),
@@ -156,14 +158,16 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
     final activeRating = _hoveredRating > 0 ? _hoveredRating : _selectedRating;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Rate Your Lawyer', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.primary,
+        title: const Text('Rate Your Lawyer', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: const Color(0xFF0D1130),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
@@ -211,7 +215,7 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text('How would you rate this lawyer?',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F))),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F1535))),
                   const SizedBox(height: 20),
 
                   // Star row
@@ -230,7 +234,7 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
                             child: Icon(
                               star <= activeRating ? Icons.star_rounded : Icons.star_outline_rounded,
                               size: 52,
-                              color: star <= activeRating ? Colors.amber : Colors.grey[300],
+                              color: star <= activeRating ? Colors.amber : const Color(0xFF4A5580),
                             ),
                           ),
                         ),
@@ -260,7 +264,7 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
                               ),
                             ),
                           )
-                        : const Text('Tap a star to rate', style: TextStyle(color: Colors.grey, fontSize: 14)),
+                        : const Text('Tap a star to rate', style: TextStyle(color: const Color(0xFF8892B0), fontSize: 14)),
                   ),
                 ],
               ),
@@ -278,9 +282,9 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Write a Review', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F))),
+                  const Text('Write a Review', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F1535))),
                   const SizedBox(height: 4),
-                  Text('Optional — help others with your experience', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                  Text('Optional — help others with your experience', style: TextStyle(fontSize: 12, color: const Color(0xFF8892B0))),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _reviewController,
@@ -288,17 +292,17 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
                     maxLength: 500,
                     decoration: InputDecoration(
                       hintText: 'e.g. Very professional, explained everything clearly...',
-                      hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
+                      hintStyle: TextStyle(color: const Color(0xFF8892B0), fontSize: 13),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
+                        borderSide: BorderSide(color: const Color(0x33F4A324)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: AppColors.primary, width: 2),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[50],
+                      fillColor: const Color(0xFF0F1535),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -316,7 +320,7 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text('Post anonymously', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                          Text('Your name will not be shown', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                          Text('Your name will not be shown', style: TextStyle(fontSize: 12, color: const Color(0xFF8892B0))),
                         ],
                       ),
                     ],
@@ -331,7 +335,7 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _selectedRating > 0 ? AppColors.primary : Colors.grey[300],
+                  backgroundColor: _selectedRating > 0 ? AppColors.primary : const Color(0xFF4A5580),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -356,10 +360,11 @@ class _RateLawyerScreenState extends ConsumerState<RateLawyerScreen> {
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => context.pop(),
-              child: Text('Skip for now', style: TextStyle(color: Colors.grey[500])),
+              child: Text('Skip for now', style: TextStyle(color: const Color(0xFF8892B0))),
             ),
           ],
         ),
+      ),
       ),
     );
   }

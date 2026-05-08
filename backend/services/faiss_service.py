@@ -121,5 +121,13 @@ class FAISSService:
         return user_id in self._user_indices
 
 
-# Global instance
-faiss_service = FAISSService()
+# Global instance — dim resolved lazily from legal_bert after model loads
+def _make_faiss_service():
+    try:
+        from models.embeddings import legal_bert
+        legal_bert.load_model()
+        return FAISSService(embedding_dim=legal_bert.embedding_dim)
+    except Exception:
+        return FAISSService(embedding_dim=768)
+
+faiss_service = _make_faiss_service()

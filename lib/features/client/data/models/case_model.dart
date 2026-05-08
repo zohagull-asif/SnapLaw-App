@@ -1,4 +1,4 @@
-enum CaseStatus { open, inProgress, closed, pending }
+enum CaseStatus { open, inProgress, closed, pending, restricted }
 
 extension CaseStatusX on CaseStatus {
   String get dbValue {
@@ -14,6 +14,8 @@ extension CaseStatusX on CaseStatus {
     switch (value) {
       case 'in_progress':
         return CaseStatus.inProgress;
+      case 'restricted':
+        return CaseStatus.restricted;
       default:
         return CaseStatus.values.firstWhere(
           (e) => e.name == value,
@@ -72,8 +74,8 @@ class CaseModel {
       id: json['id'] as String,
       clientId: json['client_id'] as String,
       lawyerId: json['lawyer_id'] as String?,
-      title: json['title'] as String,
-      description: json['description'] as String,
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
       type: CaseType.values.firstWhere(
         (e) => e.name == json['type'],
         orElse: () => CaseType.other,
@@ -179,6 +181,8 @@ class CaseModel {
         return 'Closed';
       case CaseStatus.pending:
         return 'Pending';
+      case CaseStatus.restricted:
+        return 'Restricted';
     }
   }
 }

@@ -1,61 +1,62 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // ===== LAWYER COLORS (Burgundy/Gold Theme) =====
-  // Primary Colors for Lawyer Dashboard
-  static const Color lawyerPrimary = Color(0xFF8B1538);
-  static const Color lawyerPrimaryLight = Color(0xFFA52A4A);
-  static const Color lawyerPrimaryDark = Color(0xFF6B0028);
+  // ===== PRIMARY GOLD =====
+  static const Color primary      = Color(0xFFF4A324);
+  static const Color primaryLight = Color(0xFFFFB74D);
+  static const Color primaryDark  = Color(0xFFE08E10);
 
-  // ===== CLIENT & AUTH COLORS (Original Blue/Pink Theme) =====
-  // Primary Colors for Client Dashboard & Auth Screens (Original)
-  static const Color primary = Color(0xFF1E3A5F);
-  static const Color primaryLight = Color(0xFF2E5A8F);
-  static const Color primaryDark = Color(0xFF0E2A4F);
+  // ===== SECONDARY =====
+  static const Color secondary      = Color(0xFFF4A324);
+  static const Color secondaryLight = Color(0xFFFFB74D);
+  static const Color secondaryDark  = Color(0xFFE08E10);
 
-  // Secondary Colors (Gold/Amber accent - shared)
-  static const Color secondary = Color(0xFFD4AF37);
-  static const Color secondaryLight = Color(0xFFFFD700);
-  static const Color secondaryDark = Color(0xFFB8941F);
+  // ===== BACKGROUNDS =====
+  static const Color background     = Color(0xFF0A0E27);
+  static const Color bgSecondary    = Color(0xFF0F1535);
+  static const Color surface        = Color(0xFF141B45);
+  static const Color cardBackground = Color(0xFF0F1535);
+  static const Color sidebarBg      = Color(0xFF0D1130);
 
-  // Background Colors
-  static const Color background = Color(0xFFF5F5F5);
-  static const Color surface = Colors.white;
-  static const Color cardBackground = Colors.white;
+  // ===== LAWYER COLORS =====
+  static const Color lawyerPrimary      = Color(0xFF7B61FF);
+  static const Color lawyerPrimaryLight = Color(0xFF9D85FF);
+  static const Color lawyerPrimaryDark  = Color(0xFF5A3FF0);
 
-  // Text Colors
-  static const Color textPrimary = Color(0xFF1E1E1E);
-  static const Color textSecondary = Color(0xFF757575);
-  static const Color textLight = Colors.white;
+  // ===== TEXT =====
+  static const Color textPrimary   = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFF8892B0);
+  static const Color textMuted     = Color(0xFF4A5580);
+  static const Color textLight     = Color(0xFFFFFFFF);
 
-  // Status Colors
-  static const Color success = Color(0xFF4CAF50);
-  static const Color error = Color(0xFFE53935);
-  static const Color warning = Color(0xFFFFA726);
-  static const Color info = Color(0xFF29B6F6);
+  // ===== STATUS =====
+  static const Color success = Color(0xFF00C896);
+  static const Color error   = Color(0xFFFF4757);
+  static const Color warning = Color(0xFFF4A324);
+  static const Color info    = Color(0xFF3498DB);
 
-  // Case Status Colors (Original for Client)
-  static const Color statusOpen = Color(0xFF4CAF50);
-  static const Color statusInProgress = Color(0xFFFFA726);
-  static const Color statusClosed = Color(0xFF9E9E9E);
-  static const Color statusUrgent = Color(0xFFE53935);
+  // ===== CASE STATUS =====
+  static const Color statusOpen       = Color(0xFF00C896);
+  static const Color statusInProgress = Color(0xFFF4A324);
+  static const Color statusClosed     = Color(0xFF8892B0);
+  static const Color statusUrgent     = Color(0xFFFF4757);
 
-  // Lawyer-specific Case Status Colors
-  static const Color lawyerStatusOpen = Color(0xFF27AE60);
-  static const Color lawyerStatusInProgress = Color(0xFFD4AF37);
-  static const Color lawyerStatusClosed = Color(0xFF95A5A6);
-  static const Color lawyerStatusUrgent = Color(0xFF8B1538);
+  // ===== LAWYER CASE STATUS =====
+  static const Color lawyerStatusOpen       = Color(0xFF00C896);
+  static const Color lawyerStatusInProgress = Color(0xFFF4A324);
+  static const Color lawyerStatusClosed     = Color(0xFF8892B0);
+  static const Color lawyerStatusUrgent     = Color(0xFFFF4757);
 
-  // Border Colors
-  static const Color border = Color(0xFFE0E0E0);
-  static const Color divider = Color(0xFFEEEEEE);
+  // ===== BORDERS =====
+  static const Color border  = Color(0x33F4A324);
+  static const Color divider = Color(0x1AF4A324);
 
-  // Additional Colors
-  static const Color charcoal = Color(0xFF2C3E50);
-  static const Color charcoalLight = Color(0xFF34495E);
-  static const Color charcoalDark = Color(0xFF1A252F);
+  // ===== ADDITIONAL =====
+  static const Color charcoal      = Color(0xFF141B45);
+  static const Color charcoalLight = Color(0xFF1E2860);
+  static const Color charcoalDark  = Color(0xFF0A0E27);
 
-  // Gradients
+  // ===== GRADIENTS =====
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -71,6 +72,12 @@ class AppColors {
   static const LinearGradient goldGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFFD4AF37), Color(0xFFFFD700)],
+    colors: [Color(0xFFF4A324), Color(0xFFFFB74D)],
+  );
+
+  static const LinearGradient backgroundGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF0A0E27), Color(0xFF0F1535)],
   );
 }

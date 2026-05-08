@@ -1,14 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import '../services/gemini_service.dart';
 
 /// Service for analyzing contract documents and assessing risk
-/// Uses OpenAI GPT for document validation and risk assessment
+/// Uses Gemini AI for document validation and risk assessment
 class ContractRiskAnalyzerService {
-  final String apiKey;
-  static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
-
-  ContractRiskAnalyzerService({required this.apiKey});
+  ContractRiskAnalyzerService();
 
   /// Validates if a document is a valid legal/case document
   Future<DocumentValidationResult> validateDocument(String documentText) async {
@@ -45,17 +42,17 @@ ${documentText.length > 3000 ? documentText.substring(0, 3000) + '...' : documen
 
 Respond ONLY in this JSON format:
 {
-  "isValid": true/false,
-  "documentType": "Contract/Notice/Petition/etc" or "Invalid",
-  "reason": "Brief explanation of why it is valid or invalid",
-  "confidence": 0-100
+  "isValid": true,
+  "documentType": "Contract",
+  "reason": "Brief explanation",
+  "confidence": 85
 }
 ''';
 
-      final response = await _makeOpenAIRequest(prompt);
+      final response = await GeminiService.sendJsonMessage(prompt: prompt, maxTokens: 500);
       return DocumentValidationResult.fromJson(jsonDecode(response));
     } catch (e) {
-      print('❌ Error validating document: $e');
+      print('Error validating document: $e');
       return DocumentValidationResult(
         isValid: false,
         documentType: 'Error',
@@ -71,16 +68,10 @@ Respond ONLY in this JSON format:
       final prompt = '''
 You are a Contract Risk Radar AI system specialized in Pakistani law.
 
-Your purpose is to perform STRUCTURED CONTRACT RISK ASSESSMENT based on Pakistani legal standards and common contract risks in Pakistan.
+Your purpose is to perform STRUCTURED CONTRACT RISK ASSESSMENT based on Pakistani legal standards.
 
-You are NOT a lawyer and you do NOT provide legal advice.
+You are NOT a lawyer and do NOT provide legal advice.
 You ONLY analyze and classify risk based on learned patterns.
-
-IMPORTANT CONTEXT:
-- Analyze contracts according to Pakistani Contract Act 1872
-- Consider Pakistani legal standards and precedents
-- Identify risks common in Pakistani business and legal environment
-- Consider cultural and regional business practices
 
 ANALYSIS PROCESS:
 
@@ -101,33 +92,31 @@ Step 3: Assign overall risk level
 - HIGH: One-sided obligations, unlimited liability, missing critical clauses
 
 Step 4: Pakistan-specific considerations
-- Check compliance with Pakistani laws (Contract Act, Sale of Goods Act, etc.)
+- Check compliance with Pakistani laws (Contract Act 1872, Sale of Goods Act, etc.)
 - Verify jurisdiction clauses mention Pakistani courts
 - Check for stamp duty requirements
-- Verify notarization requirements
 
-OUTPUT FORMAT (JSON):
+OUTPUT FORMAT (JSON only, no markdown):
 {
-  "overallRiskLevel": "Low/Medium/High",
-  "confidenceScore": 0-100,
+  "overallRiskLevel": "Low",
+  "confidenceScore": 75,
   "riskSummary": "Concise explanation of overall risk",
   "detectedRisks": [
     {
       "clause": "Quote or describe the clause",
-      "riskType": "Legal/Financial/Compliance/Operational",
-      "riskLevel": "Low/Medium/High",
+      "riskType": "Legal",
+      "riskLevel": "Medium",
       "explanation": "Why this is risky"
     }
   ],
   "pakistaniLawCompliance": {
-    "isCompliant": true/false,
-    "issues": ["List of compliance issues if any"],
-    "recommendations": ["Recommendations for compliance"]
+    "isCompliant": true,
+    "issues": [],
+    "recommendations": ["Recommendation 1"]
   },
   "keyFindings": [
     "Key finding 1",
-    "Key finding 2",
-    "Key finding 3"
+    "Key finding 2"
   ]
 }
 
@@ -139,50 +128,11 @@ ${documentText.length > 4000 ? documentText.substring(0, 4000) + '...' : documen
 Analyze this contract and respond ONLY with the JSON format above.
 ''';
 
-      final response = await _makeOpenAIRequest(prompt, maxTokens: 2000);
+      final response = await GeminiService.sendJsonMessage(prompt: prompt, maxTokens: 2000);
       return ContractRiskAnalysis.fromJson(jsonDecode(response));
     } catch (e) {
-      print('❌ Error analyzing contract risk: $e');
+      print('Error analyzing contract risk: $e');
       return ContractRiskAnalysis.error(e.toString());
-    }
-  }
-
-  /// Makes a request to OpenAI API
-  Future<String> _makeOpenAIRequest(String prompt, {int maxTokens = 500}) async {
-    try {
-      final response = await http.post(
-        Uri.parse(_baseUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $apiKey',
-        },
-        body: jsonEncode({
-          'model': 'gpt-4-turbo-preview',
-          'messages': [
-            {
-              'role': 'system',
-              'content': 'You are a legal document analysis expert specializing in Pakistani law. Always respond with valid JSON only.',
-            },
-            {
-              'role': 'user',
-              'content': prompt,
-            },
-          ],
-          'temperature': 0.3,
-          'max_tokens': maxTokens,
-          'response_format': {'type': 'json_object'},
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['choices'][0]['message']['content'];
-      } else {
-        throw Exception('OpenAI API error: ${response.statusCode} - ${response.body}');
-      }
-    } catch (e) {
-      print('❌ OpenAI request failed: $e');
-      rethrow;
     }
   }
 }
@@ -206,7 +156,7 @@ class DocumentValidationResult {
       isValid: json['isValid'] as bool? ?? false,
       documentType: json['documentType'] as String? ?? 'Unknown',
       reason: json['reason'] as String? ?? 'No reason provided',
-      confidence: json['confidence'] as int? ?? 0,
+      confidence: (json['confidence'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -234,7 +184,7 @@ class ContractRiskAnalysis {
   factory ContractRiskAnalysis.fromJson(Map<String, dynamic> json) {
     return ContractRiskAnalysis(
       overallRiskLevel: json['overallRiskLevel'] as String? ?? 'Unknown',
-      confidenceScore: json['confidenceScore'] as int? ?? 0,
+      confidenceScore: (json['confidenceScore'] as num?)?.toInt() ?? 0,
       riskSummary: json['riskSummary'] as String? ?? 'No summary available',
       detectedRisks: (json['detectedRisks'] as List<dynamic>?)
               ?.map((e) => DetectedRisk.fromJson(e as Map<String, dynamic>))
@@ -267,13 +217,13 @@ class ContractRiskAnalysis {
   Color get riskColor {
     switch (overallRiskLevel.toLowerCase()) {
       case 'low':
-        return const Color(0xFF4CAF50); // Green
+        return const Color(0xFF4CAF50);
       case 'medium':
-        return const Color(0xFFFFA726); // Orange
+        return const Color(0xFFFFA726);
       case 'high':
-        return const Color(0xFFE53935); // Red
+        return const Color(0xFFE53935);
       default:
-        return const Color(0xFF9E9E9E); // Gray
+        return const Color(0xFF9E9E9E);
     }
   }
 }

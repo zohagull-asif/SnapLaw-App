@@ -1,11 +1,12 @@
 import os
-from google import genai
-from google.genai import types
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.3-70b-versatile"
 
 SUMMARIZER_PROMPT = """You are an expert Pakistani legal analyst and case summarizer
 for SnapLaw, a legal platform used by lawyers in Pakistan.
@@ -67,53 +68,41 @@ Write as if explaining to a non-lawyer. No legal jargon.]
 - [Key argument 1]
 - [Key argument 2]
 - [Key argument 3]
-(list all main arguments made by complainant side)
 
 **DEFENDANT / RESPONDENT ARGUED:**
 - [Key argument 1]
 - [Key argument 2]
 - [Key argument 3]
-(list all main arguments made by defense side)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📜 LAWS AND SECTIONS CITED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-List every law section mentioned in the judgment:
 - [Law name + Section number]: [What it covers — one sentence]
 - [Law name + Section number]: [What it covers — one sentence]
-(include ALL sections cited, PPC, CrPC, MVO, constitutional articles, etc.)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚖️ COURT'S DECISION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **VERDICT:**
-[Guilty / Not Guilty / Appeal Allowed / Appeal Dismissed /
-Case Remanded / Acquitted / Convicted — state clearly]
+[Guilty / Not Guilty / Appeal Allowed / Appeal Dismissed / Acquitted / Convicted]
 
 **PUNISHMENT / ORDER:**
-[Exact sentence given — years imprisonment, fine amount,
-compensation ordered, property returned, etc.]
+[Exact sentence given]
 
 **WHO WON:**
-[Complainant / Defendant — state clearly who the court sided with]
+[Complainant / Defendant]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧠 REASONING — WHY COURT DECIDED THIS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[3-5 sentences explaining the main reasons the court gave
-for its decision. What evidence or logic convinced the judge?
-Write clearly — no unnecessary jargon.]
+[3-5 sentences explaining the main reasons the court gave for its decision.]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📌 KEY LEGAL POINTS FOR LAWYERS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[List 3-5 important legal principles or takeaways from
-this judgment that a lawyer can use in future similar cases.
-These are the most valuable parts for legal research.]
 
 - [Key point 1]
 - [Key point 2]
@@ -125,10 +114,6 @@ These are the most valuable parts for legal research.]
 🔍 PAST CASES REFERENCED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[List any past judgments / precedents the court cited
-to support its decision. If none mentioned write "None cited".]
-
-- [Case name + year if available]
 - [Case name + year if available]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -136,10 +121,10 @@ to support its decision. If none mentioned write "None cited".]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **EVIDENCE PRESENTED:**
-[Was evidence strong or weak? What type of evidence was used?]
+[Was evidence strong or weak?]
 
 **MISSING ELEMENTS:**
-[What was missing from this case that could have changed outcome?]
+[What was missing from this case?]
 
 **OVERALL CASE STRENGTH:** [Strong / Medium / Weak]
 
@@ -150,7 +135,7 @@ Document text to summarize:
 
 
 def summarize_case(document_text: str, filename: str) -> dict:
-    """Main summarization function using google-genai SDK"""
+    """Summarize using Groq Llama model."""
 
     if not document_text or len(document_text.strip()) < 100:
         return {
@@ -158,25 +143,53 @@ def summarize_case(document_text: str, filename: str) -> dict:
             "error": "Document text is too short to summarize."
         }
 
+    if not GROQ_API_KEY:
+        return {
+            "success": False,
+            "error": "GROQ_API_KEY not configured in backend .env"
+        }
+
     text_to_send = document_text
     truncated = False
-    # 15,000 chars (~2,500 words) is enough for accurate summarization
-    # and keeps Gemini response time under 30 seconds
     if len(document_text) > 15000:
         text_to_send = document_text[:15000]
         truncated = True
 
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=SUMMARIZER_PROMPT.format(document_text=text_to_send),
-            config=types.GenerateContentConfig(
-                temperature=0.2,
-                max_output_tokens=3000,
-            ),
+        response = requests.post(
+            GROQ_URL,
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": GROQ_MODEL,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are an expert Pakistani legal analyst. Follow the exact format requested. Do not add extra commentary outside the format."
+                    },
+                    {
+                        "role": "user",
+                        "content": SUMMARIZER_PROMPT.format(document_text=text_to_send)
+                    }
+                ],
+                "max_tokens": 3000,
+                "temperature": 0.2
+            },
+            timeout=120
         )
 
-        summary_text = response.text.strip()
+        if response.status_code == 401:
+            return {"success": False, "error": "Invalid Groq API key. Check GROQ_API_KEY in backend .env"}
+
+        if response.status_code == 429:
+            return {"success": False, "error": "Groq rate limit reached. Please try again in a moment."}
+
+        if response.status_code != 200:
+            return {"success": False, "error": f"Groq API error {response.status_code}: {response.text[:300]}"}
+
+        summary_text = response.json()["choices"][0]["message"]["content"].strip()
 
         return {
             "success": True,
@@ -187,8 +200,7 @@ def summarize_case(document_text: str, filename: str) -> dict:
             "summary_length": len(summary_text)
         }
 
+    except requests.Timeout:
+        return {"success": False, "error": "Request timed out. Try a shorter document."}
     except Exception as e:
-        return {
-            "success": False,
-            "error": f"AI summarization failed: {str(e)}"
-        }
+        return {"success": False, "error": f"AI summarization failed: {str(e)}"}

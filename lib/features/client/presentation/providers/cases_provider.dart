@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../services/supabase_service.dart';
@@ -30,9 +31,33 @@ class CasesState {
 
 class CasesNotifier extends StateNotifier<CasesState> {
   final Ref ref;
+  StreamSubscription? _casesSubscription;
 
   CasesNotifier(this.ref) : super(const CasesState()) {
     loadCases();
+    _subscribeToChanges();
+  }
+
+  @override
+  void dispose() {
+    _casesSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _subscribeToChanges() {
+    final user = ref.read(authProvider).user;
+    if (user == null) return;
+
+    _casesSubscription = SupabaseService
+        .from('cases')
+        .stream(primaryKey: ['id'])
+        .eq('client_id', user.id)
+        .listen((data) {
+          final cases = data
+              .map((json) => CaseModel.fromJson(json))
+              .toList();
+          state = state.copyWith(cases: cases, isLoading: false);
+        });
   }
 
   Future<void> loadCases() async {
@@ -139,6 +164,16 @@ class CasesNotifier extends StateNotifier<CasesState> {
         isLoading: false,
         errorMessage: 'An unexpected error occurred: ${e.toString()}',
       );
+      return false;
+    }
+  }
+
+  Future<bool> deleteCase(String caseId) async {
+    try {
+      await SupabaseService.from('cases').delete().eq('id', caseId);
+      state = state.copyWith(cases: state.cases.where((c) => c.id != caseId).toList());
+      return true;
+    } catch (e) {
       return false;
     }
   }

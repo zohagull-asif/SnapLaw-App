@@ -66,7 +66,10 @@ class LawyerCasesNotifier extends StateNotifier<LawyerCasesState> {
         .eq('lawyer_id', user.id)
         .listen((data) {
           print('📡 Real-time update received: ${data.length} cases');
-          final cases = data.map((json) => CaseModel.fromJson(json)).toList();
+          final cases = data
+              .where((json) => json['status'] != 'closed')
+              .map((json) => CaseModel.fromJson(json))
+              .toList();
           state = state.copyWith(cases: cases, isLoading: false);
         });
   }
@@ -87,10 +90,11 @@ class LawyerCasesNotifier extends StateNotifier<LawyerCasesState> {
     try {
       print('📡 Querying cases table for lawyer_id: ${user.id}');
 
-      // Fetch cases where the logged-in lawyer is assigned
+      // Fetch cases where the logged-in lawyer is assigned (exclude client-deleted)
       final response = await SupabaseService.from('cases')
           .select()
           .eq('lawyer_id', user.id)
+          .neq('status', 'closed')
           .order('created_at', ascending: false);
 
       print('📦 Response received: ${response.toString()}');
@@ -175,6 +179,16 @@ class LawyerCasesNotifier extends StateNotifier<LawyerCasesState> {
         isLoading: false,
         errorMessage: 'An unexpected error occurred: ${e.toString()}',
       );
+      return false;
+    }
+  }
+
+  Future<bool> deleteCase(String caseId) async {
+    try {
+      await SupabaseService.from('cases').delete().eq('id', caseId);
+      state = state.copyWith(cases: state.cases.where((c) => c.id != caseId).toList());
+      return true;
+    } catch (e) {
       return false;
     }
   }

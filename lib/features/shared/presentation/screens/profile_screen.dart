@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/data/models/user_model.dart';
 
@@ -69,10 +71,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final user = authState.user;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text(AppStrings.profile),
+        backgroundColor: SnapLawColors.bgDark,
+        elevation: 0,
+        title: const Text(AppStrings.profile,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -108,7 +114,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
@@ -327,6 +335,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

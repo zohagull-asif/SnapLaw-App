@@ -25,7 +25,7 @@ def _get_gemini_model():
         api_key = os.environ.get("GEMINI_API_KEY", "")
         if api_key:
             genai.configure(api_key=api_key)
-            _gemini_model = genai.GenerativeModel("gemini-2.5-flash")
+            _gemini_model = genai.GenerativeModel("gemini-2.0-flash")
             logger.info("Gemini model initialized for AI classification")
         else:
             logger.warning("No GEMINI_API_KEY — falling back to keyword classification")

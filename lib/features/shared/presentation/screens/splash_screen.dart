@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../auth/data/models/user_model.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -46,30 +45,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigateAfterDelay() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
-
-    final authState = ref.read(authProvider);
-    _navigate(authState);
-  }
-
-  void _navigate(AuthState authState) {
-    if (authState.status == AuthStatus.authenticated && authState.user != null) {
-      final role = authState.user!.role;
-      switch (role) {
-        case UserRole.client:
-          context.go('/client');
-          break;
-        case UserRole.lawyer:
-          context.go('/lawyer');
-          break;
-        case UserRole.admin:
-          context.go('/admin');
-          break;
-      }
-    } else {
-      context.go('/portal-select');
-    }
+    context.go('/portal-select');
   }
 
   @override
@@ -80,17 +58,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.status != AuthStatus.initial && next.status != AuthStatus.loading) {
-        _navigate(next);
-      }
-    });
-
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.primaryGradient,
-        ),
+      backgroundColor: const Color(0xFF020818),
+      body: AppBackground(
+        overlayOpacity: 0.60,
         child: Center(
           child: AnimatedBuilder(
             animation: _controller,
@@ -102,57 +73,69 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Logo
+                      // Logo container with gold border
                       Container(
-                        width: 120,
-                        height: 120,
+                        width: 110,
+                        height: 110,
                         decoration: BoxDecoration(
-                          color: AppColors.surface,
+                          color: const Color(0xFF0F1535),
                           borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: const Color(0xFFF4A324).withOpacity(0.5),
+                            width: 1.5,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: const Color(0xFFF4A324).withOpacity(0.18),
+                              blurRadius: 28,
+                              spreadRadius: 4,
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.4),
                               blurRadius: 20,
-                              offset: const Offset(0, 10),
+                              offset: const Offset(0, 8),
                             ),
                           ],
                         ),
                         child: const Icon(
                           Icons.balance,
-                          size: 64,
-                          color: AppColors.primary,
+                          size: 56,
+                          color: Color(0xFFF4A324),
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      // App Name
-                      const Text(
-                        AppStrings.appName,
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textLight,
-                          letterSpacing: 2,
-                        ),
+                      const SizedBox(height: 28),
+                      // App Name — SNAP white, LAW gold
+                      RichText(
+                        text: const TextSpan(children: [
+                          TextSpan(text: 'SNAP', style: TextStyle(
+                            fontSize: 38, fontWeight: FontWeight.w900,
+                            color: Color(0xFFF3FAFF), letterSpacing: 3,
+                          )),
+                          TextSpan(text: 'LAW', style: TextStyle(
+                            fontSize: 38, fontWeight: FontWeight.w900,
+                            color: Color(0xFFF4A324), letterSpacing: 3,
+                          )),
+                        ]),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       // Tagline
-                      const Text(
+                      Text(
                         AppStrings.appTagline,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textLight,
-                          letterSpacing: 1,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF8892B0),
+                          letterSpacing: 1.2,
                         ),
                       ),
-                      const SizedBox(height: 48),
-                      // Loading indicator
+                      const SizedBox(height: 52),
+                      // Gold loading indicator
                       const SizedBox(
-                        width: 40,
-                        height: 40,
+                        width: 36,
+                        height: 36,
                         child: CircularProgressIndicator(
-                          strokeWidth: 3,
+                          strokeWidth: 2.5,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.secondary,
+                            Color(0xFFF4A324),
                           ),
                         ),
                       ),

@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
 import '../../data/models/user_model.dart';
 import '../providers/auth_provider.dart';
 
@@ -52,26 +54,26 @@ class _BackgroundPainter extends CustomPainter {
     final h = size.height;
 
     // Animated gradient
-    final shift = sin(bgT * 2 * pi) * 0.18;
+    final shift = sin(bgT * 2 * pi) * 0.06;
     final grad = LinearGradient(
       begin: Alignment(-0.4 + shift, -1.0),
       end: Alignment(0.4 - shift, 1.0),
       colors: const [
-        Color(0xFF6C63FF),
-        Color(0xFF8B7CF6),
-        Color(0xFFA78BFA),
-        Color(0xFF7C3AED),
+        Color(0xFF0A0E27),
+        Color(0xFF0F1535),
+        Color(0xFF0F1535),
+        Color(0xFF0F1535),
       ],
       stops: const [0.0, 0.32, 0.65, 1.0],
     );
     canvas.drawRect(Offset.zero & size, Paint()..shader = grad.createShader(Offset.zero & size));
 
-    // Floating orbs
+    // Gold orbs
     _drawOrb(canvas, Offset(w * 0.85, h * 0.12), 100, bgT, 0.0);
     _drawOrb(canvas, Offset(w * 0.10, h * 0.78), 70, bgT, 0.33);
     _drawOrb(canvas, Offset(w * 0.06, h * 0.44), 40, bgT, 0.66);
 
-    // Rising particles
+    // Rising particles — gold tint
     for (final p in _kParticles) {
       final phase = (partT * p.speed + p.delay) % 1.0;
       final opacity = sin(phase * pi) * p.baseOpacity;
@@ -79,7 +81,7 @@ class _BackgroundPainter extends CustomPainter {
       final px = w * p.x;
       final py = h * (1.0 - phase);
       final paint = Paint()
-        ..color = Colors.white.withOpacity(opacity)
+        ..color = const Color(0xFFF4A324).withOpacity(opacity * 0.5)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(Offset(px, py), p.size, paint);
     }
@@ -90,7 +92,7 @@ class _BackgroundPainter extends CustomPainter {
     final c = center.translate(0, bobY);
     final paint = Paint()
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 48)
-      ..color = Colors.white.withOpacity(0.18);
+      ..color = const Color(0xFFF4A324).withOpacity(0.08);
     canvas.drawCircle(c, radius, paint);
   }
 
@@ -100,167 +102,95 @@ class _BackgroundPainter extends CustomPainter {
 }
 
 // ─────────────────────────────────────────────
-// Character painter: walking figure
+// Justice scales watermark painter
 // ─────────────────────────────────────────────
-class _CharPainter extends CustomPainter {
-  final double cycle;  // -1 to 1, walk cycle
-  final bool isIdle;
-
-  _CharPainter({required this.cycle, required this.isIdle});
-
-  // Design space: 140 × 240
-  static const double _dw = 140;
-  static const double _dh = 240;
-  static const double _cx = 70; // horizontal center
+class _ScalesPainter extends CustomPainter {
+  final double animValue;
+  _ScalesPainter({required this.animValue});
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.scale(size.width / _dw, size.height / _dh);
+    final w = size.width;
+    final h = size.height;
+    final scaleSize = h * 0.75;
+    final centerX = w * 0.5;
+    final centerY = h * 0.5;
 
-    // Ground shadow
-    final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.18)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
-    canvas.drawOval(
-      Rect.fromCenter(center: const Offset(_cx, 232), width: 60, height: 12),
-      shadowPaint,
-    );
-
-    final bobY = isIdle ? cycle.abs() * -2.5 : 0.0;
-    final bodyOffY = isIdle ? cycle.abs() * -1.5 : 0.0;
-
-    // ── Legs ──────────────────────────────────
-    final legAngleL = isIdle ? 0.0 : cycle * 8 * pi / 180;
-    final legAngleR = isIdle ? 0.0 : -cycle * 8 * pi / 180;
-    final legPx = _cx;
-    final legPy = 175.0 + bodyOffY;
-
-    _limb(canvas, legPx - 9, legPy, legAngleL, (c) {
-      final p = Paint()..color = const Color(0xFF3B82F6); // blue pants
-      c.drawRRect(RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-7, 0, 14, 50), const Radius.circular(6)),p);
-    });
-    _limb(canvas, legPx + 9, legPy, legAngleR, (c) {
-      final p = Paint()..color = const Color(0xFF3B82F6);
-      c.drawRRect(RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-7, 0, 14, 50), const Radius.circular(6)),p);
-    });
-
-    // ── Shoes ──────────────────────────────────
-    _limb(canvas, legPx - 9, legPy, legAngleL, (c) {
-      final p = Paint()..color = Colors.white;
-      c.drawRRect(RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-9, 44, 18, 10), const Radius.circular(5)),p);
-    });
-    _limb(canvas, legPx + 9, legPy, legAngleR, (c) {
-      final p = Paint()..color = Colors.white;
-      c.drawRRect(RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-9, 44, 18, 10), const Radius.circular(5)),p);
-    });
-
-    // ── Belt ──────────────────────────────────
-    final beltY = 170.0 + bodyOffY;
-    final beltPaint = Paint()..color = const Color(0xFF92400E);
-    canvas.drawRect(Rect.fromLTWH(_cx - 22, beltY, 44, 8), beltPaint);
-    // buckle
-    final bucklePaint = Paint()..color = const Color(0xFFD97706);
-    canvas.drawRect(Rect.fromLTWH(_cx - 7, beltY + 1, 14, 6), bucklePaint);
-
-    // ── Torso ─────────────────────────────────
-    final torsoAngle = isIdle ? 0.0 : cycle * 2 * pi / 180;
-    _limb(canvas, _cx, 135.0 + bodyOffY, torsoAngle, (c) {
-      final p = Paint()..color = const Color(0xFFF97316); // orange shirt
-      c.drawRRect(RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-22, 0, 44, 40), const Radius.circular(6)),p);
-    });
-
-    // ── Arms ──────────────────────────────────
-    final armAngleL = isIdle ? 20 * pi / 180 : cycle * 30 * pi / 180;
-    final armAngleR = isIdle ? -60 * pi / 180 : -cycle * 30 * pi / 180;
-    final armPy = 138.0 + bodyOffY;
-
-    _limb(canvas, _cx - 22, armPy, armAngleL, (c) {
-      final p = Paint()..color = const Color(0xFFF97316);
-      c.drawRRect(RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-6, 0, 12, 36), const Radius.circular(5)),p);
-      // hand
-      final hp = Paint()..color = const Color(0xFF92400E);
-      c.drawCircle(const Offset(0, 39), 7, hp);
-    });
-    _limb(canvas, _cx + 22, armPy, armAngleR, (c) {
-      final p = Paint()..color = const Color(0xFFF97316);
-      c.drawRRect(RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-6, 0, 12, 36), const Radius.circular(5)),p);
-      // hand
-      final hp = Paint()..color = const Color(0xFF92400E);
-      c.drawCircle(const Offset(0, 39), 7, hp);
-    });
-
-    // ── Head ──────────────────────────────────
-    final headY = 95.0 + bodyOffY + bobY;
-
-    // Neck
-    final neckPaint = Paint()..color = const Color(0xFF92400E);
-    canvas.drawRect(Rect.fromLTWH(_cx - 7, headY + 24, 14, 14), neckPaint);
-
-    // Head base (brown skin)
-    final headPaint = Paint()..color = const Color(0xFF92400E);
-    canvas.drawOval(
-      Rect.fromCenter(center: Offset(_cx, headY + 14), width: 42, height: 44),
-      headPaint,
-    );
-
-    // Afro
-    final afroPaint = Paint()..color = const Color(0xFF1C0A00);
-    canvas.drawCircle(Offset(_cx, headY + 4), 26, afroPaint);
-    canvas.drawCircle(Offset(_cx - 14, headY + 8), 16, afroPaint);
-    canvas.drawCircle(Offset(_cx + 14, headY + 8), 16, afroPaint);
-
-    // Eyes
-    final eyePaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(_cx - 8, headY + 13), 5, eyePaint);
-    canvas.drawCircle(Offset(_cx + 8, headY + 13), 5, eyePaint);
-    final pupilPaint = Paint()..color = const Color(0xFF1C0A00);
-    canvas.drawCircle(Offset(_cx - 7, headY + 14), 3, pupilPaint);
-    canvas.drawCircle(Offset(_cx + 9, headY + 14), 3, pupilPaint);
-
-    // Smile
-    final smilePaint = Paint()
-      ..color = Colors.white
+    final goldPaint = Paint()
+      ..color = const Color(0xFFF4A324).withOpacity(0.13)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
+      ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
-    final smilePath = Path()
-      ..moveTo(_cx - 7, headY + 22)
-      ..quadraticBezierTo(_cx, headY + 27, _cx + 7, headY + 22);
-    canvas.drawPath(smilePath, smilePaint);
+    final goldFillPaint = Paint()
+      ..color = const Color(0xFFF4A324).withOpacity(0.07)
+      ..style = PaintingStyle.fill;
 
-    // Earring (small gold dot on left ear)
-    final earringPaint = Paint()..color = const Color(0xFFD97706);
-    canvas.drawCircle(Offset(_cx - 20, headY + 18), 3, earringPaint);
-  }
+    final tiltAngle = sin(animValue * 2 * pi) * 0.08;
 
-  /// Rotate around pivot (px, py); drawFn receives canvas with origin at (px, py).
-  void _limb(Canvas canvas, double px, double py, double angle, void Function(Canvas) drawFn) {
-    canvas.save();
-    canvas.translate(px, py);
-    canvas.rotate(angle);
-    drawFn(canvas);
-    canvas.restore();
+    final poleTop = Offset(centerX, centerY - scaleSize * 0.42);
+    final poleBottom = Offset(centerX, centerY + scaleSize * 0.42);
+    canvas.drawLine(poleTop, poleBottom, goldPaint..strokeWidth = 3);
+
+    final basePath = Path()
+      ..moveTo(centerX - scaleSize * 0.15, poleBottom.dy)
+      ..lineTo(centerX + scaleSize * 0.15, poleBottom.dy)
+      ..lineTo(centerX + scaleSize * 0.22, poleBottom.dy + scaleSize * 0.06)
+      ..lineTo(centerX - scaleSize * 0.22, poleBottom.dy + scaleSize * 0.06)
+      ..close();
+    canvas.drawPath(basePath, goldFillPaint);
+    canvas.drawPath(basePath, goldPaint..strokeWidth = 2);
+
+    canvas.drawCircle(poleTop, scaleSize * 0.035, goldFillPaint);
+    canvas.drawCircle(poleTop, scaleSize * 0.035, goldPaint..strokeWidth = 2);
+
+    final beamY = centerY - scaleSize * 0.28;
+    final beamHalf = scaleSize * 0.38;
+    final pivotX = centerX;
+    final pivotY = beamY;
+    final leftEndX = pivotX - beamHalf;
+    final leftEndY = pivotY - tiltAngle * beamHalf;
+    final rightEndX = pivotX + beamHalf;
+    final rightEndY = pivotY + tiltAngle * beamHalf;
+
+    canvas.drawLine(
+      Offset(leftEndX, leftEndY),
+      Offset(rightEndX, rightEndY),
+      goldPaint..strokeWidth = 3,
+    );
+
+    final leftChainTop = Offset(leftEndX, leftEndY);
+    final leftPanY = leftEndY + scaleSize * 0.28;
+    final leftPanCenter = Offset(leftEndX, leftPanY);
+    final leftChainSpread = scaleSize * 0.10;
+    canvas.drawLine(leftChainTop, Offset(leftEndX - leftChainSpread, leftPanY), goldPaint..strokeWidth = 1.5);
+    canvas.drawLine(leftChainTop, Offset(leftEndX, leftPanY), goldPaint..strokeWidth = 1.5);
+    canvas.drawLine(leftChainTop, Offset(leftEndX + leftChainSpread, leftPanY), goldPaint..strokeWidth = 1.5);
+    final leftPanRect = Rect.fromCenter(center: leftPanCenter, width: scaleSize * 0.28, height: scaleSize * 0.07);
+    canvas.drawOval(leftPanRect, goldFillPaint);
+    canvas.drawOval(leftPanRect, goldPaint..strokeWidth = 2);
+
+    final rightChainTop = Offset(rightEndX, rightEndY);
+    final rightPanY = rightEndY + scaleSize * 0.28;
+    final rightPanCenter = Offset(rightEndX, rightPanY);
+    final rightChainSpread = scaleSize * 0.10;
+    canvas.drawLine(rightChainTop, Offset(rightEndX - rightChainSpread, rightPanY), goldPaint..strokeWidth = 1.5);
+    canvas.drawLine(rightChainTop, Offset(rightEndX, rightPanY), goldPaint..strokeWidth = 1.5);
+    canvas.drawLine(rightChainTop, Offset(rightEndX + rightChainSpread, rightPanY), goldPaint..strokeWidth = 1.5);
+    final rightPanRect = Rect.fromCenter(center: rightPanCenter, width: scaleSize * 0.28, height: scaleSize * 0.07);
+    canvas.drawOval(rightPanRect, goldFillPaint);
+    canvas.drawOval(rightPanRect, goldPaint..strokeWidth = 2);
   }
 
   @override
-  bool shouldRepaint(_CharPainter old) =>
-      old.cycle != cycle || old.isIdle != isIdle;
+  bool shouldRepaint(_ScalesPainter old) => old.animValue != animValue;
 }
 
 // ─────────────────────────────────────────────
 // Main screen
 // ─────────────────────────────────────────────
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  final String? requiredRole;
+  const LoginScreen({super.key, this.requiredRole});
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -277,16 +207,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   // ── Animation controllers ─────────────────
   late final AnimationController _bgCtrl;    // 8s, repeat
   late final AnimationController _partCtrl;  // 5s, repeat
-  late final AnimationController _walkCtrl;  // 450ms, alternate repeat
   late final AnimationController _entryCtrl; // 3000ms, one-shot
-  late final AnimationController _idleCtrl;  // 2000ms, repeat
 
   // Entry sub-animations (Interval based)
-  late final Animation<double> _charIn;
   late final Animation<double> _cardIn;
   late final Animation<double> _logoIn;
-
-  bool _isIdle = false;
 
   @override
   void initState() {
@@ -296,17 +221,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       ..repeat();
     _partCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 5))
       ..repeat();
-    _walkCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 450))
-      ..repeat(reverse: true);
     _entryCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 3000))
       ..forward();
-    _idleCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 2))
-      ..repeat(reverse: true);
 
-    _charIn = CurvedAnimation(
-      parent: _entryCtrl,
-      curve: const Interval(0.07, 0.53, curve: Curves.easeOut),
-    );
     _cardIn = CurvedAnimation(
       parent: _entryCtrl,
       curve: const Interval(0.50, 0.77, curve: Curves.easeOutBack),
@@ -315,22 +232,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       parent: _entryCtrl,
       curve: const Interval(0.73, 0.93, curve: Curves.easeOut),
     );
-
-    _entryCtrl.addListener(() {
-      if (!_isIdle && _entryCtrl.value >= 0.53) {
-        setState(() => _isIdle = true);
-        _walkCtrl.stop();
-      }
-    });
   }
 
   @override
   void dispose() {
     _bgCtrl.dispose();
     _partCtrl.dispose();
-    _walkCtrl.dispose();
     _entryCtrl.dispose();
-    _idleCtrl.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -346,13 +254,47 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     }
   }
 
-  void _navigateBasedOnRole(UserModel user) {
+  Future<void> _navigateBasedOnRole(UserModel user) async {
+    // Enforce portal role restriction
+    if (widget.requiredRole != null) {
+      final expected = const {
+        'client': UserRole.client,
+        'lawyer': UserRole.lawyer,
+        'admin': UserRole.admin,
+      }[widget.requiredRole];
+      if (expected != null && user.role != expected) {
+        await ref.read(authProvider.notifier).signOut();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'This account is not a ${widget.requiredRole}. Please use the correct portal.'),
+          backgroundColor: AppColors.error,
+          duration: const Duration(seconds: 4),
+        ));
+        return;
+      }
+    }
+
     switch (user.role) {
       case UserRole.client:
         context.go('/client');
         break;
       case UserRole.lawyer:
-        context.go('/lawyer');
+        // Check if lawyer has been approved by admin
+        try {
+          final result = await Supabase.instance.client.from('lawyer_profiles')
+              .select('is_verified')
+              .eq('user_id', user.id)
+              .maybeSingle();
+          if (!mounted) return;
+          if (result != null && result['is_verified'] == true) {
+            context.go('/lawyer');
+          } else {
+            context.go('/lawyer/pending');
+          }
+        } catch (_) {
+          if (mounted) context.go('/lawyer/pending');
+        }
         break;
       case UserRole.admin:
         context.go('/admin');
@@ -372,7 +314,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ),
         );
         ref.read(authProvider.notifier).clearError();
-      } else if (next.status == AuthStatus.authenticated && next.user != null) {
+      } else if (next.status == AuthStatus.authenticated && next.user != null &&
+          previous?.status != AuthStatus.authenticated) {
         _navigateBasedOnRole(next.user!);
       }
     });
@@ -381,46 +324,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     final isWide = screenSize.width > 680;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF7C3AED),
-      body: Stack(
+      backgroundColor: const Color(0xFF020818),
+      body: AppBackground(
+        overlayOpacity: 0.60,
+        child: Stack(
         fit: StackFit.expand,
         clipBehavior: Clip.hardEdge,
         children: [
-          // ── Animated background ──────────────
-          AnimatedBuilder(
-            animation: Listenable.merge([_bgCtrl, _partCtrl]),
-            builder: (_, __) => CustomPaint(
-              painter: _BackgroundPainter(
-                bgT: _bgCtrl.value,
-                partT: _partCtrl.value,
-              ),
-              child: const SizedBox.expand(),
-            ),
-          ),
-
-          // ── Walking character (wide only) ────
-          if (isWide)
-            AnimatedBuilder(
-              animation: Listenable.merge([_charIn, _walkCtrl, _idleCtrl]),
-              builder: (_, __) {
-                final charProgress = _charIn.value;
-                final charX = -120.0 + (screenSize.width * 0.22 + 120) * charProgress;
-                final cycle = _isIdle
-                    ? _idleCtrl.value * 2 - 1
-                    : _walkCtrl.value * 2 - 1;
-                return Positioned(
-                  left: charX,
-                  bottom: 0,
-                  child: SizedBox(
-                    width: 120,
-                    height: 200,
-                    child: CustomPaint(
-                      painter: _CharPainter(cycle: cycle, isIdle: _isIdle),
-                    ),
-                  ),
-                );
-              },
-            ),
 
           // ── Glassmorphism card ───────────────
           AnimatedBuilder(
@@ -428,17 +338,55 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             builder: (_, __) {
               final slideX = (1.0 - _cardIn.value) * 80.0;
               if (isWide) {
-                return Positioned(
-                  right: 48,
-                  top: 0,
-                  bottom: 0,
-                  child: Center(
-                    child: Transform.translate(
-                      offset: Offset(slideX, 0),
-                      child: Opacity(
-                        opacity: _cardIn.value.clamp(0.0, 1.0),
-                        child: SizedBox(
+                return Center(
+                  child: Transform.translate(
+                    offset: Offset(slideX, 0),
+                    child: Opacity(
+                      opacity: _cardIn.value.clamp(0.0, 1.0),
+                      child: Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()
+                          ..setEntry(3, 2, 0.0012)
+                          ..rotateX(-0.06),
+                        child: Container(
                           width: 420,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.white.withOpacity(0.07),
+                                Colors.transparent,
+                              ],
+                              stops: const [0.0, 0.3],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.85),
+                                blurRadius: 140,
+                                spreadRadius: 20,
+                                offset: const Offset(0, 80),
+                              ),
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.55),
+                                blurRadius: 60,
+                                spreadRadius: 5,
+                                offset: const Offset(0, 35),
+                              ),
+                              BoxShadow(
+                                color: const Color(0xFFF4A324).withOpacity(0.22),
+                                blurRadius: 100,
+                                spreadRadius: 5,
+                                offset: const Offset(0, 0),
+                              ),
+                              BoxShadow(
+                                color: const Color(0xFF3B82F6).withOpacity(0.15),
+                                blurRadius: 80,
+                                offset: const Offset(-30, 30),
+                              ),
+                            ],
+                          ),
                           child: _buildCard(context),
                         ),
                       ),
@@ -495,6 +443,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -522,7 +471,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   TextSpan(
                     text: 'LAW',
                     style: TextStyle(
-                      color: Color(0xFFD97706),
+                      color: Color(0xFFF4A324),
                       fontWeight: FontWeight.w900,
                       fontSize: 22,
                       letterSpacing: 2,
@@ -537,14 +486,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.12),
+            color: const Color(0xFFF4A324).withOpacity(0.10),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.25)),
+            border: Border.all(color: const Color(0xFFF4A324).withOpacity(0.30)),
           ),
           child: const Text(
             'PAKISTAN LEGAL PLATFORM',
             style: TextStyle(
-              color: Colors.white70,
+              color: Color(0xFFF4A324),
               fontSize: 9,
               letterSpacing: 2,
               fontWeight: FontWeight.w600,
@@ -564,9 +513,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.14),
+            color: const Color(0xFF0F1535),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.30), width: 1.5),
+            border: Border.all(color: const Color(0xFFF4A324).withOpacity(0.30), width: 1.5),
           ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
@@ -576,9 +525,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Title
-                  const Text(
-                    'Welcome Back',
-                    style: TextStyle(
+                  Text(
+                    widget.requiredRole == 'lawyer'
+                        ? 'Lawyer Login'
+                        : widget.requiredRole == 'admin'
+                            ? 'Admin Login'
+                            : 'Welcome Back',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -641,7 +594,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     child: TextButton(
                       onPressed: () => context.push('/forgot-password'),
                       style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFFD97706),
+                        foregroundColor: const Color(0xFFF4A324),
                         textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -684,7 +637,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       TextButton(
                         onPressed: () => context.push('/register'),
                         style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFFD97706),
+                          foregroundColor: const Color(0xFFF4A324),
                           textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -721,7 +674,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       obscureText: obscureText,
       onFieldSubmitted: onFieldSubmitted,
       style: const TextStyle(color: Colors.white, fontSize: 14),
-      cursorColor: const Color(0xFFD97706),
+      cursorColor: const Color(0xFFF4A324),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13),
@@ -730,18 +683,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             : null,
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.10),
+        fillColor: const Color(0xFF0F1535),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.20)),
+          borderSide: BorderSide(color: const Color(0xFFF4A324).withOpacity(0.25)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.20)),
+          borderSide: BorderSide(color: const Color(0xFFF4A324).withOpacity(0.25)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFD97706), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFFF4A324), width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -807,14 +760,14 @@ class _SignInButtonState extends State<_SignInButton> {
           height: 52,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFFD97706), Color(0xFFF59E0B), Color(0xFFD97706)],
+              colors: [Color(0xFFF4A324), Color(0xFFF59E0B), Color(0xFFF4A324)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFD97706).withOpacity(0.45),
+                color: const Color(0xFFF4A324).withOpacity(0.45),
                 blurRadius: 14,
                 offset: const Offset(0, 5),
               ),

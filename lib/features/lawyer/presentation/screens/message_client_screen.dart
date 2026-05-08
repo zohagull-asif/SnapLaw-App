@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../client/data/models/case_model.dart';
 import '../../../shared/presentation/providers/messages_provider.dart';
@@ -88,9 +89,14 @@ class _MessageClientScreenState extends ConsumerState<MessageClientScreen> {
   Widget build(BuildContext context) {
     if (widget.caseModel == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Message Client')),
+        backgroundColor: const Color(0xFF020818),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF0D1130),
+          title: const Text('Message Client', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
         body: const Center(
-          child: Text('Case information not available'),
+          child: Text('Case information not available', style: TextStyle(color: Colors.white70)),
         ),
       );
     }
@@ -104,17 +110,20 @@ class _MessageClientScreenState extends ConsumerState<MessageClientScreen> {
     });
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
+        backgroundColor: const Color(0xFF0D1130),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Message Client'),
+            const Text('Message Client', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             Text(
               widget.caseModel!.title,
-              style: const TextStyle(fontSize: 12),
+              style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7)),
             ),
           ],
         ),
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -130,10 +139,10 @@ class _MessageClientScreenState extends ConsumerState<MessageClientScreen> {
           // Case Info Banner
           Container(
             padding: const EdgeInsets.all(12),
-            color: AppColors.primary.withOpacity(0.1),
+            color: SnapLawColors.lawyerPurple.withOpacity(0.15),
             child: Row(
               children: [
-                Icon(Icons.folder, color: AppColors.primary, size: 20),
+                Icon(Icons.folder, color: SnapLawColors.lawyerPurple, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -237,14 +246,8 @@ class _MessageClientScreenState extends ConsumerState<MessageClientScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+              color: SnapLawColors.bgDark,
+              border: Border(top: BorderSide(color: Colors.white.withOpacity(0.08))),
             ),
             child: SafeArea(
               child: Row(

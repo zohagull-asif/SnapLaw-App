@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../shared/presentation/providers/messages_provider.dart';
 import '../providers/cases_provider.dart';
@@ -100,11 +101,14 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen> {
     final currentUser = ref.watch(authProvider).user;
     final casesState = ref.watch(casesProvider);
 
-    // Find the current case
-    final currentCase = casesState.cases.firstWhere(
-      (c) => c.id == widget.caseId,
-      orElse: () => throw Exception('Case not found'),
-    );
+    // Find the current case — may be null while loading
+    final currentCase = casesState.cases.where((c) => c.id == widget.caseId).firstOrNull;
+    if (currentCase == null) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF0A0E27),
+        body: Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6))),
+      );
+    }
 
     // Scroll to bottom when messages change
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -112,20 +116,23 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen> {
     });
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
+        backgroundColor: const Color(0xFF0D1130),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Chat with Lawyer'),
+            const Text('Chat with Lawyer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             Text(
               currentCase.title,
-              style: const TextStyle(fontSize: 12),
+              style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7)),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: () {
               ref.read(messagesProvider(widget.caseId).notifier)
                   .refreshMessages();
@@ -138,10 +145,10 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen> {
           // Case Info Banner
           Container(
             padding: const EdgeInsets.all(12),
-            color: AppColors.primary.withOpacity(0.1),
+            color: SnapLawColors.clientBlue.withOpacity(0.15),
             child: Row(
               children: [
-                Icon(Icons.folder, color: AppColors.primary, size: 20),
+                Icon(Icons.folder, color: SnapLawColors.clientBlue, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -245,14 +252,8 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+              color: SnapLawColors.bgDark,
+              border: Border(top: BorderSide(color: Colors.white.withOpacity(0.08))),
             ),
             child: SafeArea(
               child: Row(

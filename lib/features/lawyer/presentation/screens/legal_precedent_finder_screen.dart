@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/rag_api_service.dart';
 
 class LegalPrecedentFinderScreen extends ConsumerStatefulWidget {
@@ -161,31 +163,31 @@ class _LegalPrecedentFinderScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E3A5F),
+        backgroundColor: const Color(0xFF0D1130),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'Legal Precedent Finder',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Legal Precedent Finder',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         actions: [
           if (!_backendAvailable)
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: IconButton(
-                icon: const Icon(Icons.cloud_off, color: Colors.orange),
+                icon: Icon(Icons.cloud_off, color: SnapLawColors.warning),
                 tooltip: 'Backend unavailable',
                 onPressed: _checkBackend,
               ),
             ),
         ],
       ),
-      body: Column(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: Column(
         children: [
           _buildSearchSection(),
           if (_errorMessage != null)
@@ -212,13 +214,14 @@ class _LegalPrecedentFinderScreenState
           Expanded(child: _buildResultsSection()),
         ],
       ),
+      ),
     );
   }
 
   Widget _buildSearchSection() {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-      decoration: const BoxDecoration(color: Color(0xFF1E3A5F)),
+      decoration: BoxDecoration(color: const Color(0xFF0D1130).withOpacity(0.80)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -245,7 +248,7 @@ class _LegalPrecedentFinderScreenState
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
-              labelColor: const Color(0xFF1E3A5F),
+              labelColor: const Color(0xFF0F1535),
               unselectedLabelColor: Colors.white.withOpacity(0.8),
               labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               unselectedLabelStyle: const TextStyle(fontSize: 13),
@@ -303,8 +306,8 @@ class _LegalPrecedentFinderScreenState
                         onSubmitted: _performSearch,
                         decoration: InputDecoration(
                           hintText: 'Describe your legal issue or question...',
-                          hintStyle: TextStyle(color: Colors.grey[400]),
-                          prefixIcon: const Icon(Icons.search, color: Color(0xFF1E3A5F)),
+                          hintStyle: TextStyle(color: const Color(0xFF8892B0)),
+                          prefixIcon: const Icon(Icons.search, color: Color(0xFF0F1535)),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
                                   icon: const Icon(Icons.clear),
@@ -322,7 +325,7 @@ class _LegalPrecedentFinderScreenState
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: const Color(0xFF0F1535),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                         ),
                         onChanged: (value) => setState(() {}),
@@ -350,7 +353,7 @@ class _LegalPrecedentFinderScreenState
                   ),
                   child: DropdownButton<String>(
                     value: _selectedFilter,
-                    dropdownColor: const Color(0xFF1E3A5F),
+                    dropdownColor: const Color(0xFF0F1535),
                     underline: const SizedBox(),
                     isExpanded: true,
                     style: const TextStyle(color: Colors.white, fontSize: 12),
@@ -385,7 +388,7 @@ class _LegalPrecedentFinderScreenState
                   ),
                   child: DropdownButton<String>(
                     value: _selectedYear,
-                    dropdownColor: const Color(0xFF1E3A5F),
+                    dropdownColor: const Color(0xFF0F1535),
                     underline: const SizedBox(),
                     isExpanded: true,
                     style: const TextStyle(color: Colors.white, fontSize: 12),
@@ -412,8 +415,8 @@ class _LegalPrecedentFinderScreenState
                 icon: Icon(_tabController.index == 0 ? Icons.search : Icons.upload_file, size: 18),
                 label: Text(_tabController.index == 0 ? 'Search' : 'Upload'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: const Color(0xFF1E3A5F),
+                  backgroundColor: const Color(0xFFF4A324),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
@@ -516,14 +519,14 @@ class _LegalPrecedentFinderScreenState
               _isExtracting
                   ? 'Analyzing document with LegalBERT...'
                   : 'Searching with LegalBERT embeddings...',
-              style: const TextStyle(color: Colors.grey),
+              style: const TextStyle(color: const Color(0xFF8892B0)),
             ),
             const SizedBox(height: 4),
             Text(
               _isExtracting
                   ? 'Extracting clauses and finding similar cases'
                   : 'Finding semantically similar cases',
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
+              style: const TextStyle(color: const Color(0xFF8892B0), fontSize: 12),
             ),
           ],
         ),
@@ -547,24 +550,24 @@ class _LegalPrecedentFinderScreenState
             children: [
               Text(
                 '${_searchResults.length} results found',
-                style: TextStyle(fontSize: 13, color: Colors.grey[600], fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 13, color: const Color(0xFF8892B0), fontWeight: FontWeight.w500),
               ),
               if (_uploadedFileName != null) ...[
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E3A5F).withOpacity(0.1),
+                    color: const Color(0xFF0F1535).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.description, size: 12, color: Color(0xFF1E3A5F)),
+                      const Icon(Icons.description, size: 12, color: Color(0xFF0F1535)),
                       const SizedBox(width: 4),
                       Text(
                         _uploadedFileName!,
-                        style: const TextStyle(fontSize: 11, color: Color(0xFF1E3A5F), fontWeight: FontWeight.w500),
+                        style: const TextStyle(fontSize: 11, color: Color(0xFF0F1535), fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -591,17 +594,17 @@ class _LegalPrecedentFinderScreenState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 24),
-            Icon(Icons.search, size: 80, color: Colors.grey[300]),
+            Icon(Icons.search, size: 80, color: const Color(0xFF4A5580)),
             const SizedBox(height: 16),
             Text(
               'Semantic Legal Search',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: const Color(0xFF8892B0)),
             ),
             const SizedBox(height: 8),
             Text(
               'Search by text or upload a contract document.\nLegalBERT will find semantically similar cases.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              style: TextStyle(fontSize: 14, color: const Color(0xFF8892B0)),
             ),
             const SizedBox(height: 24),
             Wrap(
@@ -627,11 +630,11 @@ class _LegalPrecedentFinderScreenState
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off, size: 80, color: Colors.grey[300]),
+          Icon(Icons.search_off, size: 80, color: const Color(0xFF4A5580)),
           const SizedBox(height: 16),
-          Text('No Results Found', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.grey[600])),
+          Text('No Results Found', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: const Color(0xFF8892B0))),
           const SizedBox(height: 8),
-          Text('Try different keywords or remove filters', style: TextStyle(fontSize: 14, color: Colors.grey[500])),
+          Text('Try different keywords or remove filters', style: TextStyle(fontSize: 14, color: const Color(0xFF8892B0))),
         ],
       ),
     );
@@ -645,8 +648,8 @@ class _LegalPrecedentFinderScreenState
         _searchController.text = text;
         _performSearch(text);
       },
-      backgroundColor: const Color(0xFF1E3A5F).withOpacity(0.1),
-      labelStyle: const TextStyle(color: Color(0xFF1E3A5F), fontSize: 12),
+      backgroundColor: const Color(0xFF0F1535).withOpacity(0.1),
+      labelStyle: const TextStyle(color: Color(0xFF0F1535), fontSize: 12),
     );
   }
 
@@ -672,14 +675,14 @@ class _LegalPrecedentFinderScreenState
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E3A5F).withOpacity(0.1),
+            color: const Color(0xFF0F1535).withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(Icons.gavel, color: Color(0xFF1E3A5F), size: 24),
+          child: const Icon(Icons.gavel, color: Color(0xFF0F1535), size: 24),
         ),
         title: Text(
           case_.title,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F)),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F1535)),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -702,7 +705,7 @@ class _LegalPrecedentFinderScreenState
                 Expanded(
                   child: Text(
                     '${case_.court} \u2022 ${case_.year}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: const Color(0xFF8892B0)),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -795,8 +798,8 @@ class _LegalPrecedentFinderScreenState
                   icon: const Icon(Icons.copy, size: 18),
                   label: const Text('Copy'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF1E3A5F),
-                    side: const BorderSide(color: Color(0xFF1E3A5F)),
+                    foregroundColor: const Color(0xFF0F1535),
+                    side: const BorderSide(color: Color(0xFF0F1535)),
                   ),
                 ),
               ),
@@ -811,27 +814,27 @@ class _LegalPrecedentFinderScreenState
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E3A5F).withOpacity(0.05),
+        color: const Color(0xFF0F1535).withOpacity(0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF1E3A5F).withOpacity(0.2)),
+        border: Border.all(color: const Color(0xFF0F1535).withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.gavel, size: 16, color: Color(0xFF1E3A5F)),
+              Icon(Icons.gavel, size: 16, color: Color(0xFF0F1535)),
               SizedBox(width: 6),
               Text(
                 'Court Decision',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F)),
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F1535)),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             decision,
-            style: TextStyle(fontSize: 13, color: Colors.grey[700], height: 1.5),
+            style: TextStyle(fontSize: 13, color: const Color(0xFF8892B0), height: 1.5),
           ),
         ],
       ),
@@ -842,9 +845,9 @@ class _LegalPrecedentFinderScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F))),
+        Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F1535))),
         const SizedBox(height: 8),
-        Text(content, style: TextStyle(fontSize: 13, color: Colors.grey[700], height: 1.5)),
+        Text(content, style: TextStyle(fontSize: 13, color: const Color(0xFF8892B0), height: 1.5)),
       ],
     );
   }

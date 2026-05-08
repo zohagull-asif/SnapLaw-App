@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS public.cases (
   title TEXT NOT NULL,
   description TEXT,
   type TEXT NOT NULL DEFAULT 'other',
-  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'assigned', 'in_progress', 'resolved', 'closed')),
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'assigned', 'in_progress', 'resolved', 'closed', 'restricted')),
   is_urgent BOOLEAN DEFAULT FALSE,
   document_urls TEXT[],
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -92,7 +92,25 @@ CREATE POLICY "Case parties can update" ON public.cases
   FOR UPDATE TO authenticated
   USING (auth.uid() = client_id OR auth.uid() = lawyer_id);
 
+-- Allow admins to view ALL cases
+CREATE POLICY "Admins can view all cases" ON public.cases
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
 
+-- Allow admins to update ANY case (restrict/unrestrict)
+CREATE POLICY "Admins can update any case" ON public.cases
+  FOR UPDATE TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
 
 -- Allow lawyers to see all open/unassigned cases
 CREATE POLICY "Lawyers can view open cases" ON public.cases
@@ -118,7 +136,7 @@ ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view their messages" ON public.messages
   FOR SELECT TO authenticated
-  USING (auth.uid() = sender_id OR auth.uid() = receiver_id);
+  USING (auth.uid() = sender_id OR auth.uid() = recSeiver_id);
 
 CREATE POLICY "Users can send messages" ON public.messages
   FOR INSERT TO authenticated
@@ -140,7 +158,29 @@ CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON public.messages(sender_id);
 CREATE INDEX IF NOT EXISTS idx_messages_receiver_id ON public.messages(receiver_id);
 
 -- ========================================
--- 6. STORAGE BUCKET FOR DOCUMENTS
+-- 6. LAWYER DOCUMENTS TABLE
+-- ========================================
+CREATE TABLE IF NOT EXISTS public.lawyer_documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  lawyer_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  filename TEXT NOT NULL,
+  file_url TEXT NOT NULL,
+  file_size INTEGER,
+  file_type TEXT,
+  description TEXT,
+  case_title TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.lawyer_documents ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Lawyers can manage own documents" ON public.lawyer_documents
+  FOR ALL TO authenticated
+  USING (lawyer_id = auth.uid())
+  WITH CHECK (lawyer_id = auth.uid());
+
+-- ========================================
+-- 7. STORAGE BUCKET FOR DOCUMENTS
 -- ========================================
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('documents', 'documents', true)

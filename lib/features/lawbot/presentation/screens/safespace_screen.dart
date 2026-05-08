@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/lawbot_api_service.dart';
 
 class SafeSpaceScreen extends StatefulWidget {
@@ -61,15 +63,19 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('SafeSpace'),
+        backgroundColor: SnapLawColors.bgDark,
+        foregroundColor: Colors.white,
+        title: const Text('SafeSpace', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +96,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                       const Expanded(
                         child: Text(
                           'SafeSpace - Abuse & Harassment Guidance',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                       ),
                     ],
@@ -98,7 +104,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                   const SizedBox(height: 8),
                   const Text(
                     'Describe your situation and get step-by-step guidance, relevant Pakistani laws, and helpline numbers. Your privacy matters.',
-                    style: TextStyle(fontSize: 13, height: 1.4),
+                    style: TextStyle(fontSize: 13, height: 1.4, color: Colors.white70),
                   ),
                 ],
               ),
@@ -120,7 +126,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                   Expanded(
                     child: RichText(
                       text: TextSpan(
-                        style: TextStyle(fontSize: 13, color: Colors.grey[800]),
+                        style: TextStyle(fontSize: 13, color: Colors.white70),
                         children: const [
                           TextSpan(
                             text: 'In immediate danger? ',
@@ -151,17 +157,18 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
             TextField(
               controller: _controller,
               maxLines: 5,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Tell us what you\'re going through...\nWe\'ll provide relevant guidance and resources.',
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: const Color(0xFF0F1535),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: const Color(0xFFE91E63).withOpacity(0.3)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: const Color(0xFFE91E63).withOpacity(0.3)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -173,15 +180,15 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
 
             // Quick topics
             if (_result == null && !_isLoading) ...[
-              const Text('Or select a topic:', style: TextStyle(fontSize: 13, color: Colors.grey)),
+              const Text('Or select a topic:', style: TextStyle(fontSize: 13, color: const Color(0xFF8892B0))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: _quickTopics.map((topic) => ActionChip(
-                  label: Text(topic, style: const TextStyle(fontSize: 12)),
-                  backgroundColor: Colors.white,
-                  side: BorderSide(color: const Color(0xFFE91E63).withOpacity(0.3)),
+                  label: Text(topic, style: const TextStyle(fontSize: 12, color: Colors.white)),
+                  backgroundColor: const Color(0xFF0F1535),
+                  side: BorderSide(color: const Color(0xFFE91E63).withOpacity(0.5)),
                   onPressed: () {
                     _controller.text = topic;
                     _submit();
@@ -262,9 +269,9 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                 const SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color(0xFF0F1535),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(color: const Color(0xFFE91E63).withOpacity(0.20)),
                   ),
                   child: Column(
                     children: _result!.steps.asMap().entries.map((entry) {
@@ -274,7 +281,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                       return Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          border: isLast ? null : Border(bottom: BorderSide(color: Colors.grey[100]!)),
+                          border: isLast ? null : Border(bottom: BorderSide(color: Colors.white.withOpacity(0.08))),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,7 +305,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Text(step, style: const TextStyle(fontSize: 14, height: 1.5)),
+                              child: Text(step, style: const TextStyle(fontSize: 14, height: 1.5, color: Colors.white70)),
                             ),
                           ],
                         ),
@@ -316,9 +323,9 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color(0xFF0F1535),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(color: const Color(0xFFF4A324).withOpacity(0.20)),
                   ),
                   child: Column(
                     children: _result!.laws.map((law) => Padding(
@@ -328,7 +335,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                         children: [
                           const Icon(Icons.gavel, size: 16, color: AppColors.primary),
                           const SizedBox(width: 8),
-                          Expanded(child: Text(law, style: const TextStyle(fontSize: 13, height: 1.4))),
+                          Expanded(child: Text(law, style: const TextStyle(fontSize: 13, height: 1.4, color: Colors.white70))),
                         ],
                       ),
                     )).toList(),
@@ -361,6 +368,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
+                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -390,7 +398,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                         'Remember: You are not alone. Seeking help is a sign of strength, not weakness. If you are in immediate danger, call 15 (Police) or 1122 (Rescue) right away.',
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey[700],
+                          color: const Color(0xFF8892B0),
                           height: 1.5,
                           fontStyle: FontStyle.italic,
                         ),
@@ -402,6 +410,7 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
             ],
           ],
         ),
+      ),
       ),
     );
   }

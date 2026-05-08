@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/supabase_service.dart';
 import '../../../shared/presentation/providers/appointments_provider.dart';
 import '../providers/cases_provider.dart';
@@ -102,7 +104,7 @@ class _LawyerBookingScreenState extends ConsumerState<LawyerBookingScreen> {
             Text(
               '${widget.lawyerName} will review your request and confirm the date, time and meeting details.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: const Color(0xFF8892B0), fontSize: 14),
             ),
           ],
         ),
@@ -144,11 +146,11 @@ class _LawyerBookingScreenState extends ConsumerState<LawyerBookingScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
         title: const Text('Request Consultation',
-            style: TextStyle(color: Colors.white)),
-        backgroundColor: AppColors.primary,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF0D1130),
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -156,7 +158,9 @@ class _LawyerBookingScreenState extends ConsumerState<LawyerBookingScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         child: Column(
           children: [
             // Lawyer header
@@ -264,7 +268,7 @@ class _LawyerBookingScreenState extends ConsumerState<LawyerBookingScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(color: const Color(0x33F4A324)),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<CaseModel>(
@@ -286,7 +290,7 @@ class _LawyerBookingScreenState extends ConsumerState<LawyerBookingScreen> {
                                   Text(c.typeDisplayName,
                                       style: TextStyle(
                                           fontSize: 11,
-                                          color: Colors.grey[500])),
+                                          color: const Color(0xFF8892B0))),
                                 ],
                               ),
                             );
@@ -306,13 +310,13 @@ class _LawyerBookingScreenState extends ConsumerState<LawyerBookingScreen> {
                   const SizedBox(height: 4),
                   Text('Describe what you\'d like to discuss (optional)',
                       style: TextStyle(
-                          fontSize: 12, color: Colors.grey[500])),
+                          fontSize: 12, color: const Color(0xFF8892B0))),
                   const SizedBox(height: 10),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[300]!),
+                      border: Border.all(color: const Color(0x33F4A324)),
                     ),
                     child: TextField(
                       controller: _notesController,
@@ -321,7 +325,7 @@ class _LawyerBookingScreenState extends ConsumerState<LawyerBookingScreen> {
                         hintText:
                             'e.g. I need advice on my employment contract dispute...',
                         hintStyle: TextStyle(
-                            color: Colors.grey[400], fontSize: 13),
+                            color: const Color(0xFF8892B0), fontSize: 13),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.all(14),
                       ),
@@ -362,6 +366,7 @@ class _LawyerBookingScreenState extends ConsumerState<LawyerBookingScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

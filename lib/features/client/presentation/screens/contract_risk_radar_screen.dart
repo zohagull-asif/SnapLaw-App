@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +7,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../../services/rag_api_service.dart';
 
 class ContractRiskRadarScreen extends ConsumerStatefulWidget {
@@ -357,21 +359,27 @@ class _ContractRiskRadarScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Contract Risk Radar'),
+        backgroundColor: const Color(0xFF0D1130),
+        elevation: 0,
+        title: const Text('Contract Risk Radar',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        actions: const [],
       ),
-      body: _checkingBackend
-          ? const Center(child: CircularProgressIndicator())
-          : !_backendAvailable
-              ? _buildBackendUnavailable()
-              : _analysis == null
-                  ? _buildUploadSection()
-                  : _buildAnalysisResults(),
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: _checkingBackend
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)))
+            : !_backendAvailable
+                ? _buildBackendUnavailable()
+                : _analysis == null
+                    ? _buildUploadSection()
+                    : _buildAnalysisResults(),
+      ),
     );
   }
 
@@ -382,7 +390,7 @@ class _ContractRiskRadarScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.cloud_off, size: 64, color: Colors.grey[400]),
+            Icon(Icons.cloud_off, size: 64, color: const Color(0xFF8892B0)),
             const SizedBox(height: 16),
             const Text(
               'RAG Backend Unavailable',
@@ -913,11 +921,11 @@ class _ContractRiskRadarScreenState
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.gavel, size: 16, color: const Color(0xFF1E3A5F)),
+                        Icon(Icons.gavel, size: 16, color: const Color(0xFF0F1535)),
                         const SizedBox(width: 6),
                         const Text(
                           'Similar Legal Precedents',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F)),
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F1535)),
                         ),
                       ],
                     ),
@@ -938,9 +946,9 @@ class _ContractRiskRadarScreenState
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E3A5F).withOpacity(0.04),
+        color: const Color(0xFF0F1535).withOpacity(0.04),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFF1E3A5F).withOpacity(0.15)),
+        border: Border.all(color: const Color(0xFF0F1535).withOpacity(0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -955,7 +963,7 @@ class _ContractRiskRadarScreenState
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E3A5F),
+                    color: Color(0xFF0F1535),
                   ),
                 ),
               ),
@@ -980,7 +988,7 @@ class _ContractRiskRadarScreenState
           // Court and year
           Text(
             '${precedent.court} - ${precedent.year}',
-            style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 11, color: const Color(0xFF8892B0)),
           ),
           // Reason
           if (precedent.reason.isNotEmpty) ...[
@@ -997,21 +1005,21 @@ class _ContractRiskRadarScreenState
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.grey.withOpacity(0.2)),
+              border: Border.all(color: const Color(0xFF8892B0).withOpacity(0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Court Decision:',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF1E3A5F)),
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF0F1535)),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   precedent.decision.length > 200
                       ? '${precedent.decision.substring(0, 200)}...'
                       : precedent.decision,
-                  style: TextStyle(fontSize: 11, color: Colors.grey[700], height: 1.4),
+                  style: TextStyle(fontSize: 11, color: const Color(0xFF8892B0), height: 1.4),
                 ),
               ],
             ),
@@ -1079,7 +1087,7 @@ class _ContractRiskRadarScreenState
       case 'high':
         return Colors.deepOrange;
       default:
-        return Colors.grey;
+        return const Color(0xFF8892B0);
     }
   }
 
@@ -1092,9 +1100,9 @@ class _ContractRiskRadarScreenState
       case 'risky':
         return Colors.orange;
       case 'not covered':
-        return Colors.grey;
+        return const Color(0xFF8892B0);
       default:
-        return Colors.grey;
+        return const Color(0xFF8892B0);
     }
   }
 

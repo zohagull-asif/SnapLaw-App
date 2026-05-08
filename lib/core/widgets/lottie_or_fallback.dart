@@ -55,16 +55,8 @@ class LottieOrFallback extends StatelessWidget {
     try {
       // Try to load the asset - if it fails, catch will return false
       await DefaultAssetBundle.of(
-        // ignore: use_build_context_synchronously
-        NavigatorState.maybeOf(
-          // ignore: use_build_context_synchronously
-          Navigator.of(
-            // ignore: invalid_use_of_protected_member
-            WidgetsBinding.instance.rootElement!,
-          ).context,
-        )?.context ??
-            // ignore: invalid_use_of_protected_member
-            WidgetsBinding.instance.rootElement!,
+        // ignore: invalid_use_of_protected_member
+        WidgetsBinding.instance.rootElement!,
       ).load(animationPath);
       return true;
     } catch (e) {

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../data/citizen_data.dart';
 
@@ -17,8 +18,9 @@ class CitizenJusticeScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFF1A3A5C), Color(0xFF2E5A8F)]),
+            gradient: const LinearGradient(colors: [Color(0xFF0F1535), Color(0xFF2E5A8F)]),
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withOpacity(0.12)),
           ),
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,22 +36,22 @@ class CitizenJusticeScreen extends StatelessWidget {
         // Summary stats
         Row(
           children: [
-            _StatCard(label: 'Total Pending', value: _fmt(totalPending), color: const Color(0xFFe74c3c), icon: Icons.pending_actions),
+            _StatCard(label: 'Total Pending', value: _fmt(totalPending), color: const Color(0xFFFF4757), icon: Icons.pending_actions),
             const SizedBox(width: 10),
-            _StatCard(label: 'Avg Resolution', value: '$avgDays days', color: const Color(0xFFf39c12), icon: Icons.timer_outlined),
+            _StatCard(label: 'Avg Resolution', value: '$avgDays days', color: const Color(0xFFF4A324), icon: Icons.timer_outlined),
             const SizedBox(width: 10),
-            _StatCard(label: 'Resolved/Month', value: _fmt(totalResolved), color: const Color(0xFF27ae60), icon: Icons.check_circle_outline),
+            _StatCard(label: 'Resolved/Month', value: _fmt(totalResolved), color: const Color(0xFF00C896), icon: Icons.check_circle_outline),
           ],
         ),
         const SizedBox(height: 20),
 
-        const Text('Court Statistics', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text('Court Statistics', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white.withOpacity(0.90))),
         const SizedBox(height: 12),
 
         ...kCourtStats.map((c) => _CourtCard(court: c)),
         const SizedBox(height: 20),
 
-        const Text('Average Time to Resolve by Case Type', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text('Average Time to Resolve by Case Type', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white.withOpacity(0.90))),
         const SizedBox(height: 12),
 
         ...kCaseTypeStats.map((t) => _CaseTypeBar(stat: t)),
@@ -75,21 +77,27 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.2)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 6),
-            Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)),
-            const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.center),
-          ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: color.withOpacity(0.30)),
+            ),
+            child: Column(
+              children: [
+                Icon(icon, color: color, size: 22),
+                const SizedBox(height: 6),
+                Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)),
+                const SizedBox(height: 2),
+                Text(label, style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.55)), textAlign: TextAlign.center),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -105,40 +113,52 @@ class _CourtCard extends StatelessWidget {
     final statusColor = Color(court.statusColor);
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(court.courtType, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                  Text(court.city, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                ],
-              )),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(20), border: Border.all(color: statusColor.withOpacity(0.3))),
-                child: Text(court.status, style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.w600)),
-              ),
-            ],
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.12)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(court.courtType, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
+                        Text(court.city, style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12)),
+                      ],
+                    )),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: statusColor.withOpacity(0.40)),
+                      ),
+                      child: Text(court.status, style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    _MiniStat(label: 'Pending', value: _fmt(court.totalPendingCases), color: const Color(0xFFFF4757)),
+                    _MiniStat(label: 'Avg Days', value: '${court.avgResolutionDays}d', color: const Color(0xFFF4A324)),
+                    _MiniStat(label: 'Resolved/Mo', value: _fmt(court.casesResolvedThisMonth), color: const Color(0xFF00C896)),
+                  ],
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _MiniStat(label: 'Pending', value: _fmt(court.totalPendingCases), color: const Color(0xFFe74c3c)),
-              _MiniStat(label: 'Avg Days', value: '${court.avgResolutionDays}d', color: const Color(0xFFf39c12)),
-              _MiniStat(label: 'Resolved/Mo', value: _fmt(court.casesResolvedThisMonth), color: const Color(0xFF27ae60)),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -161,7 +181,7 @@ class _MiniStat extends StatelessWidget {
     return Expanded(child: Column(
       children: [
         Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 13)),
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+        Text(label, style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.50))),
       ],
     ));
   }
@@ -175,45 +195,57 @@ class _CaseTypeBar extends StatelessWidget {
   Widget build(BuildContext context) {
     const maxDays = 1000;
     final pct = (stat.avgDaysToResolve / maxDays).clamp(0.0, 1.0);
-    final barColor = stat.avgDaysToResolve < 365 ? const Color(0xFF27ae60) : stat.avgDaysToResolve < 730 ? const Color(0xFFf39c12) : const Color(0xFFe74c3c);
+    final barColor = stat.avgDaysToResolve < 365
+        ? const Color(0xFF00C896)
+        : stat.avgDaysToResolve < 730
+            ? const Color(0xFFF4A324)
+            : const Color(0xFFFF4757);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(child: Text(stat.caseType, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13))),
-              Text('${stat.avgDaysToResolve} days', style: TextStyle(color: barColor, fontWeight: FontWeight.bold, fontSize: 13)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: pct,
-              backgroundColor: barColor.withOpacity(0.1),
-              valueColor: AlwaysStoppedAnimation<Color>(barColor),
-              minHeight: 8,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.12)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: Text(stat.caseType, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.white))),
+                    Text('${stat.avgDaysToResolve} days', style: TextStyle(color: barColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: pct,
+                    backgroundColor: barColor.withOpacity(0.15),
+                    valueColor: AlwaysStoppedAnimation<Color>(barColor),
+                    minHeight: 8,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Success rate: ${stat.successRatePercent}%', style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.50))),
+                    Text('${_fmtK(stat.totalCases2023)} cases (2023)', style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.50))),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 6),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Success rate: ${stat.successRatePercent}%', style: const TextStyle(fontSize: 11, color: Colors.grey)),
-              Text('${_fmtK(stat.totalCases2023)} cases (2023)', style: const TextStyle(fontSize: 11, color: Colors.grey)),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

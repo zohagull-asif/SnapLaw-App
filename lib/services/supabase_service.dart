@@ -63,7 +63,24 @@ class SupabaseService {
   }
 
   static Future<void> resetPassword(String email) async {
-    await client.auth.resetPasswordForEmail(email);
+    final origin = Uri.base.origin;
+    await client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: '$origin/reset-password',
+    );
+  }
+
+  static Future<bool> emailExists(String email) async {
+    try {
+      final result = await client
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
+      return result != null;
+    } catch (_) {
+      return false;
+    }
   }
 
   // OTP methods for email verification

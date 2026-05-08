@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../shared/presentation/providers/reviews_provider.dart';
 import '../../../shared/data/models/review_model.dart';
 import '../providers/lawyers_provider.dart';
@@ -26,7 +27,7 @@ class LawyerProfileScreen extends ConsumerWidget {
     final lawyer = lawyersState.lawyers.where((l) => l.id == lawyerId).firstOrNull;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: const Color(0xFF020818),
       body: CustomScrollView(
         slivers: [
           // ─── Hero header ───
@@ -41,7 +42,7 @@ class LawyerProfileScreen extends ConsumerWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF1E3A5F), Color(0xFF2A5298)],
+                    colors: [Color(0xFF0F1535), Color(0xFF2A5298)],
                   ),
                 ),
                 child: SafeArea(
@@ -195,9 +196,9 @@ class LawyerProfileScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('About', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E3A5F))),
+          const Text('About', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F1535))),
           const SizedBox(height: 8),
-          Text(bio, style: TextStyle(color: Colors.grey[700], fontSize: 13, height: 1.5)),
+          Text(bio, style: TextStyle(color: const Color(0xFF8892B0), fontSize: 13, height: 1.5)),
         ],
       ),
     );
@@ -225,7 +226,7 @@ class _RatingSummaryCard extends StatelessWidget {
             children: [
               Text(
                 summary.reviewCount == 0 ? '—' : summary.averageRating.toStringAsFixed(1),
-                style: const TextStyle(fontSize: 52, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F)),
+                style: const TextStyle(fontSize: 52, fontWeight: FontWeight.bold, color: Color(0xFF0F1535)),
               ),
               Row(
                 children: List.generate(5, (i) => Icon(
@@ -237,7 +238,7 @@ class _RatingSummaryCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 '${summary.reviewCount} review${summary.reviewCount == 1 ? '' : 's'}',
-                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                style: TextStyle(color: const Color(0xFF8892B0), fontSize: 12),
               ),
             ],
           ),
@@ -281,7 +282,7 @@ class _RatingBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: percentage,
-                backgroundColor: Colors.grey[200],
+                backgroundColor: const Color(0xFF4A5580),
                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
                 minHeight: 8,
               ),
@@ -291,7 +292,7 @@ class _RatingBar extends StatelessWidget {
           SizedBox(
             width: 32,
             child: Text('${(percentage * 100).round()}%',
-                style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+                style: TextStyle(fontSize: 11, color: const Color(0xFF8892B0))),
           ),
         ],
       ),
@@ -320,9 +321,9 @@ class _StatChip extends StatelessWidget {
         children: [
           Icon(icon, color: AppColors.primary, size: 20),
           const SizedBox(height: 6),
-          Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: valueColor ?? const Color(0xFF1E3A5F))),
+          Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: valueColor ?? const Color(0xFF0F1535))),
           const SizedBox(height: 2),
-          Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+          Text(label, style: TextStyle(fontSize: 10, color: const Color(0xFF8892B0))),
         ],
       ),
     );
@@ -345,7 +346,7 @@ class _ReviewsSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Client Reviews', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F))),
+            Text('Client Reviews', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F1535))),
             TextButton.icon(
               icon: const Icon(Icons.rate_review, size: 16),
               label: const Text('Write Review'),
@@ -366,11 +367,11 @@ class _ReviewsSection extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Icon(Icons.rate_review_outlined, size: 48, color: Colors.grey[300]),
+                Icon(Icons.rate_review_outlined, size: 48, color: const Color(0xFF4A5580)),
                 const SizedBox(height: 12),
-                Text('No reviews yet', style: TextStyle(color: Colors.grey[500], fontSize: 15)),
+                Text('No reviews yet', style: TextStyle(color: const Color(0xFF8892B0), fontSize: 15)),
                 const SizedBox(height: 4),
-                Text('Be the first to review this lawyer', style: TextStyle(color: Colors.grey[400], fontSize: 13)),
+                Text('Be the first to review this lawyer', style: TextStyle(color: const Color(0xFF8892B0), fontSize: 13)),
               ],
             ),
           )
@@ -414,7 +415,7 @@ class _ReviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(review.displayName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    Text(review.caseType, style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                    Text(review.caseType, style: TextStyle(fontSize: 12, color: const Color(0xFF8892B0))),
                   ],
                 ),
               ),
@@ -428,7 +429,7 @@ class _ReviewCard extends StatelessWidget {
                     )),
                   ),
                   const SizedBox(height: 2),
-                  Text(review.timeAgo, style: TextStyle(fontSize: 11, color: Colors.grey[400])),
+                  Text(review.timeAgo, style: TextStyle(fontSize: 11, color: const Color(0xFF8892B0))),
                 ],
               ),
             ],
@@ -438,12 +439,12 @@ class _ReviewCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: const Color(0xFF0F1535),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 '"${review.reviewText}"',
-                style: TextStyle(color: Colors.grey[700], fontSize: 13, fontStyle: FontStyle.italic, height: 1.5),
+                style: TextStyle(color: const Color(0xFF8892B0), fontSize: 13, fontStyle: FontStyle.italic, height: 1.5),
               ),
             ),
           ],

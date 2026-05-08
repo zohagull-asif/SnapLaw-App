@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../client/data/models/case_model.dart';
 import '../../../client/data/models/case_update_model.dart';
 import '../../../client/presentation/providers/case_updates_provider.dart';
@@ -38,6 +40,8 @@ class _CaseDetailScreenState extends ConsumerState<CaseDetailScreen> {
         return AppColors.statusClosed;
       case CaseStatus.pending:
         return AppColors.warning;
+      case CaseStatus.restricted:
+        return Colors.red;
     }
   }
 
@@ -82,7 +86,7 @@ class _CaseDetailScreenState extends ConsumerState<CaseDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: const Text('Cancel', style: TextStyle(color: const Color(0xFF8892B0))),
           ),
         ],
       ),
@@ -140,16 +144,19 @@ class _CaseDetailScreenState extends ConsumerState<CaseDetailScreen> {
     print('📊 Has documents: ${_currentCase.documentUrls != null && _currentCase.documentUrls!.isNotEmpty}');
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Case Details'),
+        backgroundColor: const Color(0xFF0D1130),
+        title: const Text('Case Details', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.edit, color: Colors.white),
             tooltip: 'Update Status',
             onPressed: _showUpdateStatusDialog,
           ),
           IconButton(
-            icon: const Icon(Icons.message),
+            icon: const Icon(Icons.message, color: Colors.white),
             tooltip: 'Message Client',
             onPressed: () {
               context.push('/lawyer/message-client/${_currentCase.clientId}',
@@ -158,7 +165,9 @@ class _CaseDetailScreenState extends ConsumerState<CaseDetailScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,6 +380,7 @@ class _CaseDetailScreenState extends ConsumerState<CaseDetailScreen> {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -479,7 +489,7 @@ class _CaseDetailScreenState extends ConsumerState<CaseDetailScreen> {
                       style: TextStyle(
                         color: selectedHearingDate != null
                             ? AppColors.textPrimary
-                            : Colors.grey,
+                            : const Color(0xFF8892B0),
                       ),
                     ),
                   ),
@@ -490,7 +500,7 @@ class _CaseDetailScreenState extends ConsumerState<CaseDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: const Text('Cancel', style: TextStyle(color: const Color(0xFF8892B0))),
             ),
             ElevatedButton(
               onPressed: isPosting
@@ -569,6 +579,8 @@ class _CaseDetailScreenState extends ConsumerState<CaseDetailScreen> {
         return Icons.check_circle;
       case CaseStatus.pending:
         return Icons.schedule;
+      case CaseStatus.restricted:
+        return Icons.block;
     }
   }
 

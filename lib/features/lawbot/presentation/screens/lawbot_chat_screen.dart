@@ -1,9 +1,11 @@
+﻿import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/constants/app_styles.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../providers/lawbot_provider.dart';
 import '../../data/models/chat_message_model.dart';
 
@@ -40,12 +42,8 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
-
     _messageController.clear();
-
-    // Send message via provider
     await ref.read(lawBotProvider.notifier).sendMessage(text);
-
     _scrollToBottom();
   }
 
@@ -55,335 +53,291 @@ class _LawBotChatScreenState extends ConsumerState<LawBotChatScreen> {
     final messages = lawBotState.messages;
     final isLoading = lawBotState.isLoading;
 
-    // Listen for errors
     ref.listen<LawBotState>(lawBotProvider, (previous, next) {
-      if (next.errorMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: AppColors.warning,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-        ref.read(lawBotProvider.notifier).clearError();
+      // Errors are shown as bot chat bubbles — no snackbar needed
+      if (previous?.messages.length != next.messages.length) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
       }
     });
 
-    // Auto-scroll when new messages arrive
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (messages.isNotEmpty) {
-        _scrollToBottom();
-      }
+      if (messages.isNotEmpty) _scrollToBottom();
     });
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: const Icon(
-                Icons.smart_toy,
-                color: AppColors.primary,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'LawBot',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                Text(
-                  isLoading ? 'Typing...' : 'Online',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textLight.withOpacity(0.8),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+        backgroundColor: SnapLawColors.bgDark,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
+        title: Row(children: [
+          Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(
+              gradient: SnapLawGradients.primary,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [BoxShadow(
+                color: SnapLawColors.primary.withOpacity(0.40),
+                blurRadius: 8, offset: const Offset(0, 2),
+              )],
+            ),
+            child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('LawBot', style: TextStyle(
+              fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text(
+              isLoading ? 'Typing...' : 'Online',
+              style: TextStyle(
+                fontSize: 11,
+                color: isLoading ? SnapLawColors.warning : SnapLawColors.success,
+              )),
+          ]),
+        ]),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_vert),
+            icon: Icon(Icons.more_vert, color: Colors.white.withOpacity(0.70)),
             onPressed: () {
               showModalBottomSheet(
                 context: context,
+                backgroundColor: const Color(0xFF0D1130),
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                 builder: (context) => _buildOptionsSheet(),
               );
             },
           ),
         ],
       ),
-      body: Column(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: Column(
         children: [
           // Disclaimer Banner
           Container(
-            padding: const EdgeInsets.all(12),
-            color: AppColors.info.withOpacity(0.1),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 20,
-                  color: AppColors.info,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'LawBot provides general information only. For legal advice, consult a licensed attorney.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.info,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            color: SnapLawColors.info.withOpacity(0.10),
+            child: Row(children: [
+              Icon(Icons.info_outline, size: 16, color: SnapLawColors.info),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'LawBot provides general information only. Consult a licensed attorney for advice.',
+                  style: TextStyle(fontSize: 11, color: SnapLawColors.info.withOpacity(0.85)),
+                )),
+            ]),
           ),
 
           // Chat Messages
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: messages.length + (isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (isLoading && index == messages.length) {
-                  return const _TypingIndicator();
-                }
-                return _ChatBubble(message: messages[index]);
-              },
+            child: Container(
+              color: SnapLawColors.bgDeep,
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: messages.length + (isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (isLoading && index == messages.length) {
+                    return const _TypingIndicator();
+                  }
+                  return _ChatBubble(message: messages[index]);
+                },
+              ),
             ),
           ),
 
           // Quick Suggestions
           if (messages.length <= 2)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: SnapLawColors.bgDark,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _QuickSuggestion(
-                      text: 'What can you help with?',
-                      onTap: () {
-                        _messageController.text = 'What can you help with?';
-                        _sendMessage();
-                      },
-                    ),
-                    _QuickSuggestion(
-                      text: 'Find a lawyer',
-                      onTap: () {
-                        _messageController.text = 'Help me find a lawyer';
-                        _sendMessage();
-                      },
-                    ),
-                    _QuickSuggestion(
-                      text: 'Contract help',
-                      onTap: () {
-                        _messageController.text =
-                            'I have a question about contracts';
-                        _sendMessage();
-                      },
-                    ),
-                  ],
-                ),
+                child: Row(children: [
+                  _QuickSuggestion(text: 'What can you help with?',
+                    onTap: () { _messageController.text = 'What can you help with?'; _sendMessage(); }),
+                  _QuickSuggestion(text: 'Find a lawyer',
+                    onTap: () { _messageController.text = 'Help me find a lawyer'; _sendMessage(); }),
+                  _QuickSuggestion(text: 'Contract help',
+                    onTap: () { _messageController.text = 'I have a question about contracts'; _sendMessage(); }),
+                ]),
               ),
             ),
 
           // Input Field
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -4),
+          ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+                decoration: BoxDecoration(
+                  color: SnapLawColors.bgDark.withOpacity(0.90),
+                  border: Border(top: BorderSide(color: Colors.white.withOpacity(0.10))),
                 ),
-              ],
-            ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      textCapitalization: TextCapitalization.sentences,
-                      maxLines: null,
-                      enabled: !isLoading,
-                      decoration: InputDecoration(
-                        hintText: AppStrings.typeMessage,
-                        border: OutlineInputBorder(
+                child: SafeArea(
+                  child: Row(children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
+                          border: Border.all(color: Colors.white.withOpacity(0.15)),
                         ),
-                        filled: true,
-                        fillColor: AppColors.background,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
+                        child: TextField(
+                          controller: _messageController,
+                          textCapitalization: TextCapitalization.sentences,
+                          maxLines: null,
+                          enabled: !isLoading,
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                          decoration: InputDecoration(
+                            hintText: AppStrings.typeMessage,
+                            hintStyle: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 13),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                          ),
+                          onSubmitted: (_) => _sendMessage(),
                         ),
                       ),
-                      onSubmitted: (_) => _sendMessage(),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: isLoading ? null : _sendMessage,
+                      child: Container(
+                        width: 44, height: 44,
+                        decoration: BoxDecoration(
+                          gradient: isLoading ? null : SnapLawGradients.primary,
+                          color: isLoading ? Colors.white12 : null,
+                          shape: BoxShape.circle,
+                          boxShadow: isLoading ? null : [BoxShadow(
+                            color: SnapLawColors.primary.withOpacity(0.40),
+                            blurRadius: 8, offset: const Offset(0, 2),
+                          )],
+                        ),
+                        child: Icon(Icons.send, color: isLoading ? Colors.white30 : Colors.white, size: 20),
+                      ),
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send, color: AppColors.textLight),
-                      onPressed: isLoading ? null : _sendMessage,
-                    ),
-                  ),
-                ],
+                  ]),
+                ),
               ),
             ),
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildOptionsSheet() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.delete_outline),
-            title: const Text('Clear Chat'),
-            onTap: () {
-              Navigator.pop(context);
-              ref.read(lawBotProvider.notifier).clearChat();
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('About LawBot'),
-            onTap: () {
-              Navigator.pop(context);
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('About LawBot'),
-                  content: const Text(
-                    'LawBot is an AI-powered legal assistant powered by ChatGPT that provides general legal information and guidance. It can help answer common legal questions and direct you to appropriate resources.\n\nNote: LawBot does not provide legal advice. Always consult with a qualified attorney for specific legal matters.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('OK'),
-                    ),
-                  ],
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Container(width: 40, height: 4,
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white24,
+            borderRadius: BorderRadius.circular(2),
+          )),
+        ListTile(
+          leading: const Icon(Icons.delete_outline, color: Colors.white70),
+          title: const Text('Clear Chat', style: TextStyle(color: Colors.white)),
+          onTap: () {
+            Navigator.pop(context);
+            ref.read(lawBotProvider.notifier).clearChat();
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.info_outline, color: Colors.white70),
+          title: const Text('About LawBot', style: TextStyle(color: Colors.white)),
+          onTap: () {
+            Navigator.pop(context);
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                backgroundColor: const Color(0xFF0D1130),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                title: const Text('About LawBot', style: TextStyle(color: Colors.white)),
+                content: Text(
+                  'LawBot is an AI-powered legal assistant powered by Gemini AI that provides general legal information and guidance. It can help answer common legal questions and direct you to appropriate resources.\n\nNote: LawBot does not provide legal advice. Always consult with a qualified attorney for specific legal matters.',
+                  style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 13, height: 1.4),
                 ),
-              );
-            },
-          ),
-        ],
-      ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('OK', style: TextStyle(color: SnapLawColors.primary)),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ]),
     );
   }
 }
 
 class _ChatBubble extends StatelessWidget {
   final ChatMessageModel message;
-
   const _ChatBubble({required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Row(
-        mainAxisAlignment:
-            message.isBot ? MainAxisAlignment.start : MainAxisAlignment.end,
+        mainAxisAlignment: message.isBot ? MainAxisAlignment.start : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (message.isBot) ...[
             Container(
-              width: 32,
-              height: 32,
+              width: 30, height: 30,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+                gradient: SnapLawGradients.primary,
+                borderRadius: BorderRadius.circular(15),
               ),
-              child: const Icon(
-                Icons.smart_toy,
-                size: 18,
-                color: AppColors.primary,
-              ),
+              child: const Icon(Icons.smart_toy, size: 16, color: Colors.white),
             ),
             const SizedBox(width: 8),
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: message.isBot ? AppColors.surface : AppColors.primary,
+                color: message.isBot
+                    ? Colors.white.withOpacity(0.09)
+                    : SnapLawColors.primary.withOpacity(0.85),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
-                  bottomLeft:
-                      message.isBot ? Radius.zero : const Radius.circular(16),
-                  bottomRight:
-                      message.isBot ? const Radius.circular(16) : Radius.zero,
+                  bottomLeft: message.isBot ? Radius.zero : const Radius.circular(16),
+                  bottomRight: message.isBot ? const Radius.circular(16) : Radius.zero,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                border: Border.all(
+                  color: message.isBot
+                      ? Colors.white.withOpacity(0.12)
+                      : SnapLawColors.primary.withOpacity(0.30),
+                  width: 1,
+                ),
               ),
-              child: Text(
-                message.text,
+              child: Text(message.text,
                 style: TextStyle(
-                  color:
-                      message.isBot ? AppColors.textPrimary : AppColors.textLight,
-                  fontSize: 14,
-                  height: 1.4,
-                ),
-              ),
+                  color: message.isBot ? Colors.white.withOpacity(0.88) : Colors.white,
+                  fontSize: 13, height: 1.45,
+                )),
             ),
           ),
           if (!message.isBot) ...[
             const SizedBox(width: 8),
             Container(
-              width: 32,
-              height: 32,
+              width: 30, height: 30,
               decoration: BoxDecoration(
-                color: AppColors.secondary.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.white.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(15),
               ),
-              child: const Icon(
-                Icons.person,
-                size: 18,
-                color: AppColors.secondary,
-              ),
+              child: Icon(Icons.person, size: 16, color: Colors.white.withOpacity(0.80)),
             ),
           ],
         ],
@@ -398,46 +352,35 @@ class _TypingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(
-              Icons.smart_toy,
-              size: 18,
-              color: AppColors.primary,
-            ),
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Row(children: [
+        Container(
+          width: 30, height: 30,
+          decoration: BoxDecoration(
+            gradient: SnapLawGradients.primary,
+            borderRadius: BorderRadius.circular(15),
           ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
+          child: const Icon(Icons.smart_toy, size: 16, color: Colors.white),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.09),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+              bottomRight: Radius.circular(16),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDot(0),
-                const SizedBox(width: 4),
-                _buildDot(1),
-                const SizedBox(width: 4),
-                _buildDot(2),
-              ],
-            ),
+            border: Border.all(color: Colors.white.withOpacity(0.12)),
           ),
-        ],
-      ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            _buildDot(0), const SizedBox(width: 4),
+            _buildDot(1), const SizedBox(width: 4),
+            _buildDot(2),
+          ]),
+        ),
+      ]),
     );
   }
 
@@ -445,16 +388,13 @@ class _TypingIndicator extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: Duration(milliseconds: 600 + (index * 200)),
-      builder: (context, value, child) {
-        return Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: AppColors.textSecondary.withOpacity(0.5),
-            shape: BoxShape.circle,
-          ),
-        );
-      },
+      builder: (context, value, child) => Container(
+        width: 7, height: 7,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.45 + value * 0.40),
+          shape: BoxShape.circle,
+        ),
+      ),
     );
   }
 }
@@ -462,29 +402,23 @@ class _TypingIndicator extends StatelessWidget {
 class _QuickSuggestion extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
-
   const _QuickSuggestion({required this.text, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: InkWell(
+      child: GestureDetector(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.primary),
+            color: SnapLawColors.primary.withOpacity(0.15),
             borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: SnapLawColors.primary.withOpacity(0.40)),
           ),
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: AppColors.primary,
-              fontSize: 13,
-            ),
-          ),
+          child: Text(text, style: TextStyle(
+            color: SnapLawColors.primaryLight, fontSize: 12, fontWeight: FontWeight.w500)),
         ),
       ),
     );

@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../data/models/case_model.dart';
 import '../providers/lawyers_provider.dart';
 
@@ -29,14 +31,18 @@ class _SelectLawyerScreenState extends ConsumerState<SelectLawyerScreen> {
     final lawyers = lawyersState.lawyers;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Select a Lawyer'),
+        backgroundColor: const Color(0xFF0D1130),
+        title: const Text('Select a Lawyer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
-      body: Column(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: Column(
         children: [
           // Search Bar
           Container(
@@ -133,6 +139,7 @@ class _SelectLawyerScreenState extends ConsumerState<SelectLawyerScreen> {
                       ),
           ),
         ],
+      ),
       ),
     );
   }

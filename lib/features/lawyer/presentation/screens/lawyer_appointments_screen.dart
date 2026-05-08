@@ -1,9 +1,12 @@
+﻿import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../shared/data/models/appointment_model.dart';
 import '../../../shared/presentation/providers/appointments_provider.dart';
 
@@ -40,23 +43,27 @@ class _LawyerAppointmentsScreenState
         state.appointments.where((a) => a.status == 'pending').length;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('My Schedule'),
+        backgroundColor: const Color(0xFF0D1130),
+        elevation: 0,
+        title: const Text('My Schedule',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, color: Colors.white70),
             onPressed: () => ref.read(appointmentsProvider.notifier).refresh(),
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppColors.textLight,
-          unselectedLabelColor: AppColors.textLight.withOpacity(0.6),
-          indicatorColor: AppColors.secondary,
+          labelColor: SnapLawColors.lawyerPurple,
+          unselectedLabelColor: Colors.white,
+          indicatorColor: SnapLawColors.lawyerPurple,
           tabs: [
             Tab(
               child: Row(
@@ -89,8 +96,10 @@ class _LawyerAppointmentsScreenState
           ],
         ),
       ),
-      body: state.isLoading && state.appointments.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: state.isLoading && state.appointments.isEmpty
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF7B61FF)))
           : TabBarView(
               controller: _tabController,
               children: [
@@ -101,6 +110,7 @@ class _LawyerAppointmentsScreenState
                 _buildAppointmentsList(state.past, true),
               ],
             ),
+      ),
     );
   }
 
@@ -108,22 +118,15 @@ class _LawyerAppointmentsScreenState
   Widget _buildPendingRequests(List<AppointmentModel> pending) {
     if (pending.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.inbox_outlined,
-                size: 64, color: Colors.grey[300]),
-            const SizedBox(height: 16),
-            Text('No pending requests',
-                style: AppStyles.subtitle1
-                    .copyWith(color: AppColors.textSecondary)),
-            const SizedBox(height: 8),
-            Text('New appointment requests from clients will appear here',
-                style: AppStyles.bodyText2
-                    .copyWith(color: AppColors.textSecondary),
-                textAlign: TextAlign.center),
-          ],
-        ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(Icons.inbox_outlined, size: 64, color: Colors.white24),
+          const SizedBox(height: 16),
+          const Text('No pending requests', style: TextStyle(color: Colors.white70, fontSize: 16)),
+          const SizedBox(height: 8),
+          Text('New appointment requests from clients will appear here',
+            style: TextStyle(color: Colors.white.withOpacity(0.40), fontSize: 13),
+            textAlign: TextAlign.center),
+        ]),
       );
     }
 
@@ -231,7 +234,7 @@ class _LawyerAppointmentsScreenState
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 14),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey[300]!),
+                              border: Border.all(color: const Color(0x33F4A324)),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
@@ -259,7 +262,7 @@ class _LawyerAppointmentsScreenState
                           padding:
                               const EdgeInsets.symmetric(horizontal: 12),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[300]!),
+                            border: Border.all(color: const Color(0x33F4A324)),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: DropdownButtonHideUnderline(
@@ -334,7 +337,7 @@ class _LawyerAppointmentsScreenState
                                     ? 'e.g. +92 300 1234567'
                                     : 'e.g. Office 3, Floor 5, XYZ Plaza, Lahore',
                             hintStyle: TextStyle(
-                                color: Colors.grey[400], fontSize: 12),
+                                color: const Color(0xFF8892B0), fontSize: 12),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             prefixIcon: Icon(
@@ -370,7 +373,7 @@ class _LawyerAppointmentsScreenState
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? AppColors.lawyerPrimary
-                                        : Colors.grey[100],
+                                        : const Color(0xFF0F1535),
                                     borderRadius:
                                         BorderRadius.circular(8),
                                   ),
@@ -381,7 +384,7 @@ class _LawyerAppointmentsScreenState
                                       fontWeight: FontWeight.w600,
                                       color: isSelected
                                           ? Colors.white
-                                          : Colors.grey[600],
+                                          : const Color(0xFF8892B0),
                                     ),
                                   ),
                                 ),
@@ -403,7 +406,7 @@ class _LawyerAppointmentsScreenState
                             hintText:
                                 'e.g. Please bring your documents, parking info...',
                             hintStyle: TextStyle(
-                                color: Colors.grey[400], fontSize: 12),
+                                color: const Color(0xFF8892B0), fontSize: 12),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             contentPadding: const EdgeInsets.all(12),
@@ -613,16 +616,12 @@ class _LawyerAppointmentsScreenState
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.event_available,
-              size: 64, color: AppColors.textSecondary.withOpacity(0.5)),
+          Icon(Icons.event_available, size: 64, color: Colors.white24),
           const SizedBox(height: 16),
-          Text(title,
-              style: AppStyles.subtitle1
-                  .copyWith(color: AppColors.textSecondary)),
+          Text(title, style: const TextStyle(color: Colors.white70, fontSize: 16)),
           const SizedBox(height: 8),
           Text(subtitle,
-              style: AppStyles.bodyText2
-                  .copyWith(color: AppColors.textSecondary),
+              style: TextStyle(color: Colors.white.withOpacity(0.40), fontSize: 13),
               textAlign: TextAlign.center),
         ],
       ),
@@ -647,120 +646,100 @@ class _PendingRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.07),
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1.5),
+        border: Border.all(color: SnapLawColors.warning.withOpacity(0.40), width: 1.2),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
+                Row(children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: SnapLawColors.warning.withOpacity(0.18),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Icons.person_add, color: SnapLawColors.warning, size: 24),
                   ),
-                  child: const Icon(Icons.person_add,
-                      color: Colors.orange, size: 24),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(appointment.clientName,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15)),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white)),
                       if (appointment.caseTitle != null)
-                        Text(
-                          'Case: ${appointment.caseTitle}',
-                          style: TextStyle(
-                              fontSize: 12, color: Colors.grey[600]),
-                        ),
-                    ],
+                        Text('Case: ${appointment.caseTitle}',
+                          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.55))),
+                    ]),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: SnapLawColors.warning.withOpacity(0.18),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text('New Request', style: TextStyle(
+                      fontSize: 10, fontWeight: FontWeight.bold, color: SnapLawColors.warning)),
                   ),
-                  child: const Text('New Request',
-                      style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange)),
-                ),
-              ],
-            ),
-            if (appointment.notes != null &&
-                appointment.notes!.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.chat_bubble_outline,
-                        size: 14, color: Colors.grey[500]),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        appointment.notes!,
-                        style:
-                            TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ]),
+                if (appointment.notes != null && appointment.notes!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Icon(Icons.chat_bubble_outline, size: 14, color: Colors.white38),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(appointment.notes!,
+                        style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.60)))),
+                    ]),
+                  ),
+                ],
+                const SizedBox(height: 14),
+                Row(children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onDecline,
+                      icon: const Icon(Icons.close, size: 16),
+                      label: const Text('Decline'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: SnapLawColors.danger,
+                        side: BorderSide(color: SnapLawColors.danger),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onDecline,
-                    icon: const Icon(Icons.close, size: 16),
-                    label: const Text('Decline'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                      side: BorderSide(color: AppColors.error),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton.icon(
+                      onPressed: onSchedule,
+                      icon: const Icon(Icons.calendar_month, size: 16),
+                      label: const Text('Schedule & Confirm'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: SnapLawColors.lawyerPurple,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton.icon(
-                    onPressed: onSchedule,
-                    icon: const Icon(Icons.calendar_month, size: 16),
-                    label: const Text('Schedule & Confirm'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.lawyerPrimary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                    ),
-                  ),
-                ),
+                ]),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -793,25 +772,25 @@ class _MeetingTypeChip extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected
                 ? AppColors.lawyerPrimary
-                : Colors.grey[100],
+                : const Color(0xFF0F1535),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: selected
                   ? AppColors.lawyerPrimary
-                  : Colors.grey[300]!,
+                  : const Color(0xFF4A5580),
             ),
           ),
           child: Column(
             children: [
               Icon(icon,
                   size: 20,
-                  color: selected ? Colors.white : Colors.grey[600]),
+                  color: selected ? Colors.white : const Color(0xFF8892B0)),
               const SizedBox(height: 4),
               Text(label,
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: selected ? Colors.white : Colors.grey[600])),
+                      color: selected ? Colors.white : const Color(0xFF8892B0))),
             ],
           ),
         ),
@@ -838,186 +817,159 @@ class _LawyerAppointmentCard extends StatelessWidget {
 
   Color _getStatusColor() {
     switch (appointment.status) {
-      case 'confirmed':
-        return AppColors.success;
-      case 'pending':
-        return Colors.orange;
-      case 'cancelled':
-        return AppColors.error;
-      case 'completed':
-        return Colors.blue;
-      default:
-        return Colors.grey;
+      case 'confirmed': return SnapLawColors.success;
+      case 'pending': return SnapLawColors.warning;
+      case 'cancelled': return SnapLawColors.danger;
+      case 'completed': return SnapLawColors.clientBlue;
+      default: return Colors.white54;
     }
   }
 
   IconData _getTypeIcon() {
     switch (appointment.consultationType) {
-      case 'video':
-        return Icons.videocam;
-      case 'phone':
-        return Icons.phone;
-      default:
-        return Icons.person;
+      case 'video': return Icons.videocam;
+      case 'phone': return Icons.phone;
+      default: return Icons.person;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final statusColor = _getStatusColor();
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withOpacity(0.12), width: 1),
+            ),
+            child: IntrinsicHeight(
+              child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 3,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: statusColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(13),
+                      bottomLeft: Radius.circular(13),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Container(
+                  width: 50, height: 50,
+                  decoration: BoxDecoration(
+                    color: SnapLawColors.lawyerPurple.withOpacity(0.18),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        DateFormat('dd')
-                            .format(appointment.appointmentDate),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      Text(
-                        DateFormat('MMM')
-                            .format(appointment.appointmentDate),
-                        style: const TextStyle(
-                            fontSize: 10, color: AppColors.primary),
-                      ),
-                    ],
-                  ),
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Text(DateFormat('dd').format(appointment.appointmentDate),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: SnapLawColors.lawyerPurple)),
+                    Text(DateFormat('MMM').format(appointment.appointmentDate),
+                      style: TextStyle(fontSize: 10, color: SnapLawColors.lawyerPurple)),
+                  ]),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(appointment.clientName,
-                          style: AppStyles.subtitle1),
-                      if (appointment.caseTitle != null)
-                        Text(
-                          appointment.caseTitle!,
-                          style: AppStyles.caption.copyWith(
-                              color: AppColors.textSecondary),
-                        ),
-                    ],
-                  ),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(appointment.clientName,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                    if (appointment.caseTitle != null)
+                      Text(appointment.caseTitle!,
+                        style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.55))),
+                  ]),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getStatusColor().withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(6),
+                    color: statusColor.withOpacity(0.18),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: statusColor.withOpacity(0.40)),
                   ),
-                  child: Text(
-                    appointment.statusDisplay,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: _getStatusColor(),
-                    ),
-                  ),
+                  child: Text(appointment.statusDisplay,
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: statusColor)),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(Icons.access_time,
-                    size: 16, color: AppColors.textSecondary),
+              ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Icon(Icons.access_time, size: 14, color: Colors.white38),
                 const SizedBox(width: 4),
-                Text(
-                    '${appointment.timeSlot} · ${appointment.duration} min',
-                    style: AppStyles.caption),
-                const SizedBox(width: 16),
-                Icon(_getTypeIcon(), size: 16, color: AppColors.primary),
+                Text('${appointment.timeSlot} · ${appointment.duration} min',
+                  style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.55))),
+                const SizedBox(width: 14),
+                Icon(_getTypeIcon(), size: 14, color: SnapLawColors.lawyerPurple),
                 const SizedBox(width: 4),
                 Text(appointment.consultationTypeDisplay,
-                    style: TextStyle(
-                        fontSize: 12, color: AppColors.primary)),
-              ],
-            ),
-            if (appointment.location != null &&
-                appointment.location!.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  Icon(
-                    appointment.consultationType == 'video'
-                        ? Icons.link
-                        : Icons.location_on,
-                    size: 14,
-                    color: Colors.grey[500],
-                  ),
+                  style: TextStyle(fontSize: 12, color: SnapLawColors.lawyerPurple)),
+              ]),
+              if (appointment.location != null && appointment.location!.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Row(children: [
+                  Icon(appointment.consultationType == 'video' ? Icons.link : Icons.location_on,
+                    size: 13, color: Colors.white38),
                   const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(appointment.location!,
-                        style: TextStyle(
-                            fontSize: 12, color: Colors.grey[600])),
-                  ),
-                ],
-              ),
-            ],
-            if (appointment.notes != null &&
-                appointment.notes!.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(appointment.notes!,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis),
-            ],
-            if (!isPast && appointment.status != 'cancelled') ...[
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  if (appointment.status == 'confirmed')
+                  Expanded(child: Text(appointment.location!,
+                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.55)))),
+                ]),
+              ],
+              if (appointment.notes != null && appointment.notes!.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(appointment.notes!,
+                  style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.50)),
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
+              ],
+              if (!isPast && appointment.status != 'cancelled') ...[
+                const SizedBox(height: 12),
+                Row(children: [
+                  if (appointment.status == 'confirmed') ...[
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: onComplete,
-                        icon: const Icon(Icons.check_circle, size: 18),
+                        icon: const Icon(Icons.check_circle, size: 16),
                         label: const Text('Mark Complete'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: SnapLawColors.clientBlue,
                           foregroundColor: Colors.white,
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 10),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
                       ),
                     ),
-                  if (appointment.status == 'confirmed')
                     const SizedBox(width: 8),
+                  ],
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: onCancel,
-                      icon: const Icon(Icons.cancel_outlined, size: 18),
+                      icon: const Icon(Icons.cancel_outlined, size: 16),
                       label: const Text('Cancel'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.error,
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 10),
+                        foregroundColor: SnapLawColors.danger,
+                        side: BorderSide(color: SnapLawColors.danger.withOpacity(0.60)),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ],
+                ]),
+              ],
+            ]),
+                  ),
+                ),
+              ],
+            ),
+            ),
+          ),
         ),
       ),
     );

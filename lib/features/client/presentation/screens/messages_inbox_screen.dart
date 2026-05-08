@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../../shared/presentation/providers/messages_provider.dart';
 
 class MessagesInboxScreen extends ConsumerStatefulWidget {
@@ -46,8 +48,11 @@ class _MessagesInboxScreenState extends ConsumerState<MessagesInboxScreen> {
     );
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Messages'),
+        backgroundColor: const Color(0xFF0D1130),
+        title: const Text('Messages', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           if (messagesState.unreadCount > 0)
             Center(
@@ -76,7 +81,9 @@ class _MessagesInboxScreenState extends ConsumerState<MessagesInboxScreen> {
           ),
         ],
       ),
-      body: messagesState.isLoading && messagesState.messages.isEmpty
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: messagesState.isLoading && messagesState.messages.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : messagesState.errorMessage != null
               ? Center(
@@ -140,6 +147,7 @@ class _MessagesInboxScreenState extends ConsumerState<MessagesInboxScreen> {
                         },
                       ),
                     ),
+      ),
     );
   }
 }
@@ -174,29 +182,35 @@ class _ConversationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isUnread = unreadCount > 0;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: isUnread ? 2 : 0,
-      color: isUnread ? AppColors.primary.withOpacity(0.05) : AppColors.surface,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: isUnread
+            ? Colors.white.withOpacity(0.10)
+            : Colors.white.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isUnread
+              ? SnapLawColors.clientBlue.withOpacity(0.40)
+              : Colors.white.withOpacity(0.10),
+        ),
+      ),
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
-          backgroundColor: AppColors.primary,
+          backgroundColor: SnapLawColors.clientBlue.withOpacity(0.30),
           radius: 28,
-          child: const Icon(
-            Icons.person,
-            color: Colors.white,
-            size: 28,
-          ),
+          child: const Icon(Icons.person, color: Colors.white, size: 28),
         ),
         title: Row(
           children: [
             Expanded(
               child: Text(
                 latestMessage.senderName,
-                style: TextStyle(
-                  fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
                   fontSize: 16,
+                  color: Colors.white,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -206,7 +220,7 @@ class _ConversationCard extends StatelessWidget {
               _formatTime(latestMessage.createdAt),
               style: TextStyle(
                 fontSize: 12,
-                color: isUnread ? AppColors.primary : AppColors.textSecondary,
+                color: isUnread ? SnapLawColors.clientBlue : Colors.white54,
                 fontWeight: isUnread ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
@@ -218,10 +232,7 @@ class _ConversationCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               'Case: ${caseId.substring(0, 8)}...',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.primary,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.white38),
             ),
             const SizedBox(height: 4),
             Text(
@@ -229,7 +240,7 @@ class _ConversationCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: isUnread ? FontWeight.w500 : FontWeight.normal,
-                color: isUnread ? AppColors.textPrimary : AppColors.textSecondary,
+                color: isUnread ? Colors.white : Colors.white60,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

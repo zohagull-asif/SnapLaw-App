@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +8,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 
 class EvidenceScannerScreen extends ConsumerStatefulWidget {
   const EvidenceScannerScreen({super.key});
@@ -49,7 +51,11 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
   }
 
   Future<void> _scanDocument() async {
-    if (_selectedFile == null || _selectedFile!.bytes == null) return;
+    if (_selectedFile == null) return;
+    if (_selectedFile!.bytes == null || _selectedFile!.bytes!.isEmpty) {
+      _showSnackBar('Could not read file data. Please try selecting the file again.', isError: true);
+      return;
+    }
 
     setState(() {
       _isScanning = true;
@@ -99,7 +105,9 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
       }
     } catch (e) {
       setState(() {
-        _error = 'Connection failed. Make sure the backend server is running.';
+        _error = e.toString().contains('Connection refused') || e.toString().contains('SocketException')
+            ? 'Backend server is not running.\n\nIn VS Code terminal, run:\n  cd backend\n  .\\venv\\Scripts\\activate\n  uvicorn main:app --reload --port 8000'
+            : 'Scan failed: ${e.toString()}';
         _isScanning = false;
       });
     }
@@ -147,26 +155,24 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A2B4A),
+        backgroundColor: const Color(0xFF0D1130),
+        elevation: 0,
         foregroundColor: Colors.white,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Evidence Scanner', style: TextStyle(fontSize: 18)),
-            Text(
-              'Extract text & redact private info',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-            ),
-          ],
-        ),
+        title: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text('Evidence Scanner', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+          Text('Extract text & redact private info',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.normal, color: Colors.white70)),
+        ]),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
@@ -182,6 +188,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
             ],
           ],
         ),
+      ),
       ),
     );
   }
@@ -208,7 +215,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A2B4A),
+              color: Color(0xFF0F1535),
             ),
           ),
           const SizedBox(height: 16),
@@ -221,12 +228,12 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 40),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: const Color(0xFFFFFFFF),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: _selectedFile != null
                       ? AppColors.success
-                      : const Color(0xFF1A2B4A).withOpacity(0.2),
+                      : const Color(0xFF0F1535).withOpacity(0.2),
                   width: 2,
                   style: _selectedFile != null
                       ? BorderStyle.solid
@@ -242,7 +249,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                     size: 48,
                     color: _selectedFile != null
                         ? AppColors.success
-                        : const Color(0xFF1A2B4A).withOpacity(0.4),
+                        : const Color(0xFF0F1535).withOpacity(0.4),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -253,8 +260,8 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: _selectedFile != null
-                          ? const Color(0xFF1A2B4A)
-                          : Colors.grey[600],
+                          ? const Color(0xFF0F1535)
+                          : const Color(0xFF8892B0),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -262,7 +269,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                     _selectedFile != null
                         ? _formatFileSize(_selectedFile!.size)
                         : 'PDF, JPG, PNG supported  •  Max 10MB',
-                    style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+                    style: TextStyle(fontSize: 13, color: const Color(0xFF8892B0)),
                   ),
                 ],
               ),
@@ -281,9 +288,9 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1A2B4A),
+                backgroundColor: const Color(0xFF0F1535),
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: Colors.grey[300],
+                disabledBackgroundColor: const Color(0xFF4A5580),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -320,7 +327,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
       child: Column(
         children: [
           const CircularProgressIndicator(
-            color: Color(0xFF1A2B4A),
+            color: Color(0xFF0F1535),
             strokeWidth: 3,
           ),
           const SizedBox(height: 24),
@@ -329,7 +336,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A2B4A),
+              color: Color(0xFF0F1535),
             ),
           ),
           const SizedBox(height: 20),
@@ -348,7 +355,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                       isActive ? Icons.check_circle : step['icon'] as IconData,
                       color: isActive
                           ? AppColors.success
-                          : const Color(0xFF1A2B4A),
+                          : const Color(0xFF0F1535),
                       size: 22,
                     ),
                   ),
@@ -361,8 +368,8 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         color: isActive
-                            ? const Color(0xFF1A2B4A)
-                            : Colors.grey[400],
+                            ? const Color(0xFF0F1535)
+                            : const Color(0xFF8892B0),
                         fontWeight:
                             isActive ? FontWeight.w600 : FontWeight.normal,
                       ),
@@ -400,7 +407,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
             icon: const Icon(Icons.refresh),
             label: const Text('Try Again'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A2B4A),
+              backgroundColor: const Color(0xFF0F1535),
               foregroundColor: Colors.white,
             ),
           ),
@@ -475,23 +482,25 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
     required String copyLabel,
     bool highlightRedacted = false,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border(top: BorderSide(color: borderColor, width: 4)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(height: 4, color: borderColor),
+            Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,7 +515,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A2B4A),
+                          color: Color(0xFF0F1535),
                         ),
                       ),
                     ),
@@ -516,7 +525,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                   const SizedBox(height: 4),
                   Text(
                     '$pages page${pages > 1 ? 's' : ''} • OCR completed',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                    style: TextStyle(fontSize: 12, color: const Color(0xFF8892B0)),
                   ),
                 ],
                 if (badge != null) ...[
@@ -546,9 +555,9 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 16),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
+              color: const Color(0xFFFFFFFF),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey.withOpacity(0.2)),
+              border: Border.all(color: const Color(0xFF8892B0).withOpacity(0.2)),
             ),
             child: SingleChildScrollView(
               child: highlightRedacted
@@ -558,7 +567,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                       style: const TextStyle(
                         fontSize: 13,
                         height: 1.6,
-                        color: Color(0xFF333333),
+                        color: Color(0xFF8892B0),
                         fontFamily: 'monospace',
                       ),
                     ),
@@ -573,7 +582,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                 icon: const Icon(Icons.copy, size: 18),
                 label: Text(copyLabel),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF1A2B4A),
+                  foregroundColor: const Color(0xFF0F1535),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -583,6 +592,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -600,7 +610,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
           style: const TextStyle(
             fontSize: 13,
             height: 1.6,
-            color: Color(0xFF333333),
+            color: Color(0xFF8892B0),
             fontFamily: 'monospace',
           ),
         ));
@@ -625,7 +635,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
         style: const TextStyle(
           fontSize: 13,
           height: 1.6,
-          color: Color(0xFF333333),
+          color: Color(0xFF8892B0),
           fontFamily: 'monospace',
         ),
       ));
@@ -672,7 +682,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A2B4A),
+                  color: Color(0xFF0F1535),
                 ),
               ),
             ],
@@ -681,7 +691,7 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
           if (isClean)
             Text(
               'This document contains no detectable private information.',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 14, color: const Color(0xFF8892B0)),
             )
           else
             Wrap(
@@ -723,12 +733,12 @@ class _EvidenceScannerScreenState extends ConsumerState<EvidenceScannerScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFF1A2B4A),
+          foregroundColor: const Color(0xFF0F1535),
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          side: const BorderSide(color: Color(0xFF1A2B4A)),
+          side: const BorderSide(color: Color(0xFF0F1535)),
         ),
       ),
     );

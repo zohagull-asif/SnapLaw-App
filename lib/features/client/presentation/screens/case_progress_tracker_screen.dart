@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 import '../../data/models/case_update_model.dart';
 import '../providers/case_updates_provider.dart';
 
@@ -22,22 +24,26 @@ class CaseProgressTrackerScreen extends ConsumerWidget {
     final state = ref.watch(caseUpdatesProviderFamily(caseId));
 
     return Scaffold(
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('Case Progress'),
+        backgroundColor: const Color(0xFF0D1130),
+        title: const Text('Case Progress', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: () {
               ref.read(caseUpdatesProviderFamily(caseId).notifier).refresh();
             },
           ),
         ],
       ),
-      body: Column(
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: Column(
         children: [
           _buildCaseHeader(state.updates),
           Expanded(
@@ -50,6 +56,7 @@ class CaseProgressTrackerScreen extends ConsumerWidget {
                         : _buildTimelineView(context, state.updates),
           ),
         ],
+      ),
       ),
     );
   }
@@ -171,12 +178,12 @@ class CaseProgressTrackerScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+            Icon(Icons.error_outline, size: 64, color: const Color(0xFF8892B0)),
             const SizedBox(height: 16),
             Text(
               error,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: const Color(0xFF8892B0), fontSize: 14),
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
@@ -199,21 +206,21 @@ class CaseProgressTrackerScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.timeline, size: 64, color: Colors.grey[400]),
+            Icon(Icons.timeline, size: 64, color: const Color(0xFF8892B0)),
             const SizedBox(height: 16),
             Text(
               'No updates yet',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: const Color(0xFF8892B0),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'Your lawyer will post updates here as your case progresses.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[500], fontSize: 14),
+              style: TextStyle(color: const Color(0xFF8892B0), fontSize: 14),
             ),
           ],
         ),
@@ -499,7 +506,7 @@ class CaseProgressTrackerScreen extends ConsumerWidget {
       case UpdateType.deadline:
         return Colors.red;
       case UpdateType.general:
-        return Colors.grey;
+        return const Color(0xFF8892B0);
     }
   }
 

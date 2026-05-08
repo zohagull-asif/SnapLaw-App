@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/snaplaw_widgets.dart';
+import '../../../../theme/snaplaw_theme.dart';
 
 class LawBotHubScreen extends StatelessWidget {
   const LawBotHubScreen({super.key});
@@ -8,137 +9,119 @@ class LawBotHubScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFF020818),
       appBar: AppBar(
-        title: const Text('LawBot Assistant'),
+        backgroundColor: SnapLawColors.bgDark,
+        elevation: 0,
+        title: const Text('LawBot Assistant',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Center(
-              child: Column(
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppColors.primary, AppColors.primaryLight],
+      body: AppBackground(
+        overlayOpacity: 0.55,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Center(
+                child: FadeSlideIn(
+                  delay: const Duration(milliseconds: 80),
+                  child: Column(children: [
+                    Container(
+                      width: 84, height: 84,
+                      decoration: BoxDecoration(
+                        gradient: SnapLawGradients.primary,
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: [BoxShadow(
+                          color: SnapLawColors.primary.withOpacity(0.45),
+                          blurRadius: 20, offset: const Offset(0, 6),
+                        )],
                       ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
+                      child: const Icon(Icons.smart_toy, size: 42, color: Colors.white),
                     ),
-                    child: const Icon(
-                      Icons.smart_toy,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'LawBot Assistant',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'How can I help you today?',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    const Text('LawBot Assistant',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                    const SizedBox(height: 8),
+                    Text('How can I help you today?',
+                      style: TextStyle(fontSize: 15, color: Colors.white.withOpacity(0.60))),
+                  ]),
+                ),
               ),
-            ),
-            const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-            // Tool Cards
-            _ToolCard(
-              icon: Icons.smart_toy,
-              title: 'LawBot Chat',
-              subtitle: 'Ask any question about Pakistani law — powered by Gemini AI',
-              color: const Color(0xFF1A2B4A),
-              onTap: () => context.push('/lawbot/qa'),
-            ),
-            const SizedBox(height: 16),
-            _ToolCard(
-              icon: Icons.article_outlined,
-              title: 'Simplify Contract',
-              subtitle: 'Convert complex legal jargon into plain, simple language',
-              color: const Color(0xFF4CAF50),
-              onTap: () => context.push('/lawbot/simplify'),
-            ),
-            const SizedBox(height: 16),
-            _ToolCard(
-              icon: Icons.shield_outlined,
-              title: 'Abuse Detection',
-              subtitle: 'Detect abuse, hate speech, threats & harassment with Pakistani law references',
-              color: const Color(0xFFFF9800),
-              onTap: () => context.push('/lawbot/bias'),
-            ),
-            const SizedBox(height: 16),
-            _ToolCard(
-              icon: Icons.shield,
-              title: 'SafeSpace - Abuse Guidance',
-              subtitle: 'Get help with harassment, violence, or abuse situations',
-              color: const Color(0xFFE91E63),
-              onTap: () => context.push('/lawbot/safespace'),
-            ),
+              // Tool Cards
+              FadeSlideIn(delay: const Duration(milliseconds: 150),
+                child: _ToolCard(
+                  icon: Icons.smart_toy,
+                  title: 'LawBot Chat',
+                  subtitle: 'Ask any question about Pakistani law — powered by Gemini AI',
+                  color: SnapLawColors.primary,
+                  onTap: () => context.push('/lawbot/qa'),
+                )),
+              const SizedBox(height: 14),
+              FadeSlideIn(delay: const Duration(milliseconds: 250),
+                child: _ToolCard(
+                  icon: Icons.article_outlined,
+                  title: 'Simplify Contract',
+                  subtitle: 'Convert complex legal jargon into plain, simple language',
+                  color: SnapLawColors.citizenGreen,
+                  onTap: () => context.push('/lawbot/simplify'),
+                )),
+              const SizedBox(height: 14),
+              FadeSlideIn(delay: const Duration(milliseconds: 350),
+                child: _ToolCard(
+                  icon: Icons.shield_outlined,
+                  title: 'Abuse Detection',
+                  subtitle: 'Detect abuse, hate speech, threats & harassment with Pakistani law references',
+                  color: SnapLawColors.warning,
+                  onTap: () => context.push('/lawbot/bias'),
+                )),
+              const SizedBox(height: 14),
+              FadeSlideIn(delay: const Duration(milliseconds: 450),
+                child: _ToolCard(
+                  icon: Icons.shield,
+                  title: 'SafeSpace — Abuse Guidance',
+                  subtitle: 'Get help with harassment, violence, or abuse situations',
+                  color: const Color(0xFFEC4899),
+                  onTap: () => context.push('/lawbot/safespace'),
+                )),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
-            // Disclaimer
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.info.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.info.withOpacity(0.2)),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.info_outline, size: 20, color: AppColors.info),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'LawBot provides general legal information based on Pakistani law. '
-                      'For specific legal advice, always consult a licensed attorney.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[700],
-                        height: 1.4,
+              // Disclaimer
+              FadeSlideIn(
+                delay: const Duration(milliseconds: 550),
+                child: GlassCard(
+                  padding: const EdgeInsets.all(14),
+                  borderColor: SnapLawColors.info.withOpacity(0.30),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Icon(Icons.info_outline, size: 18, color: SnapLawColors.info),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'LawBot provides general legal information based on Pakistani law. '
+                        'For specific legal advice, always consult a licensed attorney.',
+                        style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.65), height: 1.4),
                       ),
                     ),
-                  ),
-                ],
+                  ]),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _ToolCard extends StatelessWidget {
+class _ToolCard extends StatefulWidget {
   final IconData icon;
   final String title;
   final String subtitle;
@@ -154,55 +137,47 @@ class _ToolCard extends StatelessWidget {
   });
 
   @override
+  State<_ToolCard> createState() => _ToolCardState();
+}
+
+class _ToolCardState extends State<_ToolCard> {
+  bool _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      elevation: 2,
-      shadowColor: color.withOpacity(0.2),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _hovered ? 1.02 : 1.0,
+          duration: const Duration(milliseconds: 150),
+          child: GlassCard(
+            padding: const EdgeInsets.all(18),
+            borderColor: widget.color.withOpacity(0.30),
+            child: Row(children: [
               Container(
-                width: 56,
-                height: 56,
+                width: 54, height: 54,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: widget.color.withOpacity(0.18),
                   borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: widget.color.withOpacity(0.30)),
                 ),
-                child: Icon(icon, size: 28, color: color),
+                child: Icon(widget.icon, size: 26, color: widget.color),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
-                ),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(widget.title, style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                  const SizedBox(height: 4),
+                  Text(widget.subtitle, style: TextStyle(
+                    fontSize: 12, color: Colors.white.withOpacity(0.55), height: 1.3)),
+                ]),
               ),
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
-            ],
+              Icon(Icons.chevron_right, color: widget.color.withOpacity(0.70)),
+            ]),
           ),
         ),
       ),
