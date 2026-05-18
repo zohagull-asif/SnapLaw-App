@@ -124,23 +124,28 @@ class _SafeSpaceScreenState extends State<SafeSpaceScreen> {
                   const Icon(Icons.phone, color: AppColors.error, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style: TextStyle(fontSize: 13, color: Colors.white70),
-                        children: const [
-                          TextSpan(
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          const TextSpan(
                             text: 'In immediate danger? ',
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 13),
                           ),
-                          TextSpan(text: 'Call '),
-                          TextSpan(
+                          const TextSpan(
+                            text: 'Call ',
+                            style: TextStyle(color: Colors.white70, fontSize: 13),
+                          ),
+                          const TextSpan(
                             text: '15 (Police)',
-                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.error),
+                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.error, fontSize: 13),
                           ),
-                          TextSpan(text: ' or '),
-                          TextSpan(
+                          const TextSpan(
+                            text: ' or ',
+                            style: TextStyle(color: Colors.white70, fontSize: 13),
+                          ),
+                          const TextSpan(
                             text: '1122 (Rescue)',
-                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.error),
+                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.error, fontSize: 13),
                           ),
                         ],
                       ),

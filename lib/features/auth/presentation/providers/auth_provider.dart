@@ -323,6 +323,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> refreshUser() async {
+    final currentUser = SupabaseService.currentUser;
+    if (currentUser != null) {
+      await _fetchUserProfile(currentUser.id);
+    }
+  }
+
   void clearError() {
     if (state.status == AuthStatus.error) {
       state = state.copyWith(

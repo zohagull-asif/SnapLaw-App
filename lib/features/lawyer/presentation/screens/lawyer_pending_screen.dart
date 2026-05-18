@@ -1,15 +1,64 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/widgets/snaplaw_widgets.dart';
 import '../../../../theme/snaplaw_theme.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
-class LawyerPendingScreen extends ConsumerWidget {
+class LawyerPendingScreen extends ConsumerStatefulWidget {
   const LawyerPendingScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LawyerPendingScreen> createState() => _LawyerPendingScreenState();
+}
+
+class _LawyerPendingScreenState extends ConsumerState<LawyerPendingScreen> {
+  Timer? _pollTimer;
+  bool _checking = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Poll every 10 seconds to check if admin has approved
+    _pollTimer = Timer.periodic(const Duration(seconds: 10), (_) => _checkApproval());
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _checkApproval() async {
+    if (_checking) return;
+    final userId = ref.read(authProvider).user?.id;
+    if (userId == null) return;
+
+    _checking = true;
+    try {
+      final result = await Supabase.instance.client
+          .from('lawyer_profiles')
+          .select('is_verified')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (result != null && result['is_verified'] == true && mounted) {
+        _pollTimer?.cancel();
+        // Refresh auth state so login routing sees the updated status
+        await ref.read(authProvider.notifier).refreshUser();
+        if (mounted) context.go('/lawyer');
+      }
+    } catch (_) {
+      // Silently ignore poll errors
+    } finally {
+      _checking = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user;
 
     return Scaffold(
@@ -44,7 +93,6 @@ class LawyerPendingScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 28),
 
-                // Title
                 const Text(
                   'Account Pending Approval',
                   style: TextStyle(
@@ -55,7 +103,6 @@ class LawyerPendingScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // Subtitle
                 Text(
                   'Hello ${user?.fullName ?? 'Counsel'},\n\nYour lawyer account has been created and is awaiting verification by our admin team. You will be able to access the platform once your credentials have been reviewed and approved.',
                   style: TextStyle(
@@ -66,7 +113,7 @@ class LawyerPendingScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 32),
 
-                // Status pill
+                // Status pill with animated dot
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
@@ -89,9 +136,23 @@ class LawyerPendingScreen extends ConsumerWidget {
                             color: SnapLawColors.warning,
                             fontSize: 13,
                             fontWeight: FontWeight.w600)),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: SnapLawColors.warning.withOpacity(0.6),
+                      ),
+                    ),
                   ]),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 10),
+                Text(
+                  'Checking automatically every 10 seconds...',
+                  style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11),
+                ),
+                const SizedBox(height: 30),
 
                 // What happens next
                 Container(
@@ -99,8 +160,7 @@ class LawyerPendingScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.06),
                     borderRadius: BorderRadius.circular(14),
-                    border:
-                        Border.all(color: Colors.white.withOpacity(0.12)),
+                    border: Border.all(color: Colors.white.withOpacity(0.12)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,27 +171,29 @@ class LawyerPendingScreen extends ConsumerWidget {
                               fontSize: 13,
                               fontWeight: FontWeight.w600)),
                       const SizedBox(height: 12),
-                      _Step(
-                          number: '1',
-                          text: 'Admin reviews your application'),
+                      _Step(number: '1', text: 'Admin reviews your application'),
                       const SizedBox(height: 8),
-                      _Step(
-                          number: '2',
-                          text:
-                              'Your credentials are verified'),
+                      _Step(number: '2', text: 'Your credentials are verified'),
                       const SizedBox(height: 8),
-                      _Step(
-                          number: '3',
-                          text:
-                              'You receive access to the Lawyer Dashboard'),
+                      _Step(number: '3', text: 'You are automatically redirected to the Lawyer Dashboard'),
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 20),
+
+                // Manual check button
+                TextButton.icon(
+                  onPressed: _checkApproval,
+                  icon: const Icon(Icons.refresh, size: 16, color: Colors.white54),
+                  label: const Text('Check Now',
+                      style: TextStyle(color: Colors.white54, fontSize: 13)),
+                ),
+                const SizedBox(height: 12),
 
                 // Logout button
                 OutlinedButton.icon(
                   onPressed: () {
+                    _pollTimer?.cancel();
                     ref.read(authProvider.notifier).signOut();
                     context.go('/login');
                   },
@@ -169,8 +231,8 @@ class _Step extends StatelessWidget {
         decoration: BoxDecoration(
           color: SnapLawColors.lawyerPurple.withOpacity(0.25),
           shape: BoxShape.circle,
-          border: Border.all(
-              color: SnapLawColors.lawyerPurple.withOpacity(0.50)),
+          border:
+              Border.all(color: SnapLawColors.lawyerPurple.withOpacity(0.50)),
         ),
         child: Center(
           child: Text(number,

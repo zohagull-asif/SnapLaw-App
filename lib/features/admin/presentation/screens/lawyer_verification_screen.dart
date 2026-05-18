@@ -162,6 +162,9 @@ class _LawyerVerificationScreenState
       final db = Supabase.instance.client;
       final updateData = <String, dynamic>{'is_verified': false};
       try { updateData['is_rejected'] = true; } catch (_) {}
+      if (reason.isNotEmpty) {
+        try { updateData['rejection_reason'] = reason; } catch (_) {}
+      }
       await db.from('lawyer_profiles').update(updateData).eq('id', lawyer.profileId);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
